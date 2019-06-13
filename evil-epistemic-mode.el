@@ -1,3 +1,43 @@
+;;; evil-epistemic-mode.el --- Self-reflective editing modes -*- lexical-binding: t -*-
+
+;; Author: Siddhartha Kasivajhula <sid@countvajhula.com>
+;; URL: https://github.com/countvajhula/epistemic-mode
+;; Version: 0.1
+;; Keywords: evil
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+;;
+;; Epistemic mode allows you to construct "towers" of editing modes
+;; (in principle, these could be any evil modes) and manipulate which
+;; tower is active at any point in time.  It generalizes both vim's
+;; notion of editing mode, as well as Emacs's notion of a major mode
+;; into a unified way of looking things, that is, as towers of
+;; modes which can be swapped and themselves edited using the very
+;; modes they contain.
+;;
+;; In addition, epistemic mode also defines conventions that modes that
+;; are "epistemic" should follow in order to be seamlessly integrated
+;; into editing towers.  This includes conventions around keybindings
+;; for moving up and down the hierarchy of editing levels, standard
+;; semantics of modifier keys, defining a canonical action for each
+;; mode, and other such conventions to ensure semantic uniformity across
+;; editing levels.
+
+;;; Code:
+
 ;; Define evil states for each epistemic mode
 (evil-define-state char
   "Char state."
@@ -419,3 +459,4 @@ monadic verb in the 'switch buffer' navigation."
 (global-set-key (kbd "s-m") 'hydra-mode/body)
 
 (provide 'evil-epistemic-mode)
+;;; evil-epistemic-mode.el ends here
