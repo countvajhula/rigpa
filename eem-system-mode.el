@@ -15,4 +15,4 @@
 ;; access the system menu via a "body" keybinding
 (global-set-key (kbd "s-i") 'hydra-system/body)
 
-(provide 'my-system-mode)
+(provide 'eem-system-mode)

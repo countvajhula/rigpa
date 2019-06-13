@@ -70,4 +70,4 @@
 ;; contains a nested hydra to modulate transparency
 (global-set-key (kbd "s-e") 'hydra-application/body)
 
-(provide 'my-application-mode)
+(provide 'eem-application-mode)

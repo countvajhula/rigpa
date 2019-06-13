@@ -116,4 +116,4 @@ current ('original') buffer."
 ;; access the buffer menu via a "body" keybinding
 (global-set-key (kbd "s-b") 'hydra-buffer/body)
 
-(provide 'my-buffer-mode)
+(provide 'eem-buffer-mode)

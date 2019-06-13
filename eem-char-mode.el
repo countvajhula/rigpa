@@ -110,4 +110,4 @@
 
 (global-set-key (kbd "s-x") 'hydra-char/body)
 
-(provide 'my-char-mode)
+(provide 'eem-char-mode)

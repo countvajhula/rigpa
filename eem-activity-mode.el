@@ -32,4 +32,4 @@
 
 (global-set-key (kbd "s-a") 'hydra-activity/body)
 
-(provide 'my-activity-mode)
+(provide 'eem-activity-mode)

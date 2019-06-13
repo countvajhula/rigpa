@@ -155,4 +155,4 @@
 
 (global-set-key (kbd "s-r") 'hydra-word/body)
 
-(provide 'my-word-mode)
+(provide 'eem-word-mode)

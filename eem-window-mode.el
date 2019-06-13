@@ -54,4 +54,4 @@
 
 (global-set-key (kbd "s-w") 'hydra-window/body)
 
-(provide 'my-window-mode)
+(provide 'eem-window-mode)

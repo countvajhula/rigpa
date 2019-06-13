@@ -75,17 +75,17 @@
   :message "-- MODE --"
   :enable (motion normal))
 
-(require 'my-char-mode)
-(require 'my-word-mode)
-(require 'my-line-mode)
+(require 'eem-char-mode)
+(require 'eem-word-mode)
+(require 'eem-line-mode)
 (require 'symex-mode)
-(require 'my-view-mode)
-(require 'my-window-mode)
-(require 'my-file-mode)
-(require 'my-buffer-mode)
-(require 'my-system-mode)
-(require 'my-application-mode)
-(require 'my-activity-mode)
+(require 'eem-view-mode)
+(require 'eem-window-mode)
+(require 'eem-file-mode)
+(require 'eem-buffer-mode)
+(require 'eem-system-mode)
+(require 'eem-application-mode)
+(require 'eem-activity-mode)
 
 ;; define face for use in epistemic mode
 (make-face 'eem-face)

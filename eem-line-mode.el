@@ -201,4 +201,4 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
 
 (global-set-key (kbd "s-l") 'hydra-line/body)
 
-(provide 'my-line-mode)
+(provide 'eem-line-mode)

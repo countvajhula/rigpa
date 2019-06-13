@@ -37,4 +37,4 @@ Version 2016-04-04"
 
 (global-set-key (kbd "s-f") 'hydra-file/body)
 
-(provide 'my-file-mode)
+(provide 'eem-file-mode)

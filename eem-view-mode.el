@@ -93,4 +93,4 @@
 
 (global-set-key (kbd "s-v") 'hydra-view/body)
 
-(provide 'my-view-mode)
+(provide 'eem-view-mode)
