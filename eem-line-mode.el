@@ -169,7 +169,8 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
 
 (defhydra hydra-line (:idle 1.0
                       :columns 4
-                      :body-pre (evil-line-state))
+                      :body-pre (evil-line-state)
+                      :post (evil-normal-state))
   "Line mode"
   ("h" evil-previous-line "previous")
   ("j" evil-next-line "next")

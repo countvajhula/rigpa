@@ -5,7 +5,8 @@
   (display-message-or-buffer (shell-command-to-string "pmset -g batt")))
 
 (defhydra hydra-system (:exit t
-                        :body-pre (evil-system-state))
+                        :body-pre (evil-system-state)
+                        :post (evil-normal-state))
   "System information"
   ("b" my-battery-life "show power info including battery life")
   ("s-i" my-battery-life "show power info including battery life")

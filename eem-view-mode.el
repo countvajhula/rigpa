@@ -59,7 +59,8 @@
 
 (defhydra hydra-view (:idle 1.0
                       :columns 6
-                      :body-pre (evil-view-state))
+                      :body-pre (evil-view-state)
+                      :post (evil-normal-state))
   "View mode"
   ("j" my-scroll-down "down")
   ("k" my-scroll-up "up")

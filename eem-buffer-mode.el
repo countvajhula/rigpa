@@ -91,7 +91,8 @@ current ('original') buffer."
                         :columns 3
                         :body-pre (progn (setup-buffer-marks-table)
                                          (evil-buffer-state))
-                        :post (flash-to-original-and-back))
+                        :post (progn (flash-to-original-and-back)
+                                     (evil-normal-state)))
   "Buffer mode"
   ("s-b" evil-switch-to-windows-last-buffer "switch to last" :exit t)
   ("b" evil-switch-to-windows-last-buffer "switch to last" :exit t)

@@ -85,7 +85,8 @@
 
 (defhydra hydra-char (:idle 1.0
                       :columns 4
-                      :body-pre (evil-char-state))
+                      :body-pre (evil-char-state)
+                      :post (evil-normal-state))
   "Character mode"
   ("h" evil-backward-char "left")
   ("j" evil-next-line "down")

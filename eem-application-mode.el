@@ -57,7 +57,8 @@
 
 (defhydra hydra-application (:columns 1
                              :exit t
-                             :body-pre (evil-application-state))
+                             :body-pre (evil-application-state)
+                             :post (evil-normal-state))
   "Control application environment"
   ("t" hydra-transparency/body "transparency")
   ("n" display-line-numbers-mode "toggle line numbers")

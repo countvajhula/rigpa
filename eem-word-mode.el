@@ -124,7 +124,8 @@
 
 (defhydra hydra-word (:idle 1.0
                       :columns 2
-                      :body-pre (evil-word-state))
+                      :body-pre (evil-word-state)
+                      :post (evil-normal-state))
   "Word mode"
   ("h" evil-backward-WORD-begin "backward")
   ("j" evil-next-line "down")
