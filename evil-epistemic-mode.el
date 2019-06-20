@@ -47,73 +47,73 @@
   ;;:entry-hook ;; potentially call the hydra here
   ;;:exit-hook ;; none
   ;;:suppress-keymap) ;; should be t, but probably inherits from normal
-  :enable (motion normal))
+  :enable (normal))
 
 (evil-define-state word
   "Word state."
   :tag " <W> "
   :message "-- WORD --"
-  :enable (motion normal))
+  :enable (normal))
 
 (evil-define-state line
   "Line state."
   :tag " <L> "
   :message "-- LINE --"
-  :enable (motion normal))
+  :enable (normal))
 
 (evil-define-state symex
   "Symex state."
   :tag " <λ> "
   :message "-- SYMEX --"
-  :enable (motion normal))
+  :enable (normal))
 
 (evil-define-state view
   "View state."
   :tag " <V> "
   :message "-- VIEW --"
-  :enable (motion normal))
+  :enable (normal))
 
 (evil-define-state window
   "Window state."
   :tag " <W> "
   :message "-- WINDOW --"
-  :enable (motion normal))
+  :enable (normal))
 
 (evil-define-state file
   "File state."
   :tag " <F> "
   :message "-- FILE --"
-  :enable (motion normal))
+  :enable (normal))
 
 (evil-define-state buffer
   "Buffer state."
   :tag " <B> "
   :message "-- BUFFER --"
-  :enable (motion normal))
+  :enable (normal))
 
 (evil-define-state application
   "Application state."
   :tag " <A> "
   :message "-- APPLICATION --"
-  :enable (motion normal))
+  :enable (normal))
 
 (evil-define-state system
   "System state."
   :tag " <S> "
   :message "-- SYSTEM --"
-  :enable (motion normal))
+  :enable (normal))
 
 (evil-define-state activity
   "Activity state."
   :tag " <A> "
   :message "-- ACTIVITY --"
-  :enable (motion normal))
+  :enable (normal))
 
 (evil-define-state mode
   "Mode state."
   :tag " <M> "
   :message "-- MODE --"
-  :enable (motion normal))
+  :enable (normal))
 
 (require 'eem-char-mode)
 (require 'eem-word-mode)
