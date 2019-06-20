@@ -41,8 +41,8 @@
               (truncate (/ (window-body-height) 4.0)))))
     (recenter this-scroll-margin)))
 
-(defun my-recenter-at-top ()
-  "Recenter view so that selected line is at the top"
+(defun my-recenter-at-bottom ()
+  "Recenter view so that selected line is at the bottom"
   (interactive)
   (let ((this-scroll-margin
          (min (max 0 scroll-margin)
@@ -77,10 +77,9 @@
   ("v" recenter "recenter")
   ("C-k" my-scroll-skip-up "skip up")
   ("C-j" my-scroll-skip-down "skip down")
-  ("C-l" my-recenter-at-top "recenter at top")
-  ("C-h" my-recenter-at-bottom "recenter at bottom")
-  ("H" my-reset-zoom "reset zoom")
-  ("L" my-reset-zoom "reset zoom")
+  ("L" my-recenter-at-top "recenter at top")
+  ("H" my-recenter-at-bottom "recenter at bottom")
+  (":backspace>" my-reset-zoom "reset zoom")
   ("K" text-scale-increase "zoom in")
   ("J" text-scale-decrease "zoom out")
   ("u" my-scroll-half-page-up "leap up")
