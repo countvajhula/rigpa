@@ -60,7 +60,7 @@
                              :body-pre (evil-application-state)
                              :post (evil-normal-state))
   "Control application environment"
-  ("t" hydra-transparency/body "transparency")
+  ("t" hydra-transparency/body "transparency" :exit t)
   ("n" display-line-numbers-mode "toggle line numbers")
   ("l" hl-line-mode "toggle highlight line")
   ("c" counsel-load-theme "change color scheme")
