@@ -80,7 +80,7 @@
   ("C-j" my-scroll-skip-down "skip down")
   ("L" my-recenter-at-top "recenter at top")
   ("H" my-recenter-at-bottom "recenter at bottom")
-  (":backspace>" my-reset-zoom "reset zoom")
+  ("<backspace>" my-reset-zoom "reset zoom")
   ("K" text-scale-increase "zoom in")
   ("J" text-scale-decrease "zoom out")
   ("u" my-scroll-half-page-up "leap up")
