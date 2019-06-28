@@ -32,6 +32,12 @@
 ;; and provide a custom keymap. still, seems like it needs to be
 ;; managed inside a hydra
 
+(evil-define-state buffer
+  "Buffer state."
+  :tag " <B> "
+  :message "-- BUFFER --"
+  :enable (normal))
+
 (defun my-buffer-set-mark (mark-name)
   "Set a mark"
   (interactive "cMark name?")

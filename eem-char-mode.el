@@ -1,3 +1,13 @@
+(evil-define-state char
+  "Char state."
+  :tag " <X> "
+  :message "-- CHAR --"
+  ;;:cursor ;; inherit from normal
+  ;;:entry-hook ;; potentially call the hydra here
+  ;;:exit-hook ;; none
+  ;;:suppress-keymap) ;; should be t, but probably inherits from normal
+  :enable (normal))
+
 (defun my-char-info ()
   "Info on character"
   (interactive)

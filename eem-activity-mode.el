@@ -1,3 +1,9 @@
+(evil-define-state activity
+  "Activity state."
+  :tag " <A> "
+  :message "-- ACTIVITY --"
+  :enable (normal))
+
 (setq my-accumulate-buffer-name "MY-CLIPBOARD")
 
 (defun my-yank-and-accumulate ()

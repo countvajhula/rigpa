@@ -1,3 +1,9 @@
+(evil-define-state application
+  "Application state."
+  :tag " <A> "
+  :message "-- APPLICATION --"
+  :enable (normal))
+
 (defun current-transparency ()
   (nth 0
        (frame-parameter (selected-frame)

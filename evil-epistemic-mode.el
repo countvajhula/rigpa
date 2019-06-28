@@ -24,7 +24,7 @@
 ;; (in principle, these could be any evil modes) and manipulate which
 ;; tower is active at any point in time.  It generalizes both vim's
 ;; notion of editing mode, as well as Emacs's notion of a major mode
-;; into a unified way of looking things, that is, as towers of
+;; into a unified way of looking at things, that is, as towers of
 ;; modes which can be swapped and themselves edited using the very
 ;; modes they contain.
 ;;
@@ -39,76 +39,6 @@
 ;;; Code:
 
 ;; Define evil states for each epistemic mode
-(evil-define-state char
-  "Char state."
-  :tag " <X> "
-  :message "-- CHAR --"
-  ;;:cursor ;; inherit from normal
-  ;;:entry-hook ;; potentially call the hydra here
-  ;;:exit-hook ;; none
-  ;;:suppress-keymap) ;; should be t, but probably inherits from normal
-  :enable (normal))
-
-(evil-define-state word
-  "Word state."
-  :tag " <W> "
-  :message "-- WORD --"
-  :enable (normal))
-
-(evil-define-state line
-  "Line state."
-  :tag " <L> "
-  :message "-- LINE --"
-  :enable (normal))
-
-(evil-define-state symex
-  "Symex state."
-  :tag " <λ> "
-  :message "-- SYMEX --"
-  :enable (normal))
-
-(evil-define-state view
-  "View state."
-  :tag " <V> "
-  :message "-- VIEW --"
-  :enable (normal))
-
-(evil-define-state window
-  "Window state."
-  :tag " <W> "
-  :message "-- WINDOW --"
-  :enable (normal))
-
-(evil-define-state file
-  "File state."
-  :tag " <F> "
-  :message "-- FILE --"
-  :enable (normal))
-
-(evil-define-state buffer
-  "Buffer state."
-  :tag " <B> "
-  :message "-- BUFFER --"
-  :enable (normal))
-
-(evil-define-state application
-  "Application state."
-  :tag " <A> "
-  :message "-- APPLICATION --"
-  :enable (normal))
-
-(evil-define-state system
-  "System state."
-  :tag " <S> "
-  :message "-- SYSTEM --"
-  :enable (normal))
-
-(evil-define-state activity
-  "Activity state."
-  :tag " <A> "
-  :message "-- ACTIVITY --"
-  :enable (normal))
-
 (evil-define-state mode
   "Mode state."
   :tag " <M> "

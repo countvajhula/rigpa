@@ -2,6 +2,12 @@
 ;; TODO: region does not persist on entering mode, e.g. for
 ;;       use in "narrow" functionality
 
+(evil-define-state view
+  "View state."
+  :tag " <V> "
+  :message "-- VIEW --"
+  :enable (normal))
+
 (defun my-scroll-half-page-up ()
   (interactive)
   (evil-scroll-line-up (/ (window-total-height) 2)))

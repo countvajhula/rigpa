@@ -1,3 +1,9 @@
+(evil-define-state word
+  "Word state."
+  :tag " <W> "
+  :message "-- WORD --"
+  :enable (normal))
+
 (defun my-move-word-backward ()
   "Move word backwards"
   (interactive)

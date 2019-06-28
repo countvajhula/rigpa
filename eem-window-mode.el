@@ -1,4 +1,10 @@
 
+(evil-define-state window
+  "Window state."
+  :tag " <W> "
+  :message "-- WINDOW --"
+  :enable (normal))
+
 (use-package ace-window
   :config
   (setq aw-keys '(?h ?j ?k ?l ?g ?f ?d ?s ?a)))

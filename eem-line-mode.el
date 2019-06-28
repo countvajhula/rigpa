@@ -7,6 +7,12 @@
 ;; - copy line
 ;; similarly for "region-mode", possibly by invoking multiple cursors
 
+(evil-define-state line
+  "Line state."
+  :tag " <L> "
+  :message "-- LINE --"
+  :enable (normal))
+
 (defun my-move-line-down (&optional count)
   "Move line down"
   (interactive)

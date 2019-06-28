@@ -1,3 +1,9 @@
+(evil-define-state system
+  "System state."
+  :tag " <S> "
+  :message "-- SYSTEM --"
+  :enable (normal))
+
 (defun my-battery-life ()
   "Show power info including battery life
    (Mac-specific, at the moment)."

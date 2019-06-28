@@ -1,3 +1,9 @@
+(evil-define-state file
+  "File state."
+  :tag " <F> "
+  :message "-- FILE --"
+  :enable (normal))
+
 ;; From: https://www.emacswiki.org/emacs/MarkCommands#toc4
 (defun unpop-to-mark-command ()
     "Unpop off mark ring. Does nothing if mark ring is empty."
