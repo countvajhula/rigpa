@@ -270,7 +270,7 @@ initial epistemic tower."
 (define-key evil-insert-state-map [escape] 'eem-enter-higher-level)
 (define-key evil-normal-state-map [escape] 'eem-enter-higher-level)
 (define-key evil-normal-state-map [return] 'eem-enter-lower-level)
-(global-set-key (kbd "s-<escape>") 'evil-force-normal-state)
+(global-set-key (kbd "H-<escape>") 'evil-force-normal-state)
 
 (defun eem--enter-level (level-number)
   "Enter level LEVEL-NUMBER"
@@ -379,14 +379,12 @@ monadic verb in the 'switch buffer' navigation."
   ;; the mode mode, tower mode, and so on recursively makes more sense
   ;; if we assume that keyboard shortcuts are scarce. this gives us ways to use
   ;; a small number of keys in any arbitrary configuration
-  ("s-m" eem-flashback-to-last-tower :exit t)  ; canonical action
-  ("<return>" eem-enter-selected-level :exit t)
+  ("s-m" eem-flashback-to-last-tower "flashback" :exit t)  ; canonical action
+  ("<return>" eem-enter-selected-level "enter selected level" :exit t)
   ("i" my-noop "exit" :exit t)
   ("<escape>" nil "exit" :exit t))
   ;("s-<return>" eem-enter-lower-level "enter lower level" :exit t)
   ;("s-<escape>" eem-enter-higher-level "escape to higher level" :exit t))
-
-(global-set-key (kbd "s-m") 'hydra-mode/body)
 
 (provide 'evil-epistemic-mode)
 ;;; evil-epistemic-mode.el ends here
