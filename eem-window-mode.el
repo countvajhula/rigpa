@@ -5,13 +5,16 @@
   :message "-- WINDOW --"
   :enable (normal))
 
-(use-package ace-window
-  :config
-  (setq aw-keys '(?h ?j ?k ?l ?g ?f ?d ?s ?a)))
+(require 'ace-window)
+(require 'winner)
 
-(use-package winner
-  :config
-  (winner-mode t))
+;; configure home-row hotkeys to index windows in ace-window,
+;; used as "search" feature in window mode
+(setq aw-keys '(?h ?j ?k ?l ?g ?f ?d ?s ?a))
+
+;; enable winner mode, used to provide "undo/redo" functionality
+;; in window mode
+(winner-mode t)
 
 ;; Evil provides some good window navigation functionality, but these
 ;; bindings aren't available in Emacs state and also consequently in
