@@ -381,6 +381,7 @@ monadic verb in the 'switch buffer' navigation."
   ;; a small number of keys in any arbitrary configuration
   ("s-m" eem-flashback-to-last-tower "flashback" :exit t)  ; canonical action
   ("<return>" eem-enter-selected-level "enter selected level" :exit t)
+  ("s-<return>" eem-enter-selected-level "enter selected level" :exit t)
   ("i" my-noop "exit" :exit t)
   ("<escape>" nil "exit" :exit t))
   ;("s-<return>" eem-enter-lower-level "enter lower level" :exit t)
