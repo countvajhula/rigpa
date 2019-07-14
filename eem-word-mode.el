@@ -153,7 +153,6 @@
   ("U" my-upper-case "upper case")
   ("u" my-lower-case "lower case")
   ("s" my-split-word "split into characters")
-  ("i" dictionary-lookup-definition "lookup in dictionary" :exit t)
   ("s-r" my-delete-word "delete" :exit t)
   ("s-o" my-delete-other-words "delete other words" :exit t)
   ("?" dictionary-lookup-definition "lookup in dictionary" :exit t)
