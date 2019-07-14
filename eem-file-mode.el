@@ -2,6 +2,7 @@
   "File state."
   :tag " <F> "
   :message "-- FILE --"
+  :entry-hook (hydra-file/body)
   :enable (normal))
 
 ;; From: https://www.emacswiki.org/emacs/MarkCommands#toc4
@@ -27,7 +28,6 @@ Version 2016-04-04"
 
 (defhydra hydra-file (:idle 1.0
                       :columns 2
-                      :body-pre (evil-file-state)
                       :post (evil-normal-state))
   "File mode"
   ("h" evil-backward-char "backward")
@@ -42,6 +42,6 @@ Version 2016-04-04"
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(global-set-key (kbd "s-f") 'hydra-file/body)
+(global-set-key (kbd "s-f") 'evil-file-state)
 
 (provide 'eem-file-mode)

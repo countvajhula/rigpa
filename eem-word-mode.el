@@ -2,6 +2,7 @@
   "Word state."
   :tag " <W> "
   :message "-- WORD --"
+  :entry-hook (hydra-word/body)
   :enable (normal))
 
 (defun my-move-word-backward ()
@@ -130,7 +131,6 @@
 
 (defhydra hydra-word (:idle 1.0
                       :columns 2
-                      :body-pre (evil-word-state)
                       :post (evil-normal-state))
   "Word mode"
   ("h" evil-backward-WORD-begin "backward")
@@ -159,6 +159,6 @@
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(global-set-key (kbd "s-r") 'hydra-word/body)
+(global-set-key (kbd "s-r") 'evil-word-state)
 
 (provide 'eem-word-mode)

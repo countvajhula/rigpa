@@ -2,6 +2,7 @@
   "Application state."
   :tag " <A> "
   :message "-- APPLICATION --"
+  :entry-hook (hydra-application/body)
   :enable (normal))
 
 (defun current-transparency ()
@@ -63,7 +64,6 @@
 
 (defhydra hydra-application (:columns 1
                              :exit t
-                             :body-pre (evil-application-state)
                              :post (evil-normal-state))
   "Control application environment"
   ("t" hydra-transparency/body "transparency" :exit t)
@@ -75,6 +75,6 @@
 
 ;; hydra to configure the application environment
 ;; contains a nested hydra to modulate transparency
-(global-set-key (kbd "s-e") 'hydra-application/body)
+(global-set-key (kbd "s-e") 'evil-application-state)
 
 (provide 'eem-application-mode)

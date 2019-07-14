@@ -3,6 +3,7 @@
   "Window state."
   :tag " <W> "
   :message "-- WINDOW --"
+  :entry-hook (hydra-window/body)
   :enable (normal))
 
 (require 'ace-window)
@@ -27,7 +28,6 @@
 
 (defhydra hydra-window (:idle 1.0
                         :columns 4
-                        :body-pre (evil-window-state)
                         :post (evil-normal-state))
   "Window mode"
   ("h" evil-window-left "left")
@@ -62,6 +62,6 @@
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(global-set-key (kbd "s-w") 'hydra-window/body)
+(global-set-key (kbd "s-w") 'evil-window-state)
 
 (provide 'eem-window-mode)

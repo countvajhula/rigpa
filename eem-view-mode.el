@@ -6,6 +6,7 @@
   "View state."
   :tag " <V> "
   :message "-- VIEW --"
+  :entry-hook (hydra-view/body)
   :enable (normal))
 
 (defun my-scroll-half-page-up ()
@@ -65,7 +66,6 @@
 
 (defhydra hydra-view (:idle 1.0
                       :columns 6
-                      :body-pre (evil-view-state)
                       :post (evil-normal-state))
   "View mode"
   ("j" my-scroll-down "down")
@@ -97,6 +97,6 @@
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(global-set-key (kbd "s-v") 'hydra-view/body)
+(global-set-key (kbd "s-v") 'evil-view-state)
 
 (provide 'eem-view-mode)
