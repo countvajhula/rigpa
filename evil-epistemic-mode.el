@@ -48,7 +48,7 @@
 (require 'eem-char-mode)
 (require 'eem-word-mode)
 (require 'eem-line-mode)
-(require 'symex-mode)
+(require 'symex)
 (require 'eem-view-mode)
 (require 'eem-window-mode)
 (require 'eem-file-mode)
