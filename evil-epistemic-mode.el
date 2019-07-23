@@ -309,6 +309,20 @@ initial epistemic tower."
   (eem--enter-level (+ eem--current-level
                        1)))
 
+(defun eem-enter-lowest-level ()
+  "Enter lowest (manual) level."
+  (interactive)
+  (eem--enter-level 0))
+
+(defun eem-enter-highest-level ()
+  "Enter highest level."
+  (interactive)
+  (let* ((tower (eem--current-tower))
+         (levels (ht-get tower 'levels))
+         (tower-height (length levels)))
+    (eem--enter-level (- tower-height
+                         1))))
+
 (defun eem--extract-selected-level ()
   "Extract the selected level from the current representation"
   (interactive)
