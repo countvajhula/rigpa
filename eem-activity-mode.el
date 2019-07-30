@@ -23,14 +23,36 @@
   (insert-buffer my-accumulate-buffer-name)
   (kill-buffer my-accumulate-buffer-name))
 
-(defhydra hydra-activity (:idle 1.0
+(defun my-goto-older-change ()
+  "docstring"
+  (interactive)
+  (call-interactively 'goto-last-change))
+
+(defun my-goto-newer-change ()
+  "docstring"
+  (interactive)
+  (when (eq last-command 'my-goto-older-change)
+    ;; emacs only cycles "forwards" through the change list
+    ;; if the previous command was a "backwards" navigation
+    ;; through this list. Since we're wrapping the internal
+    ;; commands, we need to manually indicate that the last
+    ;; command was equivalent to the internal backwards
+    ;; changelist navigation command
+    (setq last-command 'goto-last-change))
+  (call-interactively 'goto-last-change-reverse))
+
+
+(defhydra hydra-activity (:color pink
                           :columns 2
+                          :idle 1.0
                           :post (evil-normal-state))
   "Activity mode"
-  ("h" goto-last-change "previous change")
-  ("j" goto-last-change-reverse "next change")
-  ("k" goto-last-change "previous change")
-  ("l" goto-last-change-reverse "next change")
+  ("h" my-goto-older-change "previous change in buffer")
+  ("C-j" evil-jump-backward "jump backward") ;; TODO: these jumps don't work via hydra atm
+  ("C-k" evil-jump-forward "jump forward")
+  ("l" my-goto-newer-change "next change in buffer")
+  ("m" evil-set-marker "set mark")
+  ("g" evil-goto-mark "go to mark")
   ("y" my-yank-and-accumulate "yank and accumulate") ;; TODO: these don't work via hydra atm
   ("p" my-paste-and-clear "paste and clear")
   ("i" my-noop "exit" :exit t)
