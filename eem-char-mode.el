@@ -23,15 +23,26 @@
 (defun my-move-char-left ()
   "Move character left"
   (interactive)
-  (my-delete-char)
-  (evil-backward-char)
-  (evil-paste-before nil nil))
+  (when (not (bolp))
+    (my-delete-char)
+    (let ((at-eol (eolp)))
+      (evil-backward-char)
+      (if at-eol
+          (evil-paste-after nil nil)
+        (evil-paste-before nil nil)))))
 
 (defun my-move-char-right ()
   "Move character right"
   (interactive)
-  (my-delete-char)
-  (evil-paste-after nil nil))
+  (when (not (eolp))
+    (my-delete-char)
+    (evil-paste-after nil nil)
+    ;; Note: The above is sufficient when this command is run
+    ;; interactively via M-x. But when run via the hydra, it
+    ;; moves point forward an extra character. Not sure why this
+    ;; happens but since hydra is the main entry point to this,
+    ;; adding the line below for usage via hydra.
+    (backward-char)))
 
 (defun my-move-char-down ()
   "Move character down"
@@ -95,6 +106,7 @@
 
 (defhydra hydra-char (:idle 1.0
                       :columns 4
+                      :color pink
                       :post (evil-normal-state))
   "Character mode"
   ("h" evil-backward-char "left")
