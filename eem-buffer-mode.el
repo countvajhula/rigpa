@@ -109,8 +109,8 @@ current ('original') buffer."
          (my-new-empty-buffer nil
                               :switch-p t)) "new" :exit t)
   ("m" my-buffer-set-mark "set mark")
-  ("'" my-buffer-return-to-mark "return to mark")
-  ("`" my-buffer-return-to-mark "return to mark")
+  ("'" my-buffer-return-to-mark "return to mark" :exit t)
+  ("`" my-buffer-return-to-mark "return to mark" :exit t)
   ("s" my-search-buffers "search" :exit t)
   ("/" my-search-buffers "search" :exit t)
   ("i" ibuffer "list (ibuffer)" :exit t)
