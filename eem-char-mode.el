@@ -28,7 +28,8 @@
     (let ((at-eol (eolp)))
       (evil-backward-char)
       (if at-eol
-          (evil-paste-after nil nil)
+          (progn (evil-paste-after nil nil)
+                 (backward-char))
         (evil-paste-before nil nil)))))
 
 (defun my-move-char-right ()
