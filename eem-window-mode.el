@@ -28,7 +28,8 @@
 
 (defhydra hydra-window (:idle 1.0
                         :columns 4
-                        :post (evil-normal-state))
+                        :post ((lambda ()
+                               (my-exit-mode-with-recall 'window))))
   "Window mode"
   ("h" evil-window-left "left")
   ("j" evil-window-down "down")
@@ -62,6 +63,8 @@
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(global-set-key (kbd "s-w") 'evil-window-state)
+(global-set-key (kbd "s-w") (lambda ()
+                              (interactive)
+                              (my-enter-mode-with-recall 'window)))
 
 (provide 'eem-window-mode)

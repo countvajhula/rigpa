@@ -239,6 +239,29 @@
        (my-delete-line)))
     tower-buffer))
 
+(defun my-enter-mode-with-recall (mode)
+  "Enter MODE, but remember the previous state to return to it."
+  (interactive)
+  (let* ((mode-name (symbol-name mode))
+         (hydra (intern (concat "hydra-" mode-name)))
+         (recall (intern (concat "evil-" (symbol-name evil-state) "-state"))))
+    (hydra-set-property hydra :recall recall)
+    (funcall (intern (concat "evil-" mode-name "-state")))))
+
+(defun my-exit-mode-with-recall (mode)
+  "Exit MODE to a prior state, unless it has already exited to another state."
+  (interactive)
+  (let ((hydra (intern (concat "hydra-" (symbol-name mode)))))
+    (if (equal evil-state mode)
+        (let ((recall (hydra-get-property hydra :recall)))
+          (if recall
+              (progn (hydra-set-property hydra :recall nil)
+                     (funcall recall))
+            ;; TODO: make abstract
+            (evil-normal-state)))
+      ;; in either case null out the recall
+      (hydra-set-property hydra :recall nil))))
+
 (defun my-enter-mode-mode ()
   "Enter a buffer containing a textual representation of the
 initial epistemic tower."
