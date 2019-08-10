@@ -9,6 +9,29 @@
   :entry-hook (hydra-view/body)
   :enable (normal))
 
+(defun my-enter-mode-with-recall (mode)
+  "Enter MODE, but remember the previous state to return to it."
+  (interactive)
+  (let* ((mode-name (symbol-name mode))
+         (hydra (intern (concat "hydra-" mode-name)))
+         (recall (intern (concat "evil-" (symbol-name evil-state) "-state"))))
+    (hydra-set-property hydra :recall recall)
+    (funcall (intern (concat "evil-" mode-name "-state")))))
+
+(defun my-exit-mode-with-recall (mode)
+  "Exit MODE to a prior state, unless it has already exited to another state."
+  (interactive)
+  (let ((hydra (intern (concat "hydra-" (symbol-name mode)))))
+    (if (equal evil-state mode)
+        (let ((recall (hydra-get-property hydra :recall)))
+          (if recall
+              (progn (hydra-set-property hydra :recall nil)
+                     (funcall recall))
+            ;; TODO: make abstract
+            (evil-normal-state)))
+      ;; in either case null out the recall
+      (hydra-set-property hydra :recall nil))))
+
 (defun my-scroll-half-page-up ()
   (interactive)
   (evil-scroll-line-up (/ (window-total-height) 2)))
@@ -66,7 +89,8 @@
 
 (defhydra hydra-view (:idle 1.0
                       :columns 6
-                      :post (evil-normal-state))
+                      :post ((lambda ()
+                               (my-exit-mode-with-recall 'view))))
   "View mode"
   ("j" my-scroll-down "down")
   ("k" my-scroll-up "up")
@@ -98,6 +122,8 @@
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(global-set-key (kbd "s-v") 'evil-view-state)
+(global-set-key (kbd "s-v") (lambda ()
+                              (interactive)
+                              (my-enter-mode-with-recall 'view)))
 
 (provide 'eem-view-mode)
