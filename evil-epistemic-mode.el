@@ -272,8 +272,9 @@
   "Exit a mode and perform any cleanup."
   (let* ((mode-name (symbol-name mode))
          (hydra (intern (concat "hydra-" mode-name))))
-    (eem-exit-mode-with-recall mode)
-    (hydra-set-property hydra :exiting nil)))
+    (when (hydra-get-property hydra :exiting)
+      (eem-exit-mode-with-recall mode)
+      (hydra-set-property hydra :exiting nil))))
 
 (defun my-enter-mode-mode ()
   "Enter a buffer containing a textual representation of the
