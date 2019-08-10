@@ -239,7 +239,7 @@
        (my-delete-line)))
     tower-buffer))
 
-(defun my-enter-mode-with-recall (mode)
+(defun eem-enter-mode-with-recall (mode)
   "Enter MODE, but remember the previous state to return to it."
   (interactive)
   (let* ((mode-name (symbol-name mode))
@@ -248,7 +248,7 @@
     (hydra-set-property hydra :recall recall)
     (funcall (intern (concat "evil-" mode-name "-state")))))
 
-(defun my-exit-mode-with-recall (mode)
+(defun eem-exit-mode-with-recall (mode)
   "Exit MODE to a prior state, unless it has already exited to another state."
   (interactive)
   (let ((hydra (intern (concat "hydra-" (symbol-name mode)))))
@@ -257,10 +257,20 @@
           (if recall
               (progn (hydra-set-property hydra :recall nil)
                      (funcall recall))
-            ;; TODO: make abstract
+            ;; TODO: make interop to a sane "normal"
             (evil-normal-state)))
       ;; in either case null out the recall
       (hydra-set-property hydra :recall nil))))
+
+(defun eem--set-mode-exit-flag (mode)
+  "Set a mode exit flag to indicate cleanup operations need to be performed."
+  (let* ((mode-name (symbol-name mode))
+         (hydra (intern (concat "hydra-" mode-name))))
+    (hydra-set-property hydra :exiting t)))
+
+(defun eem--exit-mode (mode)
+  "Exit a mode and perform any cleanup."
+  (eem-exit-mode-with-recall mode))
 
 (defun my-enter-mode-mode ()
   "Enter a buffer containing a textual representation of the

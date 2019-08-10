@@ -28,8 +28,8 @@
 
 (defhydra hydra-window (:idle 1.0
                         :columns 4
-                        :post ((lambda ()
-                               (my-exit-mode-with-recall 'window))))
+                        :post (eem--set-mode-exit-flag 'window)
+                        :after-exit (eem--exit-mode 'window))
   "Window mode"
   ("h" evil-window-left "left")
   ("j" evil-window-down "down")
@@ -65,6 +65,6 @@
 
 (global-set-key (kbd "s-w") (lambda ()
                               (interactive)
-                              (my-enter-mode-with-recall 'window)))
+                              (eem-enter-mode-with-recall 'window)))
 
 (provide 'eem-window-mode)
