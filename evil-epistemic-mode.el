@@ -243,24 +243,23 @@
   "Enter MODE, but remember the previous state to return to it."
   (interactive)
   (let* ((mode-name (symbol-name mode))
-         (hydra (intern (concat "hydra-" mode-name)))
          (recall (intern (concat "evil-" (symbol-name evil-state) "-state"))))
-    (hydra-set-property hydra :recall recall)
+    (setq-local eem-recall recall)
     (funcall (intern (concat "evil-" mode-name "-state")))))
 
 (defun eem-exit-mode-with-recall (mode)
   "Exit MODE to a prior state, unless it has already exited to another state."
   (interactive)
-  (let ((hydra (intern (concat "hydra-" (symbol-name mode)))))
-    (if (equal evil-state mode)
-        (let ((recall (hydra-get-property hydra :recall)))
-          (if recall
-              (progn (hydra-set-property hydra :recall nil)
-                     (funcall recall))
-            ;; TODO: make interop to a sane "normal"
-            (evil-normal-state)))
-      ;; in either case null out the recall
-      (hydra-set-property hydra :recall nil))))
+  (if (equal evil-state mode)
+      (let ((recall (and (boundp 'eem-recall)
+                         eem-recall)))
+        (if recall
+            (progn (setq-local eem-recall nil)
+                   (funcall recall))
+          ;; TODO: make interop to a sane "normal"
+          (evil-normal-state)))
+    ;; in either case null out the recall
+    (setq-local eem-recall nil)))
 
 (defun eem--set-mode-exit-flag (mode)
   "Set a mode exit flag to indicate cleanup operations need to be performed."
