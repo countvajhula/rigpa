@@ -5,6 +5,13 @@
   :entry-hook (hydra-application/body)
   :enable (normal))
 
+(defun my-toggle-alarm-bell ()
+  "Toggle whether the alarm bell sounds."
+  (interactive)
+  (setq ring-bell-function (if ring-bell-function
+                               nil
+                             'ignore)))
+
 (defun current-transparency ()
   (nth 0
        (frame-parameter (selected-frame)
@@ -68,6 +75,7 @@
   "Control application environment"
   ("t" hydra-transparency/body "transparency" :exit t)
   ("n" display-line-numbers-mode "toggle line numbers")
+  ("b" my-toggle-alarm-bell "toggle alarm bell")
   ("l" hl-line-mode "toggle highlight line")
   ("c" counsel-load-theme "change color scheme")
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
