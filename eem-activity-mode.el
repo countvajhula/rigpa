@@ -55,6 +55,8 @@
   ("g" evil-goto-mark "go to mark")
   ("y" my-yank-and-accumulate "yank and accumulate") ;; TODO: these don't work via hydra atm
   ("p" my-paste-and-clear "paste and clear")
+  ("a" my-goto-older-change "previous change in buffer" :exit t)
+  ("s-a" my-goto-older-change "previous change in buffer" :exit t)
   ("i" my-noop "exit" :exit t)
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
