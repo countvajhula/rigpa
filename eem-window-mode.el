@@ -17,6 +17,16 @@
 ;; in window mode
 (winner-mode t)
 
+(defun my-window-mru ()
+  "Jump to most recent window, or other window if there is only one other.
+
+TODO: This doesn't work with more than 2 windows that are all the same buffer."
+  (interactive)
+  (let ((num-windows (length (window-list))))
+    (if (= num-windows 2)
+        (other-window 1)
+      (evil-window-mru))))
+
 ;; Evil provides some good window navigation functionality, but these
 ;; bindings aren't available in Emacs state and also consequently in
 ;; Insert state if the insert mode keymap is overridden in favor of
@@ -41,7 +51,7 @@
   ("L" evil-window-move-far-right "move to far right")
   ("x" evil-window-delete "delete")
   ("c" evil-window-delete)
-  ("o" evil-window-mru "Jump to most recent (like Alt-Tab)" :exit t)
+  ("o" my-window-mru "Jump to most recent (like Alt-Tab)" :exit t)
   ("n" other-window "next")
   ("w" delete-other-windows "maximize" :exit t)
   ("s" evil-window-split "split horizontally")
