@@ -95,6 +95,7 @@
   ("d" my-scroll-half-page-down "leap down")
   ("n" my-narrow-to-defun-or-region "narrow context")
   ("w" widen "widen to full view")
+  ("H-m" eem-toggle-menu "show/hide this menu")
   ("i" my-noop "exit" :exit t)
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))

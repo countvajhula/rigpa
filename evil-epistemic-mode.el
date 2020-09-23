@@ -108,7 +108,7 @@
           ('levels (list (ht ('name "insert")
                              ('mode-entry 'evil-insert-state))
                          (ht ('name "symex")
-                             ('mode-entry 'evil-symex-state))
+                             ('mode-entry 'hydra-symex/body))
                          (ht ('name "normal")
                              ('mode-entry 'evil-normal-state))))))
 
