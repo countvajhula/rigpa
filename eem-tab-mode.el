@@ -17,6 +17,8 @@
   ("l" centaur-tabs-forward "next")
   ("k" centaur-tabs-backward-group "previous group")
   ("j" centaur-tabs-forward-group "next group")
+  ("H" centaur-tabs-move-current-tab-to-left "move left")
+  ("L" centaur-tabs-move-current-tab-to-right "move right")
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
