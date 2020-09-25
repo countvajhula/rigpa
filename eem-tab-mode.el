@@ -5,7 +5,6 @@
   :entry-hook (hydra-tab/body)
   :enable (normal))
 
-
 (defun setup-tab-marks-table ()
   "Initialize the tab marks hashtable and add an entry for the
 current ('original') tab."
@@ -27,7 +26,7 @@ buffer mode."
   (switch-to-buffer
    (gethash key my-tab-marks-hash)))
 
-(defun flash-to-original-and-back ()
+(defun flash-to-original-tab-and-back ()
   "Go momentarily to original tab and return.
 
 This 'flash' allows the original tab, rather than the previous one
@@ -46,12 +45,17 @@ happen quickly enough not to be noticeable."
   (interactive)
   (gethash 'original my-tab-marks-hash))
 
+(defun return-to-original-tab ()
+  "Return to the buffer we were in at the time of entering
+buffer mode."
+  (interactive)
+  (load-tab 'original))
 
 (defhydra hydra-tab (:color pink
                      :columns 2
                      :body-pre (setup-tab-marks-table)
                      :idle 1.0
-                     :post (progn (flash-to-original-and-back)
+                     :post (progn (flash-to-original-tab-and-back)
                                   (evil-normal-state)))
   "Tab mode"
   ("/" centaur-tabs-counsel-switch-group "search" :exit t)
@@ -70,7 +74,6 @@ happen quickly enough not to be noticeable."
          (centaur-tabs-forward-group)) "next group")
   ("H" centaur-tabs-move-current-tab-to-left "move left")
   ("L" centaur-tabs-move-current-tab-to-right "move right")
-  ("N" "join lines backwards")
   ("s-t" (lambda ()
            (interactive)
            (save-tab 'temp-previous)
