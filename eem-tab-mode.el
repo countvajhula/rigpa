@@ -6,6 +6,7 @@
   :enable (normal))
 
 
+;; TODO: s-t s-t switch to last tab group
 (defhydra hydra-tab (:color pink
                      :columns 2
                      :idle 1.0
@@ -14,6 +15,8 @@
   ("/" centaur-tabs-counsel-switch-group "search" :exit t)
   ("h" centaur-tabs-backward "previous")
   ("l" centaur-tabs-forward "next")
+  ("k" centaur-tabs-backward-group "previous group")
+  ("j" centaur-tabs-forward-group "next group")
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
