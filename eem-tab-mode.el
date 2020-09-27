@@ -86,6 +86,10 @@ buffer mode."
          (load-tab 'previous)
          (puthash 'previous (gethash 'temp-previous my-tab-marks-hash)
                   my-tab-marks-hash)) "switch to last" :exit t)
+  ("n" (lambda ()
+         (interactive)
+         (my-new-empty-buffer nil
+                              :switch-p t)) "new" :exit t)
   ("q" return-to-original-tab "return to original" :exit t)
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
