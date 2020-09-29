@@ -94,6 +94,15 @@ current ('original') buffer."
   (return-to-original-buffer)
   (ivy-switch-buffer))
 
+;; TODO: implement a dynamic ring buffer storing every visited buffer
+;; then, buffer mode retains a pointer to the current position (buffer)
+;; and reverses direction of traversal each time buffer mode is exited
+;; h and l should then use this wrapped form of previous and next buffer
+;; we also wouldn't need to rely on evil-switch-to-windows-last-buffer
+;; so there would be no need to "flash back"
+;; this should be an independent utility library so that it can be used
+;; in all modes that need an intuitive way to keep track of recency
+;; maybe `recency-ring`, has a nice... ring to it
 (defhydra hydra-buffer (:idle 1.0
                         :columns 3
                         :body-pre (setup-buffer-marks-table)
