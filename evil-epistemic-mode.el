@@ -58,6 +58,7 @@
 (require 'eem-activity-mode)
 (require 'eem-text-mode)
 (require 'eem-tab-mode)
+(require 'eem-history-mode)
 
 ;; define face for use in epistemic mode
 (make-face 'eem-face)
