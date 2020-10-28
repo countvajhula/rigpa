@@ -437,6 +437,39 @@ monadic verb in the 'switch buffer' navigation."
       (setq eem--current-level (1- (length (ht-get (eem--current-tower)
                                                    'levels)))))))
 
+(defun eem-hide-menu ()
+  "Hide current mode menu."
+  (let ((current-mode-name (symbol-name evil-state)))
+    (message "mode is %s" (concat "hydra-" current-mode-name))
+    (hydra-set-property
+     (intern (concat "hydra-"
+                     current-mode-name))
+     :verbosity 0)))
+
+(defun eem-show-menu ()
+  "Show current mode menu."
+  (let ((current-mode-name (symbol-name evil-state)))
+    (hydra-set-property
+     (intern (concat "hydra-"
+                     current-mode-name))
+     :verbosity 2)))
+
+(defun eem-toggle-menu ()
+  "Show/hide the current mode menu.
+
+Note that hiding the menu still retains the current editing mode,
+and simply toggles whether the menu is visible or not."
+  (interactive)
+  (let ((current-mode-name (symbol-name evil-state)))
+    (let ((visibility (hydra-get-property
+                       (intern (concat "hydra-"
+                                       current-mode-name))
+                       :verbosity)))
+      (if (> visibility 0)
+          (eem-hide-menu)
+        (eem-show-menu)))))
+
+
 (defhydra hydra-mode (:idle 1.0
                       :columns 4
                       :body-pre (my-enter-mode-mode)
