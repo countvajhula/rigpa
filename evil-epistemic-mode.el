@@ -242,27 +242,58 @@
        (my-delete-line)))
     tower-buffer))
 
+(defun eem--temp-setup-buffer-marks-table ()
+  "Initialize the buffer marks hashtable and add an entry for the
+current ('original') buffer."
+  (interactive)
+  (defvar eem--temp-buffer-marks-hash
+    (make-hash-table :test 'equal))
+  (save-original-buffer))
+
+(defun eem--temp-save-original-buffer ()
+  "Save current buffer as original buffer."
+  (interactive)
+  (puthash "0" (current-buffer)
+           eem--temp-buffer-marks-hash))
+
+(defun eem--temp-original-buffer ()
+  "Get original buffer identifier"
+  (interactive)
+  (gethash "0" eem--temp-buffer-marks-hash))
+
+(defun eem--temp-return-to-original-buffer ()
+  "Return to the buffer we were in at the time of entering
+buffer mode."
+  (interactive)
+  (switch-to-buffer (eem--temp-original-buffer)))
+
 (defun eem-enter-mode-with-recall (mode)
   "Enter MODE, but remember the previous state to return to it."
   (interactive)
   (let* ((mode-name (symbol-name mode))
          (recall (intern (concat "evil-" (symbol-name evil-state) "-state"))))
+    (eem--temp-setup-buffer-marks-table)
+    (eem--temp-save-original-buffer)
     (setq-local eem-recall recall)
     (funcall (intern (concat "evil-" mode-name "-state")))))
 
 (defun eem-exit-mode-with-recall (mode)
   "Exit MODE to a prior state, unless it has already exited to another state."
   (interactive)
-  (if (equal evil-state mode)
-      (let ((recall (and (boundp 'eem-recall)
-                         eem-recall)))
-        (if recall
-            (progn (setq-local eem-recall nil)
-                   (funcall recall))
-          ;; TODO: make interop to a sane "normal"
-          (evil-normal-state)))
-    ;; in either case null out the recall
-    (setq-local eem-recall nil)))
+  (progn (with-current-buffer (eem--temp-original-buffer)
+           (let ((recall (and (boundp 'eem-recall)
+                              eem-recall)))
+             (if recall
+                 (progn (funcall recall))
+               ;; TODO: make interop to a sane "normal"
+               (evil-normal-state))))
+         (let ((recall (and (boundp 'eem-recall)
+                            eem-recall)))
+           (if recall
+               (progn (setq-local eem-recall nil)
+                      (funcall recall))
+             ;; TODO: make interop to a sane "normal"
+             (evil-normal-state)))))
 
 (defun eem--set-mode-exit-flag (mode)
   "Set a mode exit flag to indicate cleanup operations need to be performed."
