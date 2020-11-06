@@ -128,6 +128,18 @@
   (interactive)
   (evil-forward-WORD-begin 3))
 
+(defun my-first-word ()
+  "Jump backward to the first word in the paragraph."
+  (interactive)
+  (evil-backward-paragraph)
+  (evil-forward-WORD-begin))
+
+(defun my-last-word ()
+  "Jump forward to the last word in the paragraph."
+  (interactive)
+  (evil-forward-paragraph)
+  (evil-backward-WORD-begin))
+
 
 (defhydra hydra-word (:idle 1.0
                       :columns 2
@@ -143,12 +155,14 @@
   ("C-l" my-scroll-jump-words-forward "forward")
   ("C-S-h" my-rotate-chars-left-in-word "rotate chars left")
   ("C-S-l" my-rotate-chars-right-in-word "rotate chars right")
+  ("M-h" my-first-word "first word")
+  ("M-l" my-last-word "last word")
   ("H" my-move-word-backward "move left")
   ("L" my-move-word-forward "move right")
   ("J" my-move-word-down "move down")
   ("K" my-move-word-up "move up")
   ("x" my-delete-word "delete")
-  ("c" my-change-word "" :exit t)
+  ("c" my-change-word "change" :exit t)
   ("~" my-toggle-case "toggle case")
   ("U" my-upper-case "upper case")
   ("u" my-lower-case "lower case")
