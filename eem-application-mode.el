@@ -17,6 +17,10 @@
        (frame-parameter (selected-frame)
 			'alpha)))
 
+(defun bound (value min-bound max-bound)
+  "Bound a value within the provided range."
+  (min (max value min-bound) max-bound))
+
 ;; Set transparency of emacs
 ;; From: https://www.emacswiki.org/emacs/TransparentEmacs
 (defun transparency (value)
@@ -28,18 +32,28 @@
   "Adjust the transparency of the frame window by the configured delta,
    in the range: 0=transparent/100=opaque"
   (interactive)
-  (transparency (+ (current-transparency)
-                   delta)))
+  (transparency (bound (+ (current-transparency)
+                          delta)
+                       0
+                       100)))
 
-(defun increase-transparency ()
+(defun increase-transparency (&optional superlative)
   "Increase frame transparency."
   (interactive)
-  (adjust-transparency -3))
+  (cond ((eq superlative nil)
+         (adjust-transparency -1))
+        ((eq superlative 'more)
+         (adjust-transparency -5))
+        (t (maximize-transparency))))
 
-(defun decrease-transparency ()
+(defun decrease-transparency (&optional superlative)
   "Decrease frame transparency."
   (interactive)
-  (adjust-transparency 3))
+  (cond ((eq superlative nil)
+         (adjust-transparency 1))
+        ((eq superlative 'more)
+         (adjust-transparency 5))
+        (t (minimize-transparency))))
 
 (defun maximize-transparency ()
   "Maximize frame transparency (i.e. make transparent)"
@@ -63,9 +77,15 @@
   ("+" decrease-transparency "decrease transparency")
   ("-" increase-transparency "increase transparency")
   ("k" decrease-transparency "decrease transparency")
+  ("C-k" (lambda ()
+           (interactive)
+           (decrease-transparency 'more)) "decrease transparency more")
   ("j" increase-transparency "increase transparency")
-  ("K" minimize-transparency "min transparency (opaque)")
-  ("J" maximize-transparency "max transparency (transparent)")
+  ("C-j" (lambda ()
+           (interactive)
+           (increase-transparency 'more)) "increase transparency more")
+  ("M-k" minimize-transparency "least transparent (opaque)")
+  ("M-j" maximize-transparency "most transparent")
   ("q" return-to-original-transparency  "return to original transparency" :exit t)
   ("<escape>" my-noop "quit" :exit t))
 
