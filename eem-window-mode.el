@@ -3,7 +3,6 @@
   "Window state."
   :tag " <W> "
   :message "-- WINDOW --"
-  :entry-hook (hydra-window/body)
   :enable (normal))
 
 (require 'ace-window)
@@ -44,6 +43,7 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
 
 (defhydra hydra-window (:idle 1.0
                         :columns 4
+                        :body-pre (evil-window-state)
                         :post (eem--set-mode-exit-flag 'window)
                         :after-exit (eem--exit-mode 'window))
   "Window mode"

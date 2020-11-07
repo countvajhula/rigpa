@@ -2,12 +2,12 @@
   "History state."
   :tag " <C> "
   :message "-- x→o --"
-  :entry-hook (hydra-history/body)
   :enable (normal))
 
 (defhydra hydra-history (:color pink
                          :columns 2
-                         :body-pre (unless git-timemachine-mode (git-timemachine))
+                         :body-pre (progn (unless git-timemachine-mode (git-timemachine))
+                                          (evil-history-state))
                          :idle 1.0
                          :post (evil-normal-state))
   "History mode"
@@ -21,6 +21,6 @@
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(global-set-key (kbd "s-g") 'evil-history-state)
+(global-set-key (kbd "s-g") 'hydra-history/body)
 
 (provide 'eem-history-mode)

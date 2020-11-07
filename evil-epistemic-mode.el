@@ -271,11 +271,24 @@ buffer mode."
   "Enter MODE, but remember the previous state to return to it."
   (interactive)
   (let* ((mode-name (symbol-name mode))
-         (recall (intern (concat "evil-" (symbol-name evil-state) "-state"))))
+         ;; we're relying on the evil state here even though the
+         ;; delegation is hydra -> evil. Probably introduce an
+         ;; independent state variable, for which the evil state
+         ;; variable can be treated as a proxy for now
+         (recall (let ((state (symbol-name evil-state)))
+                   (if (equal state "normal")
+                       (intern (concat "evil-" state "-state"))
+                     (intern (concat "hydra-" state "/body"))))))
     (eem--temp-setup-buffer-marks-table)
     (eem--temp-save-original-buffer)
     (setq-local eem-recall recall)
-    (funcall (intern (concat "evil-" mode-name "-state")))))
+    (let ((mode-entry (if (member mode-name (list "normal" "insert"))
+                          ;; handle the (at present, hypothetical) case of entry
+                          ;; to a standard evil mode
+                          ;; no hydra for standard evil modes
+                          (intern (concat "evil-" mode-name "-state"))
+                        (intern (concat "hydra-" mode-name "/body")))))
+      (funcall mode-entry))))
 
 (defun eem-exit-mode-with-recall (mode)
   "Exit MODE to a prior state, unless it has already exited to another state."

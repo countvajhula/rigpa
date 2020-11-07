@@ -2,7 +2,6 @@
   "Char state."
   :tag " <X> "
   :message "-- CHAR --"
-  :entry-hook (hydra-char/body)
   ;;:cursor ;; inherit from normal
   ;;:exit-hook ;; none
   ;;:suppress-keymap) ;; should be t, but probably inherits from normal
@@ -96,6 +95,7 @@
 (defhydra hydra-char (:idle 1.0
                       :columns 4
                       :color pink
+                      :body-pre (evil-char-state)
                       :post (evil-normal-state))
   "Character mode"
   ("h" evil-backward-char "left")
@@ -149,6 +149,6 @@
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(global-set-key (kbd "s-x") 'evil-char-state)
+(global-set-key (kbd "s-x") 'hydra-char/body)
 
 (provide 'eem-char-mode)

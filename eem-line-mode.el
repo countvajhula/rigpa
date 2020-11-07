@@ -11,7 +11,6 @@
   "Line state."
   :tag " <L> "
   :message "-- LINE --"
-  :entry-hook (hydra-line/body)
   :enable (normal))
 
 (defun my-move-line-down (&optional count)
@@ -176,6 +175,7 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
 
 (defhydra hydra-line (:idle 1.0
                       :columns 4
+                      :body-pre (evil-line-state)
                       :post (evil-normal-state))
   "Line mode"
   ("h" evil-previous-line "previous")
@@ -206,6 +206,6 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(global-set-key (kbd "s-l") 'evil-line-state)
+(global-set-key (kbd "s-l") 'hydra-line/body)
 
 (provide 'eem-line-mode)

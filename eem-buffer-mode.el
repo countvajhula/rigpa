@@ -36,7 +36,6 @@
   "Buffer state."
   :tag " <B> "
   :message "-- BUFFER --"
-  :entry-hook (hydra-buffer/body)
   :enable (normal))
 
 (defun my-buffer-set-mark (mark-name)
@@ -105,7 +104,8 @@ current ('original') buffer."
 ;; maybe `recency-ring`, has a nice... ring to it
 (defhydra hydra-buffer (:idle 1.0
                         :columns 3
-                        :body-pre (setup-buffer-marks-table)
+                        :body-pre (progn (setup-buffer-marks-table)
+                                         (evil-buffer-state))
                         :post (progn (flash-to-original-and-back)
                                      (evil-normal-state)))
   "Buffer mode"
@@ -130,6 +130,6 @@ current ('original') buffer."
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 ;; access the buffer menu via a "body" keybinding
-(global-set-key (kbd "s-b") 'evil-buffer-state)
+(global-set-key (kbd "s-b") 'hydra-buffer/body)
 
 (provide 'eem-buffer-mode)

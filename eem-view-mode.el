@@ -6,7 +6,6 @@
   "View state."
   :tag " <V> "
   :message "-- VIEW --"
-  :entry-hook (hydra-view/body)
   :enable (normal))
 
 (defun my-scroll-half-page-up ()
@@ -72,6 +71,7 @@
 
 (defhydra hydra-view (:idle 1.0
                       :columns 6
+                      :body-pre (evil-view-state)
                       :post (eem--set-mode-exit-flag 'view)
                       :after-exit (eem--exit-mode 'view))
   "View mode"

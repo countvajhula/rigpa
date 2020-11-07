@@ -2,7 +2,6 @@
   "Activity state."
   :tag " <A> "
   :message "-- ACTIVITY --"
-  :entry-hook (hydra-activity/body)
   :enable (normal))
 
 (setq my-accumulate-buffer-name "MY-CLIPBOARD")
@@ -45,6 +44,7 @@
 (defhydra hydra-activity (:color pink
                           :columns 2
                           :idle 1.0
+                          :body-pre (evil-activity-state)
                           :post (evil-normal-state))
   "Activity mode"
   ("h" my-goto-older-change "previous change in buffer")
@@ -61,6 +61,6 @@
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(global-set-key (kbd "s-a") 'evil-activity-state)
+(global-set-key (kbd "s-a") 'hydra-activity/body)
 
 (provide 'eem-activity-mode)

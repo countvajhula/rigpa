@@ -2,7 +2,6 @@
   "Tab state."
   :tag " <T> "
   :message "-- TAB --"
-  :entry-hook (hydra-tab/body)
   :enable (normal))
 
 (defun setup-tab-marks-table ()
@@ -53,7 +52,8 @@ buffer mode."
 
 (defhydra hydra-tab (:color pink
                      :columns 2
-                     :body-pre (setup-tab-marks-table)
+                     :body-pre (progn (setup-tab-marks-table)
+                                      (evil-tab-state))
                      :idle 1.0
                      :post (progn (flash-to-original-tab-and-back)
                                   (evil-normal-state)))
@@ -96,6 +96,6 @@ buffer mode."
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(global-set-key (kbd "s-t") 'evil-tab-state)
+(global-set-key (kbd "s-t") 'hydra-tab/body)
 
 (provide 'eem-tab-mode)

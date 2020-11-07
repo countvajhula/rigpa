@@ -2,7 +2,6 @@
   "Application state."
   :tag " <A> "
   :message "-- APPLICATION --"
-  :entry-hook (hydra-application/body)
   :enable (normal))
 
 (defun my-toggle-alarm-bell ()
@@ -91,6 +90,7 @@
 
 (defhydra hydra-application (:columns 1
                              :exit t
+                             :body-pre (evil-application-state)
                              :post (evil-normal-state))
   "Control application environment"
   ("t" hydra-transparency/body "transparency" :exit t)
@@ -103,6 +103,6 @@
 
 ;; hydra to configure the application environment
 ;; contains a nested hydra to modulate transparency
-(global-set-key (kbd "s-e") 'evil-application-state)
+(global-set-key (kbd "s-e") 'hydra-application/body)
 
 (provide 'eem-application-mode)
