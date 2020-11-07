@@ -33,8 +33,10 @@
           ;; for some reason delete-char doesn't update point
           ;; while in hydra at EOL, so the handling here
           ;; is different than it otherwise would be
-          (progn (evil-paste-after nil nil)
-                 (backward-char))
+          (if (bolp)
+              (evil-paste-before nil nil)
+            (progn (evil-paste-after nil nil)
+                   (backward-char)))
         (evil-paste-before nil nil)))))
 
 (defun my-move-char-right (&optional superlative)
