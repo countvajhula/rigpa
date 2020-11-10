@@ -1,4 +1,3 @@
-
 (evil-define-state window
   "Window state."
   :tag " <W> "
