@@ -79,13 +79,12 @@
            (level-number (reverse
                           (number-sequence 0 (- tower-height
                                                 1))))
-         (let ((level (nth level-number
-                           tower-levels)))
+         (let ((mode-name (nth level-number
+                               tower-levels)))
            (insert "|―――"
                    (number-to-string level-number)
                    "―――|"
-                   " " (ht-get level
-                               'name) "\n")))
+                   " " mode-name "\n")))
        (my-delete-line)))
     tower-buffer))
 

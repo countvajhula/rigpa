@@ -61,51 +61,33 @@
 
 (setq eem-complete-tower
       (ht ('name "complete")
-          ('levels (list (ht ('name "insert")
-                             ('mode-entry 'evil-insert-state))
-                         (ht ('name "char")
-                             ('mode-entry 'evil-char-state))
-                         (ht ('name "word")
-                             ('mode-entry 'evil-word-state))
-                         (ht ('name "line")
-                             ('mode-entry 'evil-line-state))
-                         (ht ('name "activity")
-                             ('mode-entry 'evil-activity-state))
-                         (ht ('name "normal")
-                             ('mode-entry 'evil-normal-state))
-                         (ht ('name "view")
-                             ('mode-entry 'evil-view-state))
-                         (ht ('name "window")
-                             ('mode-entry 'evil-window-state))
-                         (ht ('name "file")
-                             ('mode-entry 'evil-file-state))
-                         (ht ('name "buffer")
-                             ('mode-entry 'evil-buffer-state))
-                         (ht ('name "system")
-                             ('mode-entry 'evil-system-state))
-                         (ht ('name "application")
-                             ('mode-entry 'evil-application-state))))))
+          ('levels (list "insert"
+                         "char"
+                         "word"
+                         "line"
+                         "activity"
+                         "normal"
+                         "view"
+                         "window"
+                         "file"
+                         "buffer"
+                         "system"
+                         "application"))))
 
 (setq eem-vim-tower
       (ht ('name "vim")
-          ('levels (list (ht ('name "insert")
-                             ('mode-entry 'evil-insert-state))
-                         (ht ('name "normal")
-                             ('mode-entry 'evil-normal-state))))))
+          ('levels (list "insert"
+                         "normal"))))
 
 (setq eem-emacs-tower
       (ht ('name "emacs")
-          ('levels (list (ht ('name "emacs")
-                             ('mode-entry 'evil-emacs-state))))))
+          ('levels (list "emacs"))))
 
 (setq eem-lisp-tower
       (ht ('name "lisp")
-          ('levels (list (ht ('name "insert")
-                             ('mode-entry 'evil-insert-state))
-                         (ht ('name "symex")
-                             ('mode-entry 'hydra-symex/body))
-                         (ht ('name "normal")
-                             ('mode-entry 'evil-normal-state))))))
+          ('levels (list "insert"
+                         "symex"
+                         "normal"))))
 
 (setq eem-towers
       (list eem-vim-tower
@@ -180,61 +162,6 @@ buffer mode."
   (interactive)
   (switch-to-buffer (eem--temp-original-buffer)))
 
-(defun eem-enter-mode-with-recall (mode)
-  "Enter MODE, but remember the previous state to return to it."
-  (interactive)
-  (let* ((mode-name (symbol-name mode))
-         ;; we're relying on the evil state here even though the
-         ;; delegation is hydra -> evil. Probably introduce an
-         ;; independent state variable, for which the evil state
-         ;; variable can be treated as a proxy for now
-         (recall (let ((state (symbol-name evil-state)))
-                   (if (equal state "normal")
-                       (intern (concat "evil-" state "-state"))
-                     (intern (concat "hydra-" state "/body"))))))
-    (eem--temp-setup-buffer-marks-table)
-    (eem--temp-save-original-buffer)
-    (setq-local eem-recall recall)
-    (let ((mode-entry (if (member mode-name (list "normal" "insert"))
-                          ;; handle the (at present, hypothetical) case of entry
-                          ;; to a standard evil mode
-                          ;; no hydra for standard evil modes
-                          (intern (concat "evil-" mode-name "-state"))
-                        (intern (concat "hydra-" mode-name "/body")))))
-      (funcall mode-entry))))
-
-(defun eem-exit-mode-with-recall (mode)
-  "Exit MODE to a prior state, unless it has already exited to another state."
-  (interactive)
-  (progn (with-current-buffer (eem--temp-original-buffer)
-           (let ((recall (and (boundp 'eem-recall)
-                              eem-recall)))
-             (if recall
-                 (progn (funcall recall))
-               ;; TODO: make interop to a sane "normal"
-               (evil-normal-state))))
-         (let ((recall (and (boundp 'eem-recall)
-                            eem-recall)))
-           (if recall
-               (progn (setq-local eem-recall nil)
-                      (funcall recall))
-             ;; TODO: make interop to a sane "normal"
-             (evil-normal-state)))))
-
-(defun eem--set-mode-exit-flag (mode)
-  "Set a mode exit flag to indicate cleanup operations need to be performed."
-  (let* ((mode-name (symbol-name mode))
-         (hydra (intern (concat "hydra-" mode-name))))
-    (hydra-set-property hydra :exiting t)))
-
-(defun eem--exit-mode (mode)
-  "Exit a mode and perform any cleanup."
-  (let* ((mode-name (symbol-name mode))
-         (hydra (intern (concat "hydra-" mode-name))))
-    (when (hydra-get-property hydra :exiting)
-      (eem-exit-mode-with-recall mode)
-      (hydra-set-property hydra :exiting nil))))
-
 (define-key evil-insert-state-map [escape] 'eem-enter-higher-level)
 (define-key evil-normal-state-map [escape] 'eem-enter-higher-level)
 (define-key evil-normal-state-map [return] 'eem-enter-lower-level)
@@ -272,11 +199,11 @@ and simply toggles whether the menu is visible or not."
           (eem-hide-menu)
         (eem-show-menu)))))
 
-;; [ ] make the tower representation a list instead of a hash, and streamline
-;; mode entry via an interface (which uses hydra)
 ;; [ ] move tower config (and keybinding config) out of epistemic mode and into init.d
 ;; [ ] move all require's to init.d - their point is to simply load those modes, so they are the same as other package-related config in init.d
 ;; [x] get it working with tower mode / mode mode / core refactor
+;; [x] make the tower representation a list instead of a hash, and streamline
+;;     mode entry via an interface (which uses hydra)
 
 (provide 'evil-epistemic-mode)
 ;;; evil-epistemic-mode.el ends here
