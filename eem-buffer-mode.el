@@ -1,37 +1,3 @@
-;; A "mode" to navigate buffers.
-;; TODO: s-b to get into mode, ivy should already be visible, hjkl has
-;; calling on, s to search-> exit hydra and go to
-;; counsel-switch-buffer, s-b s-b to flashback, q to return to
-;; original buffer, esc to exit mode
-
-;; (defun my-ivy-switch-buffer ()
-;;   (interactive)
-;;   (keyboard-quit)
-;;   (ivy-switch-buffer))
-
-;; (define-prefix-command 'my-buffer-map)
-;; (define-key my-buffer-map (kbd "j") 'ivy-next-line-and-call)
-;; (define-key my-buffer-map (kbd "k") 'ivy-previous-line-and-call)
-;; (define-key my-buffer-map (kbd "s") 'my-ivy-switch-buffer)
-;; (define-key my-buffer-map (kbd "s-b") 'keyboard-quit)
-
-;; (defun my-buffer-select ()
-;;   (interactive)
-;;   (setq ll (mapcar #'buffer-name (buffer-list)))
-;;   (setq ll (append (cdr ll) (list (car ll))))
-;;   (switch-to-buffer (car ll))
-;;   (ivy-read "My buffers: " ll
-;;             :action '(1 ;; index (1 based) of the default action
-;;                       ("s" (lambda (x)
-;;                              (switch-to-buffer x)) "switch"))
-;;             :keymap my-buffer-map))
-
-;; (global-set-key (kbd "s-b") 'my-buffer-select)
-
-;; alternatively, try implementing as "advice" to ivy-switch-buffer
-;; and provide a custom keymap. still, seems like it needs to be
-;; managed inside a hydra
-
 (evil-define-state buffer
   "Buffer state."
   :tag " <B> "

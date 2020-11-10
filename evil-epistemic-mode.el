@@ -59,42 +59,6 @@
 (set-face-font 'eem-face "-*-Consolas-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1")
 (set-face-foreground 'eem-face "tomato")
 
-(setq eem-complete-tower
-      (ht ('name "complete")
-          ('levels (list "insert"
-                         "char"
-                         "word"
-                         "line"
-                         "activity"
-                         "normal"
-                         "view"
-                         "window"
-                         "file"
-                         "buffer"
-                         "system"
-                         "application"))))
-
-(setq eem-vim-tower
-      (ht ('name "vim")
-          ('levels (list "insert"
-                         "normal"))))
-
-(setq eem-emacs-tower
-      (ht ('name "emacs")
-          ('levels (list "emacs"))))
-
-(setq eem-lisp-tower
-      (ht ('name "lisp")
-          ('levels (list "insert"
-                         "symex"
-                         "normal"))))
-
-(setq eem-towers
-      (list eem-vim-tower
-            eem-complete-tower
-            eem-lisp-tower
-            eem-emacs-tower))
-
 ;; the prefix that will be used in naming all buffers used
 ;; in epistemic mode representations
 (setq eem-buffer-prefix "EPISTEMIC")
@@ -162,11 +126,6 @@ buffer mode."
   (interactive)
   (switch-to-buffer (eem--temp-original-buffer)))
 
-(define-key evil-insert-state-map [escape] 'eem-enter-higher-level)
-(define-key evil-normal-state-map [escape] 'eem-enter-higher-level)
-(define-key evil-normal-state-map [return] 'eem-enter-lower-level)
-(global-set-key (kbd "H-<escape>") 'evil-force-normal-state)
-
 (defun eem-hide-menu ()
   "Hide current mode menu."
   (let ((current-mode-name (symbol-name evil-state)))
@@ -199,11 +158,11 @@ and simply toggles whether the menu is visible or not."
           (eem-hide-menu)
         (eem-show-menu)))))
 
-;; [ ] move tower config (and keybinding config) out of epistemic mode and into init.d
 ;; [ ] move all require's to init.d - their point is to simply load those modes, so they are the same as other package-related config in init.d
 ;; [x] get it working with tower mode / mode mode / core refactor
 ;; [x] make the tower representation a list instead of a hash, and streamline
 ;;     mode entry via an interface (which uses hydra)
+;; [x] move tower config (and keybinding config) out of epistemic mode and into init.d
 
 (provide 'evil-epistemic-mode)
 ;;; evil-epistemic-mode.el ends here
