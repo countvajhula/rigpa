@@ -6,7 +6,7 @@
 
 (defun eem-enter-mode (mode-name)
   "Enter mode MODE-NAME."
-  (let ((mode-entry (if (member mode-name (list "normal" "insert"))
+  (let ((mode-entry (if (member mode-name (list "normal" "insert" "emacs"))
                         ;; handle the (at present, hypothetical) case of entry
                         ;; to a standard evil mode
                         ;; no hydra for standard evil modes

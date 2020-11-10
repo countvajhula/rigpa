@@ -105,7 +105,7 @@ initial epistemic tower."
     (setq eem--flashback-tower-index eem--tower-index-on-entry)
     (setq eem--tower-index-on-entry eem--current-tower-index)
     (eem--switch-to-tower eem--current-tower-index))
-  (evil-mode-state))
+  (evil-tower-state))
 
 (defun my-exit-tower-mode ()
   "Exit tower mode."
@@ -113,7 +113,7 @@ initial epistemic tower."
   (with-current-buffer eem--reference-buffer
     (setq eem--last-tower-index eem--tower-index-on-entry))
   (eem--revert-buffer-appearance)
-  (evil-normal-state)
+  (evil-normal-state) ; TODO: FIX
   (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t))
 
 (defun eem-flashback-to-last-tower ()
