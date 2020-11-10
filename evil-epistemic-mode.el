@@ -159,6 +159,8 @@ and simply toggles whether the menu is visible or not."
         (eem-show-menu)))))
 
 ;; [ ] move all require's to init.d - their point is to simply load those modes, so they are the same as other package-related config in init.d
+;; [ ] bug: other-window complains if in symex mode ("move-to-window-line called from unrelated buffer")
+;; [ ] bug: modes using recall complain about temp-marks-buffer while e.g. navigating complete tower
 ;; [x] get it working with tower mode / mode mode / core refactor
 ;; [x] make the tower representation a list instead of a hash, and streamline
 ;;     mode entry via an interface (which uses hydra)

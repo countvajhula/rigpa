@@ -95,7 +95,7 @@
          ;; independent state variable, for which the evil state
          ;; variable can be treated as a proxy for now
          (recall (let ((state (symbol-name evil-state)))
-                   (if (equal state "normal")
+                   (if (member state (list "normal" "insert"))
                        (intern (concat "evil-" state "-state"))
                      (intern (concat "hydra-" state "/body"))))))
     (eem--temp-setup-buffer-marks-table)
