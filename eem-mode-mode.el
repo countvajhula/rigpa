@@ -89,19 +89,14 @@
 (defun eem-enter-mode-with-recall (mode)
   "Enter MODE, but remember the previous state to return to it."
   (interactive)
-  (let* ((mode-name (symbol-name mode))
-         ;; we're relying on the evil state here even though the
-         ;; delegation is hydra -> evil. Probably introduce an
-         ;; independent state variable, for which the evil state
-         ;; variable can be treated as a proxy for now
-         (recall (let ((state (symbol-name evil-state)))
-                   (if (member state (list "normal" "insert"))
-                       (intern (concat "evil-" state "-state"))
-                     (intern (concat "hydra-" state "/body"))))))
-    (eem--temp-setup-buffer-marks-table)
-    (eem--temp-save-original-buffer)
-    (setq-local eem-recall recall)
-    (eem-enter-mode mode-name)))
+  ;; we're relying on the evil state here even though the
+  ;; delegation is hydra -> evil. Probably introduce an
+  ;; independent state variable, for which the evil state
+  ;; variable can be treated as a proxy for now
+  (setq-local eem-recall (symbol-name evil-state))
+  (eem--temp-setup-buffer-marks-table)
+  (eem--temp-save-original-buffer)
+  (eem-enter-mode mode))
 
 (defun eem-exit-mode-with-recall (mode)
   "Exit MODE to a prior state, unless it has already exited to another state."
@@ -110,27 +105,25 @@
            (let ((recall (and (boundp 'eem-recall)
                               eem-recall)))
              (if recall
-                 (progn (funcall recall))
+                 (eem-enter-mode recall)
                ;; TODO: make interop to a sane "normal"
                (evil-normal-state))))
          (let ((recall (and (boundp 'eem-recall)
                             eem-recall)))
            (if recall
                (progn (setq-local eem-recall nil)
-                      (funcall recall))
+                      (eem-enter-mode recall))
              ;; TODO: make interop to a sane "normal"
              (evil-normal-state)))))
 
 (defun eem--set-mode-exit-flag (mode)
   "Set a mode exit flag to indicate cleanup operations need to be performed."
-  (let* ((mode-name (symbol-name mode))
-         (hydra (intern (concat "hydra-" mode-name))))
+  (let ((hydra (intern (concat "hydra-" mode))))
     (hydra-set-property hydra :exiting t)))
 
 (defun eem--exit-mode (mode)
   "Exit a mode and perform any cleanup."
-  (let* ((mode-name (symbol-name mode))
-         (hydra (intern (concat "hydra-" mode-name))))
+  (let ((hydra (intern (concat "hydra-" mode))))
     (when (hydra-get-property hydra :exiting)
       (eem-exit-mode-with-recall mode)
       (hydra-set-property hydra :exiting nil))))
@@ -139,8 +132,8 @@
 (defhydra hydra-mode (:idle 1.0
                       :columns 4
                       :body-pre (evil-mode-state)
-                      :post (eem--set-mode-exit-flag 'mode)
-                      :after-exit (eem--exit-mode 'mode))
+                      :post (eem--set-mode-exit-flag "mode")
+                      :after-exit (eem--exit-mode "mode"))
   "Mode mode"
   ("j" eem-mode-down "down")
   ("k" eem-mode-up "up")
@@ -162,7 +155,7 @@
 
 (global-set-key (kbd "s-k") (lambda ()
                               (interactive)
-                              (eem-enter-mode-with-recall 'mode)))
+                              (eem-enter-mode-with-recall "mode")))
 
 ;; mode mode as the lowest level upon s-Esc, with tower mode above that achieved via s-Esc again, and so on...
 ;; i.e. once in any meta mode, you should be able to use the usual L00 machinery incl. e.g. line mode

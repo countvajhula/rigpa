@@ -72,8 +72,8 @@
 (defhydra hydra-view (:idle 1.0
                       :columns 6
                       :body-pre (evil-view-state)
-                      :post (eem--set-mode-exit-flag 'view)
-                      :after-exit (eem--exit-mode 'view))
+                      :post (eem--set-mode-exit-flag "view")
+                      :after-exit (eem--exit-mode "view"))
   "View mode"
   ("j" my-scroll-down "down")
   ("k" my-scroll-up "up")
@@ -122,6 +122,6 @@
 
 (global-set-key (kbd "s-v") (lambda ()
                               (interactive)
-                              (eem-enter-mode-with-recall 'view)))
+                              (eem-enter-mode-with-recall "view")))
 
 (provide 'eem-view-mode)

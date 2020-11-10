@@ -43,8 +43,8 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
 (defhydra hydra-window (:idle 1.0
                         :columns 4
                         :body-pre (evil-window-state)
-                        :post (eem--set-mode-exit-flag 'window)
-                        :after-exit (eem--exit-mode 'window))
+                        :post (eem--set-mode-exit-flag "window")
+                        :after-exit (eem--exit-mode "window"))
   "Window mode"
   ("h" evil-window-left "left")
   ("j" evil-window-down "down")
@@ -81,6 +81,6 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
 
 (global-set-key (kbd "s-w") (lambda ()
                               (interactive)
-                              (eem-enter-mode-with-recall 'window)))
+                              (eem-enter-mode-with-recall "window")))
 
 (provide 'eem-window-mode)
