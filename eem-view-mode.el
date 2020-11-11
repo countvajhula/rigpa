@@ -72,7 +72,7 @@
 (defhydra hydra-view (:idle 1.0
                       :columns 6
                       :body-pre (evil-view-state)
-                      :post (eem--set-mode-exit-flag "view")
+                      :post (eem--update-mode-exit-flag "view" t)
                       :after-exit (eem--exit-mode "view"))
   "View mode"
   ("j" my-scroll-down "down")

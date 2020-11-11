@@ -6,13 +6,15 @@
 
 (defun eem-enter-mode (mode-name)
   "Enter mode MODE-NAME."
+  (message "entering mode %s" mode-name)
   (let ((mode-entry (if (member mode-name (list "normal" "insert" "emacs"))
                         ;; handle the (at present, hypothetical) case of entry
                         ;; to a standard evil mode
                         ;; no hydra for standard evil modes
                         (intern (concat "evil-" mode-name "-state"))
                       (intern (concat "hydra-" mode-name "/body")))))
-    (funcall mode-entry)))
+    (funcall mode-entry))
+  (message "entered mode %s" mode-name))
 
 (defun eem--enter-level (level-number)
   "Enter level LEVEL-NUMBER"
@@ -42,14 +44,22 @@
 (defun eem-enter-lower-level ()
   "Enter lower level."
   (interactive)
-  (eem--enter-level (- eem--current-level
-                       1)))
+  (message "entering lower level")
+  (let ((mode-name (symbol-name evil-state)))
+    (if (member mode-name (ht-get (eem--current-tower) 'levels))
+        (progn (eem--update-mode-exit-flag mode-name)
+               (eem--enter-level (- eem--current-level
+                                    1))))))
 
 (defun eem-enter-higher-level ()
   "Enter higher level."
   (interactive)
-  (eem--enter-level (+ eem--current-level
-                       1)))
+  (message "entering higher level")
+  (let ((mode-name (symbol-name evil-state)))
+    (if (member mode-name (ht-get (eem--current-tower) 'levels))
+        (progn (eem--update-mode-exit-flag mode-name)
+               (eem--enter-level (+ eem--current-level
+                                    1))))))
 
 (defun eem-enter-lowest-level ()
   "Enter lowest (manual) level."
@@ -93,33 +103,32 @@
   ;; delegation is hydra -> evil. Probably introduce an
   ;; independent state variable, for which the evil state
   ;; variable can be treated as a proxy for now
+  (message "entering %s with recall" mode)
   (setq-local eem-recall (symbol-name evil-state))
-  (eem--temp-setup-buffer-marks-table)
-  (eem--temp-save-original-buffer)
   (eem-enter-mode mode))
+
+(defun eem--enter-local-recall-mode (buffer)
+  "Enter the recall mode (if any) in the BUFFER."
+  (with-current-buffer buffer
+    (let ((recall (and (boundp 'eem-recall)
+                       eem-recall)))
+      (if recall
+          (progn (setq-local eem-recall nil)
+                 (eem-enter-mode recall))
+        ;; TODO: make interop to a sane "normal"
+        (evil-normal-state)))))
 
 (defun eem-exit-mode-with-recall (mode)
   "Exit MODE to a prior state, unless it has already exited to another state."
   (interactive)
-  (progn (with-current-buffer (eem--temp-original-buffer)
-           (let ((recall (and (boundp 'eem-recall)
-                              eem-recall)))
-             (if recall
-                 (eem-enter-mode recall)
-               ;; TODO: make interop to a sane "normal"
-               (evil-normal-state))))
-         (let ((recall (and (boundp 'eem-recall)
-                            eem-recall)))
-           (if recall
-               (progn (setq-local eem-recall nil)
-                      (eem-enter-mode recall))
-             ;; TODO: make interop to a sane "normal"
-             (evil-normal-state)))))
+  (message "exiting %s with recall" mode)
+  (eem--enter-local-recall-mode (current-buffer)))
 
-(defun eem--set-mode-exit-flag (mode)
+(defun eem--update-mode-exit-flag (mode &optional value)
   "Set a mode exit flag to indicate cleanup operations need to be performed."
+  (message "updating flag: %s %s" mode value)
   (let ((hydra (intern (concat "hydra-" mode))))
-    (hydra-set-property hydra :exiting t)))
+    (hydra-set-property hydra :exiting value)))
 
 (defun eem--exit-mode (mode)
   "Exit a mode and perform any cleanup."
@@ -131,9 +140,7 @@
 
 (defhydra hydra-mode (:idle 1.0
                       :columns 4
-                      :body-pre (evil-mode-state)
-                      :post (eem--set-mode-exit-flag "mode")
-                      :after-exit (eem--exit-mode "mode"))
+                      :body-pre (evil-mode-state))
   "Mode mode"
   ("j" eem-mode-down "down")
   ("k" eem-mode-up "up")

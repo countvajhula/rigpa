@@ -43,7 +43,7 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
 (defhydra hydra-window (:idle 1.0
                         :columns 4
                         :body-pre (evil-window-state)
-                        :post (eem--set-mode-exit-flag "window")
+                        :post (eem--update-mode-exit-flag "window" t)
                         :after-exit (eem--exit-mode "window"))
   "Window mode"
   ("h" evil-window-left "left")
@@ -75,12 +75,14 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
   ("r" evil-window-rotate-downwards "rotate downwards")
   ("R" evil-window-rotate-upwards "rotate upwards")
   ("f" ffap-other-window "go to file in other window" :exit t)
-  ("i" my-noop "exit" :exit t)
+  ("i" nil "exit" :exit t)
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (global-set-key (kbd "s-w") (lambda ()
                               (interactive)
+                              ;; TODO: change this to "jump to level"
+                              ;; and update current level if still in tower
                               (eem-enter-mode-with-recall "window")))
 
 (provide 'eem-window-mode)
