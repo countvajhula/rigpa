@@ -32,6 +32,8 @@
 (defun eem-enter-selected-level ()
   "Enter selected level"
   (interactive)
+  (with-current-buffer eem--reference-buffer
+    (message "entering level %s in tower %s" eem--selected-level eem--current-tower-index))
   (eem--enter-level eem--selected-level))
 
 (defun enter-first-level ()
@@ -96,7 +98,7 @@
   (evil-next-line)
   (eem--extract-selected-level))
 
-(defun eem-enter-mode-with-recall (mode)
+(defun eem-jump-to-level (mode)
   "Enter MODE, but remember the previous state to return to it."
   (interactive)
   ;; we're relying on the evil state here even though the
@@ -105,7 +107,13 @@
   ;; variable can be treated as a proxy for now
   (message "entering %s with recall" mode)
   (setq-local eem-recall (symbol-name evil-state))
-  (eem-enter-mode mode))
+  (eem-enter-mode mode)
+  ;; update current level if still in tower
+  ;; TODO: not ideal to have this decoupled - streamline if possible
+  (let ((level-number (seq-position (ht-get (eem--current-tower) 'levels) mode)))
+    (when level-number
+      (message "updating level number")
+      (setq eem--current-level level-number))))
 
 (defun eem--enter-local-recall-mode (buffer)
   "Enter the recall mode (if any) in the BUFFER."
@@ -118,23 +126,18 @@
         ;; TODO: make interop to a sane "normal"
         (evil-normal-state)))))
 
-(defun eem-exit-mode-with-recall (mode)
-  "Exit MODE to a prior state, unless it has already exited to another state."
-  (interactive)
-  (message "exiting %s with recall" mode)
-  (eem--enter-local-recall-mode (current-buffer)))
-
 (defun eem--update-mode-exit-flag (mode &optional value)
   "Set a mode exit flag to indicate cleanup operations need to be performed."
   (message "updating flag: %s %s" mode value)
   (let ((hydra (intern (concat "hydra-" mode))))
     (hydra-set-property hydra :exiting value)))
 
-(defun eem--exit-mode (mode)
-  "Exit a mode and perform any cleanup."
+(defun eem-recall-context (mode)
+  "Recall a prior state upon exiting MODE, if one is indicated."
   (let ((hydra (intern (concat "hydra-" mode))))
     (when (hydra-get-property hydra :exiting)
-      (eem-exit-mode-with-recall mode)
+      (message "exiting %s with recall" mode)
+      (eem--enter-local-recall-mode (current-buffer))
       (hydra-set-property hydra :exiting nil))))
 
 
@@ -162,7 +165,7 @@
 
 (global-set-key (kbd "s-k") (lambda ()
                               (interactive)
-                              (eem-enter-mode-with-recall "mode")))
+                              (eem-jump-to-level "mode")))
 
 ;; mode mode as the lowest level upon s-Esc, with tower mode above that achieved via s-Esc again, and so on...
 ;; i.e. once in any meta mode, you should be able to use the usual L00 machinery incl. e.g. line mode

@@ -20,7 +20,6 @@
 (make-variable-buffer-local 'eem--current-level)
 
 (defun eem--get-reference-buffer ()
-  ; what's this for?
   "Get the buffer in reference to which epistemic mode is operating."
   (if (string-match (format "^%s"
                              eem-buffer-prefix)
@@ -168,7 +167,7 @@ monadic verb in the 'switch buffer' navigation."
   ("s-m" eem-flashback-to-last-tower "flashback" :exit t)  ; canonical action
   ("<return>" eem-enter-selected-level "enter selected level" :exit t)
   ("s-<return>" eem-enter-selected-level "enter selected level" :exit t)
-  ("i" my-noop "exit" :exit t)
+  ("i" nil "exit" :exit t)
   ("<escape>" nil "exit" :exit t))
   ;("s-<return>" eem-enter-lower-level "enter lower level" :exit t)
   ;("s-<escape>" eem-enter-higher-level "escape to higher level" :exit t))

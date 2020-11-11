@@ -73,7 +73,7 @@
                       :columns 6
                       :body-pre (evil-view-state)
                       :post (eem--update-mode-exit-flag "view" t)
-                      :after-exit (eem--exit-mode "view"))
+                      :after-exit (eem-recall-context "view"))
   "View mode"
   ("j" my-scroll-down "down")
   ("k" my-scroll-up "up")
@@ -122,6 +122,6 @@
 
 (global-set-key (kbd "s-v") (lambda ()
                               (interactive)
-                              (eem-enter-mode-with-recall "view")))
+                              (eem-jump-to-level "view")))
 
 (provide 'eem-view-mode)

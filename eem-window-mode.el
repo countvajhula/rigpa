@@ -44,7 +44,7 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
                         :columns 4
                         :body-pre (evil-window-state)
                         :post (eem--update-mode-exit-flag "window" t)
-                        :after-exit (eem--exit-mode "window"))
+                        :after-exit (eem-recall-context "window"))
   "Window mode"
   ("h" evil-window-left "left")
   ("j" evil-window-down "down")
@@ -81,8 +81,6 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
 
 (global-set-key (kbd "s-w") (lambda ()
                               (interactive)
-                              ;; TODO: change this to "jump to level"
-                              ;; and update current level if still in tower
-                              (eem-enter-mode-with-recall "window")))
+                              (eem-jump-to-level "window")))
 
 (provide 'eem-window-mode)
