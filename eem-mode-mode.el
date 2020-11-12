@@ -21,10 +21,9 @@
   (let* ((tower (eem--current-tower))
          (levels (ht-get tower 'levels))
          (tower-height (length levels))
-         (level-number (if (< level-number
-                              tower-height)
-                           level-number
-                         (- tower-height 1))))
+         (level-number (max (min level-number
+                                 (1- tower-height))
+                            0)))
     (let ((mode-name (nth level-number levels)))
       (eem-enter-mode mode-name)
       (setq eem--current-level level-number))))
