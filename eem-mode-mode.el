@@ -35,32 +35,25 @@
     (message "entering level %s in tower %s" eem--selected-level eem--current-tower-index))
   (eem--enter-level eem--selected-level))
 
-(defun enter-first-level ()
-  "Enter epistemic modes at first level"
-  (interactive)
-  (evil-force-normal-state)
-  ;; start at the lowest level
-  (eem--enter-level 1))
-
 (defun eem-enter-lower-level ()
   "Enter lower level."
   (interactive)
   (message "entering lower level")
   (let ((mode-name (symbol-name evil-state)))
-    (if (member mode-name (ht-get (eem--current-tower) 'levels))
-        (progn (eem--update-mode-exit-flag mode-name)
-               (eem--enter-level (- eem--current-level
-                                    1))))))
+    (when (member mode-name (ht-get (eem--current-tower) 'levels))
+      (progn (eem--update-mode-exit-flag mode-name)
+             (eem--enter-level (- eem--current-level
+                                  1))))))
 
 (defun eem-enter-higher-level ()
   "Enter higher level."
   (interactive)
   (message "entering higher level")
   (let ((mode-name (symbol-name evil-state)))
-    (if (member mode-name (ht-get (eem--current-tower) 'levels))
-        (progn (eem--update-mode-exit-flag mode-name)
-               (eem--enter-level (+ eem--current-level
-                                    1))))))
+    (when (member mode-name (ht-get (eem--current-tower) 'levels))
+      (progn (eem--update-mode-exit-flag mode-name)
+             (eem--enter-level (+ eem--current-level
+                                  1))))))
 
 (defun eem-enter-lowest-level ()
   "Enter lowest (manual) level."

@@ -112,7 +112,8 @@ initial epistemic tower."
   (with-current-buffer eem--reference-buffer
     (setq eem--last-tower-index eem--tower-index-on-entry))
   (eem--revert-buffer-appearance)
-  (evil-normal-state) ; TODO: FIX
+  (with-current-buffer eem--reference-buffer
+    (evil-normal-state)) ; TODO: FIX
   (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t))
 
 (defun eem-flashback-to-last-tower ()
@@ -171,5 +172,6 @@ monadic verb in the 'switch buffer' navigation."
   ("<escape>" nil "exit" :exit t))
   ;("s-<return>" eem-enter-lower-level "enter lower level" :exit t)
   ;("s-<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+
 
 (provide 'eem-tower-mode)
