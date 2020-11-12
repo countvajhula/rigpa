@@ -207,6 +207,5 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(global-set-key (kbd "s-l") 'hydra-line/body)
 
 (provide 'eem-line-mode)

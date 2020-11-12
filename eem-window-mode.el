@@ -79,8 +79,5 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(global-set-key (kbd "s-w") (lambda ()
-                              (interactive)
-                              (eem-jump-to-level "window")))
 
 (provide 'eem-window-mode)

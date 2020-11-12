@@ -116,12 +116,9 @@
   ("n" my-narrow-to-defun-or-region "narrow context")
   ("w" widen "widen to full view")
   ("H-m" eem-toggle-menu "show/hide this menu")
-  ("i" my-noop "exit" :exit t)
+  ("i" nil "exit" :exit t)
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(global-set-key (kbd "s-v") (lambda ()
-                              (interactive)
-                              (eem-jump-to-level "view")))
 
 (provide 'eem-view-mode)

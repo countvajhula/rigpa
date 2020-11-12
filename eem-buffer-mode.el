@@ -96,7 +96,5 @@ current ('original') buffer."
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-;; access the buffer menu via a "body" keybinding
-(global-set-key (kbd "s-b") 'hydra-buffer/body)
 
 (provide 'eem-buffer-mode)

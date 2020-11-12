@@ -102,8 +102,5 @@
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-;; hydra to configure the application environment
-;; contains a nested hydra to modulate transparency
-(global-set-key (kbd "s-e") 'hydra-application/body)
 
 (provide 'eem-application-mode)
