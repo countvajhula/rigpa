@@ -28,7 +28,8 @@ Version 2016-04-04"
 (defhydra hydra-file (:idle 1.0
                       :columns 2
                       :body-pre (evil-file-state)
-                      :post (evil-normal-state))
+                      :post (eem--update-mode-exit-flag "file" t)
+                      :after-exit (eem-hydra-signal-exit "file"))
   "File mode"
   ("h" evil-backward-char "backward")
   ("j" evil-next-line "down")

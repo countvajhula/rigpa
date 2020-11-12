@@ -96,7 +96,8 @@
                       :columns 4
                       :color pink
                       :body-pre (evil-char-state)
-                      :post (evil-normal-state))
+                      :post (eem--update-mode-exit-flag "char" t)
+                      :after-exit (eem-hydra-signal-exit "char"))
   "Character mode"
   ("h" evil-backward-char "left")
   ("j" evil-next-line "down")

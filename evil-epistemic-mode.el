@@ -133,9 +133,6 @@ and simply toggles whether the menu is visible or not."
           (eem-hide-menu)
         (eem-show-menu)))))
 
-;; exit tower mode with Esc leaves it in limbo
-;; entering a state not in the current tower breaks enter/escape
-;; tower mode exits to an unrelated buffer when entering complete tower in tower mode
 
 (provide 'evil-epistemic-mode)
 ;;; evil-epistemic-mode.el ends here

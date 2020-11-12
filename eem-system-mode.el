@@ -12,14 +12,13 @@
 
 (defhydra hydra-system (:exit t
                         :body-pre (evil-system-state)
-                        :post (evil-normal-state))
+                        :post (eem--update-mode-exit-flag "system" t)
+                        :after-exit (eem-hydra-signal-exit "system"))
   "System information"
   ("b" my-battery-life "show power info including battery life")
   ("s-i" my-battery-life "show power info including battery life")
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-;; access the system menu via a "body" keybinding
-(global-set-key (kbd "s-i") 'hydra-system/body)
 
 (provide 'eem-system-mode)

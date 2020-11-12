@@ -9,7 +9,8 @@
                       :columns 2
                       :idle 1.0
                       :body-pre (evil-text-state)
-                      :post (evil-normal-state))
+                      :post (eem--update-mode-exit-flag "text" t)
+                      :after-exit (eem-hydra-signal-exit "text"))
   "Text mode"
   ("z" evil-fill-and-move "justify" :exit t)
   ("s-z" evil-fill-and-move "justify" :exit t)

@@ -45,7 +45,8 @@
                           :columns 2
                           :idle 1.0
                           :body-pre (evil-activity-state)
-                          :post (evil-normal-state))
+                          :post (eem--update-mode-exit-flag "activity" t)
+                          :after-exit (eem-hydra-signal-exit "activity"))
   "Activity mode"
   ("h" my-goto-older-change "previous change in buffer")
   ("C-j" evil-jump-backward "jump backward") ;; TODO: these jumps don't work via hydra atm

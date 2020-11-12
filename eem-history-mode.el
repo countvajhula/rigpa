@@ -9,7 +9,8 @@
                          :body-pre (progn (unless git-timemachine-mode (git-timemachine))
                                           (evil-history-state))
                          :idle 1.0
-                         :post (evil-normal-state))
+                         :post (eem--update-mode-exit-flag "history" t)
+                         :after-exit (eem-hydra-signal-exit "history"))
   "History mode"
   ("h" git-timemachine-show-previous-revision "previous")
   ("l" git-timemachine-show-next-revision "next")

@@ -176,7 +176,8 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
 (defhydra hydra-line (:idle 1.0
                       :columns 4
                       :body-pre (evil-line-state)
-                      :post (evil-normal-state))
+                      :post (eem--update-mode-exit-flag "line" t)
+                      :after-exit (eem-hydra-signal-exit "line"))
   "Line mode"
   ("h" evil-previous-line "previous")
   ("j" evil-next-line "next")

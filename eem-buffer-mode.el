@@ -73,7 +73,8 @@ current ('original') buffer."
                         :body-pre (progn (setup-buffer-marks-table)
                                          (evil-buffer-state))
                         :post (progn (flash-to-original-and-back)
-                                     (evil-normal-state)))
+                                     (eem--update-mode-exit-flag "buffer" t))
+                        :after-exit (eem-hydra-signal-exit "buffer"))
   "Buffer mode"
   ("s-b" evil-switch-to-windows-last-buffer "switch to last" :exit t)
   ("b" evil-switch-to-windows-last-buffer "switch to last" :exit t)

@@ -73,7 +73,7 @@
                       :columns 6
                       :body-pre (evil-view-state)
                       :post (eem--update-mode-exit-flag "view" t)
-                      :after-exit (eem-recall-context "view"))
+                      :after-exit (eem-hydra-signal-exit "view"))
   "View mode"
   ("j" my-scroll-down "down")
   ("k" my-scroll-up "up")

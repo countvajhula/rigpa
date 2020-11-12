@@ -44,7 +44,7 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
                         :columns 4
                         :body-pre (evil-window-state)
                         :post (eem--update-mode-exit-flag "window" t)
-                        :after-exit (eem-recall-context "window"))
+                        :after-exit (eem-hydra-signal-exit "window"))
   "Window mode"
   ("h" evil-window-left "left")
   ("j" evil-window-down "down")

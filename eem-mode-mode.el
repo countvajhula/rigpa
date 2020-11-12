@@ -132,12 +132,18 @@
   (let ((hydra (intern (concat "hydra-" mode))))
     (hydra-set-property hydra :exiting value)))
 
-(defun eem-recall-context (mode)
-  "Recall a prior state upon exiting MODE, if one is indicated."
+(defun eem-handle-mode-exit (mode)
+  "Take appropriate action when MODE is exited.
+
+Recalls a prior state upon exiting MODE, if one is indicated."
+  (message "exiting %s with recall" mode)
+  (eem--enter-local-recall-mode (current-buffer)))
+
+(defun eem-hydra-signal-exit (mode)
+  "Helper function to witness hydra exit and notify epistemic mode."
   (let ((hydra (intern (concat "hydra-" mode))))
     (when (hydra-get-property hydra :exiting)
-      (message "exiting %s with recall" mode)
-      (eem--enter-local-recall-mode (current-buffer))
+      (eem-handle-mode-exit mode)
       (hydra-set-property hydra :exiting nil))))
 
 
