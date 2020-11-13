@@ -119,6 +119,21 @@
       (message "updating level number")
       (setq eem--current-level level-number))))
 
+(defun eem--enter-appropriate-mode (&optional buffer)
+  "Enter the most appropriate mode. TODO: not used at the moment.
+
+Priority: (1) provided mode if admissible (i.e. present in tower)
+(2) recall if present, (3) lowest level (or maybe 'tower home level' which defaults to lowest)."
+  (with-current-buffer (or buffer (current-buffer))
+    (let ((recall (and (boundp 'eem-recall)
+                       eem-recall)))
+      (if recall
+          (eem--enter-local-recall-mode)
+        ;; for now, enter the highest level in the absence of recall
+        (setq eem--current-level (1- (length (ht-get (eem--current-tower)
+                                                     'levels))))
+        (eem--enter-level eem--current-level)))))
+
 (defun eem--enter-local-recall-mode (&optional buffer)
   "Enter the recall mode (if any) in the BUFFER."
   (with-current-buffer (or buffer (current-buffer))
