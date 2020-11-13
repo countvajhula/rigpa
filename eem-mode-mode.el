@@ -107,16 +107,18 @@
       (message "updating level number")
       (setq eem--current-level level-number))))
 
-(defun eem--enter-local-recall-mode (buffer)
+(defun eem--enter-local-recall-mode (&optional buffer)
   "Enter the recall mode (if any) in the BUFFER."
-  (with-current-buffer buffer
+  (with-current-buffer (or buffer (current-buffer))
     (let ((recall (and (boundp 'eem-recall)
                        eem-recall)))
       (if recall
           (progn (setq-local eem-recall nil)
                  (eem-enter-mode recall))
-        ;; TODO: make interop to a sane "normal"
-        (evil-normal-state)))))
+        ;; for now, enter the highest level in the absence of recall
+        (setq eem--current-level (1- (length (ht-get (eem--current-tower)
+                                                     'levels))))
+        (eem--enter-level eem--current-level)))))
 
 (defun eem--update-mode-exit-flag (mode &optional value)
   "Set a mode exit flag to indicate cleanup operations need to be performed."
