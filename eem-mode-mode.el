@@ -28,32 +28,44 @@
       (eem-enter-mode mode-name)
       (setq eem--current-level level-number))))
 
-(defun eem-enter-selected-level ()
-  "Enter selected level"
-  (interactive)
-  (with-current-buffer eem--reference-buffer
-    (message "entering level %s in tower %s" eem--selected-level eem--current-tower-index))
-  (eem--enter-level eem--selected-level))
-
 (defun eem-enter-lower-level ()
   "Enter lower level."
   (interactive)
   (message "entering lower level")
   (let ((mode-name (symbol-name evil-state)))
-    (when (member mode-name (ht-get (eem--current-tower) 'levels))
-      (progn (eem--update-mode-exit-flag mode-name)
-             (eem--enter-level (- eem--current-level
-                                  1))))))
+    (if (member mode-name (ht-get (eem--current-tower) 'levels))
+        (progn (eem--update-mode-exit-flag mode-name)
+               (eem--enter-level (- eem--current-level
+                                    1)))
+      ;; if we left a buffer in a state that isn't in its tower, then
+      ;; returning to it "out of band" would find it still that way,
+      ;; and Enter/Escape would assume that there is a recall to be
+      ;; returned to. If we did nothing here, then since there is in
+      ;; fact no recall, nothing would happen. So preemptively go
+      ;; to a safe "normal" as a failsafe, which would be overridden
+      ;; by a recall if there is one.
+      ;; to reproduce: use C-] to jump to definition, to a buffer
+      ;; that doesn't contain buffer mode in the tower, but which
+      ;; was exited using buffer mode
+      ;; TODO: Note that this is currently not safe since a tower not
+      ;; containing normal mode (e.g. emacs tower) would be left in limbo
+      (evil-normal-state)))) ; TODO: fix to sane normal
 
 (defun eem-enter-higher-level ()
   "Enter higher level."
   (interactive)
   (message "entering higher level")
   (let ((mode-name (symbol-name evil-state)))
-    (when (member mode-name (ht-get (eem--current-tower) 'levels))
-      (progn (eem--update-mode-exit-flag mode-name)
-             (eem--enter-level (+ eem--current-level
-                                  1))))))
+    ;; if the current mode is in the current tower,
+    ;; go up a level and clear recall; otherwise do
+    ;; nothing, and the mode exit hook would call
+    ;; recall if one is set
+    (if (member mode-name (ht-get (eem--current-tower) 'levels))
+        (progn (eem--update-mode-exit-flag mode-name)
+               (eem--enter-level (+ eem--current-level
+                                    1)))
+      ;; see note for eem-enter-lower-level
+      (evil-normal-state)))) ; TODO: sane normal
 
 (defun eem-enter-lowest-level ()
   "Enter lowest (manual) level."
@@ -113,6 +125,9 @@
     (let ((recall (and (boundp 'eem-recall)
                        eem-recall)))
       (if recall
+          ;; recall should probably be tower-specific and
+          ;; meta-level specific, so that
+          ;; we can set it upon entry to a meta mode
           (progn (setq-local eem-recall nil)
                  (eem-enter-mode recall))
         ;; for now, enter the highest level in the absence of recall
@@ -120,6 +135,7 @@
                                                      'levels))))
         (eem--enter-level eem--current-level)))))
 
+;; move these to epistemic.el?
 (defun eem--update-mode-exit-flag (mode &optional value)
   "Set a mode exit flag to indicate cleanup operations need to be performed."
   (message "updating flag: %s %s" mode value)
@@ -131,7 +147,7 @@
 
 Recalls a prior state upon exiting MODE, if one is indicated."
   (message "exiting %s with recall" mode)
-  (eem--enter-local-recall-mode (current-buffer)))
+  (eem--enter-local-recall-mode))
 
 (defun eem-hydra-signal-exit (mode)
   "Helper function to witness hydra exit and notify epistemic mode."

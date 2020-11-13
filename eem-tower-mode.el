@@ -21,11 +21,13 @@
 
 (defun eem--get-reference-buffer ()
   "Get the buffer in reference to which epistemic mode is operating."
-  (if (string-match (format "^%s"
-                             eem-buffer-prefix)
-                     (buffer-name))
-      eem--reference-buffer
-    (current-buffer)))
+  (let ((ref-buf (if (string-match (format "^%s"
+                                           eem-buffer-prefix)
+                                   (buffer-name))
+                     eem--reference-buffer
+                   (current-buffer))))
+    (message "reference buffer is %s" ref-buf)
+    ref-buf))
 
 (defun eem--tower (tower-id)
   "The epistemic tower corresponding to the provided index."
@@ -109,12 +111,13 @@ initial epistemic tower."
 (defun my-exit-tower-mode ()
   "Exit tower mode."
   (interactive)
-  (with-current-buffer eem--reference-buffer
-    (setq eem--last-tower-index eem--tower-index-on-entry))
-  (eem--revert-buffer-appearance)
-  (with-current-buffer eem--reference-buffer
-    (evil-normal-state)) ; TODO: FIX
-  (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t))
+  (let ((ref-buf (eem--get-reference-buffer)))
+    (with-current-buffer ref-buf
+      (setq eem--last-tower-index eem--tower-index-on-entry)
+      (evil-normal-state))     ; TODO: FIX
+    (eem--revert-buffer-appearance)
+    (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t)
+    (switch-to-buffer ref-buf)))
 
 (defun eem-flashback-to-last-tower ()
   "Switch to the last tower used.
@@ -137,6 +140,13 @@ monadic verb in the 'switch buffer' navigation."
       (setq eem--flashback-tower-index original-tower-index))
     ;; enter the appropriate level in the new tower
     (eem--enter-local-recall-mode)))
+
+(defun eem-enter-selected-level ()
+  "Enter selected level"
+  (interactive)
+  (with-current-buffer (eem--get-reference-buffer)
+    (message "entering level %s in tower %s" eem--selected-level eem--current-tower-index)
+    (eem--enter-level eem--selected-level)))
 
 (defhydra hydra-tower (:idle 1.0
                        :columns 4
