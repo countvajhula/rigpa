@@ -115,6 +115,9 @@ and simply toggles whether the menu is visible or not."
           (eem-hide-menu)
         (eem-show-menu)))))
 
+;; TODO: wrap all evil states in lithium modes and register them with epistemic mode
+;; TODO: fix recall - probably reframe it in terms of exit and entry (and eliminate any
+;; unnecessary ad hoc cases of entry to normal mode)
 
 (provide 'evil-epistemic-mode)
 ;;; evil-epistemic-mode.el ends here

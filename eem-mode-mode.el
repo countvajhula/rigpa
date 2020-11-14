@@ -179,6 +179,8 @@ Recalls a prior state upon exiting MODE, if one is indicated."
       (let ((exit-hook (lithium-mode-exit-hook
                         (symbol-value
                          (intern
+                          ; (a) put this in a callback, and (b) don't rely
+                          ; on a particular name being present
                           (concat "lithium-" mode "-mode"))))))
         (message "exit hook is %s" exit-hook)
         (run-hooks exit-hook))
