@@ -67,8 +67,9 @@
 ;; if that state is in the present tower. For now, just handle the specific
 ;; case of insert mode, since it's the one that's often entered using a
 ;; non-eem entry point
-(add-function :after (symbol-function 'evil-insert-state)
-              (lambda (&rest args) (setq eem--current-level 0)))
+(add-hook 'evil-insert-state-entry-hook
+          (lambda (&rest args)
+            (setq eem--current-level 0)))
 
 ;;;; set tower to lisp tower in all lisp modes (emulating major mode -- TODO: improve)
 ;; (defvar lisp-modes (list 'emacs-lisp-mode
