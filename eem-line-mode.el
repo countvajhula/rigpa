@@ -215,7 +215,8 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   "Exit hook for epistemic line mode.")
 
 (defvar lithium-line-mode
-  (make-lithium-mode :enter #'hydra-line/body
+  (make-lithium-mode :name "line"
+                     :enter #'hydra-line/body
                      :entry-hook 'lithium-line-mode-entry-hook
                      :exit-hook 'lithium-line-mode-exit-hook))
 

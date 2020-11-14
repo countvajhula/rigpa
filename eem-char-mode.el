@@ -158,7 +158,8 @@
   "Exit hook for epistemic char mode.")
 
 (defvar lithium-char-mode
-  (make-lithium-mode :enter #'hydra-char/body
+  (make-lithium-mode :name "char"
+                     :enter #'hydra-char/body
                      :entry-hook 'lithium-char-mode-entry-hook
                      :exit-hook 'lithium-char-mode-exit-hook))
 

@@ -28,7 +28,8 @@
   "Exit hook for epistemic system mode.")
 
 (defvar lithium-system-mode
-  (make-lithium-mode :enter #'hydra-system/body
+  (make-lithium-mode :name "system"
+                     :enter #'hydra-system/body
                      :entry-hook 'lithium-system-mode-entry-hook
                      :exit-hook 'lithium-system-mode-exit-hook))
 

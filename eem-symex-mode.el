@@ -7,7 +7,8 @@
   "Exit hook for epistemic symex mode.")
 
 (defvar lithium-symex-mode
-  (make-lithium-mode :enter #'symex-mode-interface
+  (make-lithium-mode :name "symex"
+                     :enter #'symex-mode-interface
                      :entry-hook 'lithium-symex-mode-entry-hook
                      :exit-hook 'lithium-symex-mode-exit-hook))
 

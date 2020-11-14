@@ -51,7 +51,8 @@ Version 2016-04-04"
   "Exit hook for epistemic file mode.")
 
 (defvar lithium-file-mode
-  (make-lithium-mode :enter #'hydra-file/body
+  (make-lithium-mode :name "file"
+                     :enter #'hydra-file/body
                      :entry-hook 'lithium-file-mode-entry-hook
                      :exit-hook 'lithium-file-mode-exit-hook))
 

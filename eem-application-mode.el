@@ -108,7 +108,8 @@
   "Exit hook for epistemic application mode.")
 
 (defvar lithium-application-mode
-  (make-lithium-mode :enter #'hydra-application/body
+  (make-lithium-mode :name "application"
+                     :enter #'hydra-application/body
                      :entry-hook 'lithium-application-mode-entry-hook
                      :exit-hook 'lithium-application-mode-exit-hook))
 

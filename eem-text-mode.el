@@ -26,7 +26,8 @@
   "Exit hook for epistemic text mode.")
 
 (defvar lithium-text-mode
-  (make-lithium-mode :enter #'hydra-text/body
+  (make-lithium-mode :name "text"
+                     :enter #'hydra-text/body
                      :entry-hook 'lithium-text-mode-entry-hook
                      :exit-hook 'lithium-text-mode-exit-hook))
 

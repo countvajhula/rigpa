@@ -104,7 +104,8 @@ current ('original') buffer."
   "Exit hook for epistemic buffer mode.")
 
 (defvar lithium-buffer-mode
-  (make-lithium-mode :enter #'hydra-buffer/body
+  (make-lithium-mode :name "buffer"
+                     :enter #'hydra-buffer/body
                      :entry-hook 'lithium-buffer-mode-entry-hook
                      :exit-hook 'lithium-buffer-mode-exit-hook))
 

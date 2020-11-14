@@ -105,7 +105,8 @@ buffer mode."
   "Exit hook for epistemic tab mode.")
 
 (defvar lithium-tab-mode
-  (make-lithium-mode :enter #'hydra-tab/body
+  (make-lithium-mode :name "tab"
+                     :enter #'hydra-tab/body
                      :entry-hook 'lithium-tab-mode-entry-hook
                      :exit-hook 'lithium-tab-mode-exit-hook))
 

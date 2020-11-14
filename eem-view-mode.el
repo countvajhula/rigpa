@@ -128,7 +128,8 @@
   "Exit hook for epistemic view mode.")
 
 (defvar lithium-view-mode
-  (make-lithium-mode :enter #'hydra-view/body
+  (make-lithium-mode :name "view"
+                     :enter #'hydra-view/body
                      :entry-hook 'lithium-view-mode-entry-hook
                      :exit-hook 'lithium-view-mode-exit-hook))
 

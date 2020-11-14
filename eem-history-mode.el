@@ -31,7 +31,8 @@
   "Exit hook for epistemic history mode.")
 
 (defvar lithium-history-mode
-  (make-lithium-mode :enter #'hydra-history/body
+  (make-lithium-mode :name "history"
+                     :enter #'hydra-history/body
                      :entry-hook 'lithium-history-mode-entry-hook
                      :exit-hook 'lithium-history-mode-exit-hook))
 

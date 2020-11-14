@@ -78,7 +78,8 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
   "Exit hook for epistemic window mode.")
 
 (defvar lithium-window-mode
-  (make-lithium-mode :enter #'hydra-window/body
+  (make-lithium-mode :name "window"
+                     :enter #'hydra-window/body
                      :entry-hook 'lithium-window-mode-entry-hook
                      :exit-hook 'lithium-window-mode-exit-hook))
 

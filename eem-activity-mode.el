@@ -70,7 +70,8 @@
   "Exit hook for epistemic activity mode.")
 
 (defvar lithium-activity-mode
-  (make-lithium-mode :enter #'hydra-activity/body
+  (make-lithium-mode :name "activity"
+                     :enter #'hydra-activity/body
                      :entry-hook 'lithium-activity-mode-entry-hook
                      :exit-hook 'lithium-activity-mode-exit-hook))
 

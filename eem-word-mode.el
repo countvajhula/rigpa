@@ -182,7 +182,8 @@
   "Exit hook for epistemic word mode.")
 
 (defvar lithium-word-mode
-  (make-lithium-mode :enter #'hydra-word/body
+  (make-lithium-mode :name "word"
+                     :enter #'hydra-word/body
                      :entry-hook 'lithium-word-mode-entry-hook
                      :exit-hook 'lithium-word-mode-exit-hook))
 

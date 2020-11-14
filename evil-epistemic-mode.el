@@ -122,17 +122,20 @@ and simply toggles whether the menu is visible or not."
 
 ;; wrap native evil states in lithium modes
 (defvar lithium-normal-mode
-  (make-lithium-mode :enter #'evil-normal-state
+  (make-lithium-mode :name "normal"
+                     :enter #'evil-normal-state
                      :entry-hook 'evil-normal-state-entry-hook
                      :exit-hook 'evil-normal-state-exit-hook))
 
 (defvar lithium-insert-mode
-  (make-lithium-mode :enter #'evil-insert-state
+  (make-lithium-mode :name "insert"
+                     :enter #'evil-insert-state
                      :entry-hook 'evil-insert-state-entry-hook
                      :exit-hook 'evil-insert-state-exit-hook))
 
 (defvar lithium-emacs-mode
-  (make-lithium-mode :enter #'evil-emacs-state
+  (make-lithium-mode :name "emacs"
+                     :enter #'evil-emacs-state
                      :entry-hook 'evil-emacs-state-entry-hook
                      :exit-hook 'evil-emacs-state-exit-hook))
 
