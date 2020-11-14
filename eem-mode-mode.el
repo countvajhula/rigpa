@@ -104,6 +104,7 @@
 
 (defun eem-jump-to-level (mode)
   "Enter MODE, but remember the previous state to return to it."
+  ;; TODO: make this a callback from an entry hook
   (interactive)
   ;; we're relying on the evil state here even though the
   ;; delegation is hydra -> evil. Probably introduce an

@@ -83,25 +83,6 @@
 ;;                      (setq eem--current-tower-index 2)
 ;;                      (setq eem--current-level 2)))))
 
-(defun eem--buffer-name (tower)
-  "Buffer name to use for a given tower."
-  (concat eem-buffer-prefix "-" (ht-get tower 'name)))
-
-(defun eem--set-buffer-appearance ()
-  "Configure mode mode appearance."
-  (buffer-face-set 'eem-face)
-  (text-scale-set 5)
-  ;;(setq cursor-type nil))
-  (hl-line-mode)
-  (blink-cursor-mode -1)
-  (internal-show-cursor nil nil)
-  (display-line-numbers-mode 'toggle))
-
-(defun eem--revert-buffer-appearance ()
-  "Revert buffer appearance to settings prior to entering mode mode."
-  (hl-line-mode -1)
-  (blink-cursor-mode 1))
-
 (defun eem-hide-menu ()
   "Hide current mode menu."
   (let ((current-mode-name (symbol-name evil-state)))
