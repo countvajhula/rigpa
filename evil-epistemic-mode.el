@@ -42,6 +42,7 @@
 (require 'eem-word-mode)
 (require 'eem-line-mode)
 (require 'symex)
+(require 'eem-symex-mode)
 (require 'eem-view-mode)
 (require 'eem-window-mode)
 (require 'eem-file-mode)
