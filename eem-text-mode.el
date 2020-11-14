@@ -1,3 +1,5 @@
+(require 'lithium)
+
 (evil-define-state text
   "Text state."
   :tag " <A> "
@@ -8,7 +10,6 @@
 (defhydra hydra-text (:color pink
                       :columns 2
                       :idle 1.0
-                      :body-pre (evil-text-state)
                       :post (eem--update-mode-exit-flag "text" t)
                       :after-exit (eem-hydra-signal-exit "text"))
   "Text mode"
@@ -17,6 +18,20 @@
   ("i" nil "exit" :exit t)
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+
+(defvar lithium-text-mode-entry-hook nil
+  "Entry hook for epistemic text mode.")
+
+(defvar lithium-text-mode-exit-hook nil
+  "Exit hook for epistemic text mode.")
+
+(defvar lithium-text-mode
+  (make-lithium-mode :enter #'hydra-text/body
+                     :entry-hook 'lithium-text-mode-entry-hook
+                     :exit-hook 'lithium-text-mode-exit-hook))
+
+;; register mode with the epistemic framework
+(eem-register-mode "text")
 
 
 (provide 'eem-text-mode)

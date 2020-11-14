@@ -2,6 +2,8 @@
 ;; TODO: region does not persist on entering mode, e.g. for
 ;;       use in "narrow" functionality
 
+(require 'lithium)
+
 (evil-define-state view
   "View state."
   :tag " <V> "
@@ -71,7 +73,6 @@
 
 (defhydra hydra-view (:idle 1.0
                       :columns 6
-                      :body-pre (evil-view-state)
                       :post (eem--update-mode-exit-flag "view" t)
                       :after-exit (eem-hydra-signal-exit "view"))
   "View mode"
@@ -119,6 +120,20 @@
   ("i" nil "exit" :exit t)
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+
+(defvar lithium-view-mode-entry-hook nil
+  "Entry hook for epistemic view mode.")
+
+(defvar lithium-view-mode-exit-hook nil
+  "Exit hook for epistemic view mode.")
+
+(defvar lithium-view-mode
+  (make-lithium-mode :enter #'hydra-view/body
+                     :entry-hook 'lithium-view-mode-entry-hook
+                     :exit-hook 'lithium-view-mode-exit-hook))
+
+;; register mode with the epistemic framework
+(eem-register-mode "view")
 
 
 (provide 'eem-view-mode)

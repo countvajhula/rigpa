@@ -90,7 +90,6 @@
 
 (defhydra hydra-application (:columns 1
                              :exit t
-                             :body-pre (evil-application-state)
                              :post (eem--update-mode-exit-flag "application" t)
                              :after-exit (eem-hydra-signal-exit "application"))
   "Control application environment"
@@ -101,6 +100,20 @@
   ("c" counsel-load-theme "change color scheme")
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+
+(defvar lithium-application-mode-entry-hook nil
+  "Entry hook for epistemic application mode.")
+
+(defvar lithium-application-mode-exit-hook nil
+  "Exit hook for epistemic application mode.")
+
+(defvar lithium-application-mode
+  (make-lithium-mode :enter #'hydra-application/body
+                     :entry-hook 'lithium-application-mode-entry-hook
+                     :exit-hook 'lithium-application-mode-exit-hook))
+
+;; register mode with the epistemic framework
+(eem-register-mode "application")
 
 
 (provide 'eem-application-mode)

@@ -1,6 +1,6 @@
 (require 'ace-window)
 (require 'winner)
-(require 'epistemic-cursor-mode)
+(require 'lithium)
 
 (evil-define-state window
   "Window state."
@@ -35,12 +35,8 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
 ;; TODO: after-exit shoudl call a true eem-window-post-exit, which can run hooks
 (defhydra hydra-window (:idle 1.0
                         :columns 4
-                        :body-pre (progn (evil-window-state)
-                                         ;; this should be in epistemic adapter code
-                                         ;; rather than in the hydra
-                                         (run-hooks 'epistemic-window-mode-entry-hook))
                         :post (eem--update-mode-exit-flag "window" t)
-                        :after-exit (eem-hydra-signal-exit-too "window"))
+                        :after-exit (eem-hydra-signal-exit "window"))
   "Window mode"
   ("h" evil-window-left "left")
   ("j" evil-window-down "down")
@@ -75,16 +71,16 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(defvar epistemic-window-mode-entry-hook nil
+(defvar lithium-window-mode-entry-hook nil
   "Entry hook for epistemic window mode.")
 
-(defvar epistemic-window-mode-exit-hook nil
+(defvar lithium-window-mode-exit-hook nil
   "Exit hook for epistemic window mode.")
 
-(defvar epistemic-window-mode
-  (make-epistemic-cursor-mode :enter #'hydra-window/body
-                              :entry-hook 'epistemic-window-mode-entry-hook
-                              :exit-hook 'epistemic-window-mode-exit-hook))
+(defvar lithium-window-mode
+  (make-lithium-mode :enter #'hydra-window/body
+                     :entry-hook 'lithium-window-mode-entry-hook
+                     :exit-hook 'lithium-window-mode-exit-hook))
 
 ;; register mode with the epistemic framework
 (eem-register-mode "window")

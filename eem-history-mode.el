@@ -1,3 +1,5 @@
+(require 'lithium)
+
 (evil-define-state history
   "History state."
   :tag " <C> "
@@ -6,8 +8,8 @@
 
 (defhydra hydra-history (:color pink
                          :columns 2
-                         :body-pre (progn (unless git-timemachine-mode (git-timemachine))
-                                          (evil-history-state))
+                         ; maybe put body-pre in ad hoc entry
+                         :body-pre (unless git-timemachine-mode (git-timemachine))
                          :idle 1.0
                          :post (eem--update-mode-exit-flag "history" t)
                          :after-exit (eem-hydra-signal-exit "history"))
@@ -21,6 +23,20 @@
   ("q" git-timemachine-quit "return to the present" :exit t)
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+
+(defvar lithium-history-mode-entry-hook nil
+  "Entry hook for epistemic history mode.")
+
+(defvar lithium-history-mode-exit-hook nil
+  "Exit hook for epistemic history mode.")
+
+(defvar lithium-history-mode
+  (make-lithium-mode :enter #'hydra-history/body
+                     :entry-hook 'lithium-history-mode-entry-hook
+                     :exit-hook 'lithium-history-mode-exit-hook))
+
+;; register mode with the epistemic framework
+(eem-register-mode "history")
 
 
 (provide 'eem-history-mode)

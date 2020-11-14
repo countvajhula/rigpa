@@ -1,3 +1,5 @@
+(require 'lithium)
+
 (evil-define-state buffer
   "Buffer state."
   :tag " <B> "
@@ -70,8 +72,7 @@ current ('original') buffer."
 ;; maybe `recency-ring`, has a nice... ring to it
 (defhydra hydra-buffer (:idle 1.0
                         :columns 3
-                        :body-pre (progn (setup-buffer-marks-table)
-                                         (evil-buffer-state))
+                        :body-pre (setup-buffer-marks-table) ; maybe put in ad-hoc entry
                         :post (progn (flash-to-original-and-back)
                                      (eem--update-mode-exit-flag "buffer" t))
                         :after-exit (eem-hydra-signal-exit "buffer"))
@@ -95,6 +96,20 @@ current ('original') buffer."
   ("q" return-to-original-buffer "return to original" :exit t)
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+
+(defvar lithium-buffer-mode-entry-hook nil
+  "Entry hook for epistemic buffer mode.")
+
+(defvar lithium-buffer-mode-exit-hook nil
+  "Exit hook for epistemic buffer mode.")
+
+(defvar lithium-buffer-mode
+  (make-lithium-mode :enter #'hydra-buffer/body
+                     :entry-hook 'lithium-buffer-mode-entry-hook
+                     :exit-hook 'lithium-buffer-mode-exit-hook))
+
+;; register mode with the epistemic framework
+(eem-register-mode "buffer")
 
 
 (provide 'eem-buffer-mode)

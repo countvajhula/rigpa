@@ -1,3 +1,5 @@
+(require 'lithium)
+
 (evil-define-state file
   "File state."
   :tag " <F> "
@@ -27,7 +29,6 @@ Version 2016-04-04"
 
 (defhydra hydra-file (:idle 1.0
                       :columns 2
-                      :body-pre (evil-file-state)
                       :post (eem--update-mode-exit-flag "file" t)
                       :after-exit (eem-hydra-signal-exit "file"))
   "File mode"
@@ -42,6 +43,20 @@ Version 2016-04-04"
   ("i" nil "exit" :exit t)
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+
+(defvar lithium-file-mode-entry-hook nil
+  "Entry hook for epistemic file mode.")
+
+(defvar lithium-file-mode-exit-hook nil
+  "Exit hook for epistemic file mode.")
+
+(defvar lithium-file-mode
+  (make-lithium-mode :enter #'hydra-file/body
+                     :entry-hook 'lithium-file-mode-entry-hook
+                     :exit-hook 'lithium-file-mode-exit-hook))
+
+;; register mode with the epistemic framework
+(eem-register-mode "file")
 
 
 (provide 'eem-file-mode)

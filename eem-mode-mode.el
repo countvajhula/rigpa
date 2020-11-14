@@ -102,7 +102,7 @@
   (evil-next-line)
   (eem--extract-selected-level))
 
-(defun eem-jump-to-level-too-before ()
+(defun eem-jump-to-level-before ()
   "Enter MODE, but remember the previous state to return to it."
   ;; TODO: make this a callback from an entry hook
   (interactive)
@@ -113,30 +113,15 @@
   (message "exiting %s with recall" (symbol-name evil-state))
   (setq-local eem-recall (symbol-name evil-state)))
 
-(defun eem-jump-to-level-too-after ()
+(defun eem-jump-to-level-after ()
   "Post-jump."
   (interactive)
   ;; update current level if still in tower
   ;; TODO: not ideal to have this decoupled - streamline if possible
-  (let ((level-number (seq-position (ht-get (eem--current-tower) 'levels) (symbol-name evil-state))))
-    (when level-number
-      (message "updating level number")
-      (setq eem--current-level level-number))))
-
-(defun eem-jump-to-level (mode)
-  "Enter MODE, but remember the previous state to return to it."
-  ;; TODO: make this a callback from an entry hook
-  (interactive)
-  ;; we're relying on the evil state here even though the
-  ;; delegation is hydra -> evil. Probably introduce an
-  ;; independent state variable, for which the evil state
-  ;; variable can be treated as a proxy for now
-  (message "entering %s with recall" mode)
-  (setq-local eem-recall (symbol-name evil-state))
-  (eem-enter-mode mode)
-  ;; update current level if still in tower
-  ;; TODO: not ideal to have this decoupled - streamline if possible
-  (let ((level-number (seq-position (ht-get (eem--current-tower) 'levels) mode)))
+  (let ((level-number
+         (seq-position (ht-get (eem--current-tower)
+                               'levels)
+                       (symbol-name evil-state))))
     (when level-number
       (message "updating level number")
       (setq eem--current-level level-number))))
@@ -190,15 +175,11 @@ Recalls a prior state upon exiting MODE, if one is indicated."
   "Helper function to witness hydra exit and notify epistemic mode."
   (let ((hydra (intern (concat "hydra-" mode))))
     (when (hydra-get-property hydra :exiting)
-      (eem-handle-mode-exit mode)
-      (hydra-set-property hydra :exiting nil))))
-
-(defun eem-hydra-signal-exit-too (mode)
-  "Helper function to witness hydra exit and notify epistemic mode."
-  (let ((hydra (intern (concat "hydra-" mode))))
-    (when (hydra-get-property hydra :exiting)
-      (eem-handle-mode-exit mode)
-      (let ((exit-hook (epistemic-cursor-mode-exit-hook (symbol-value (intern (concat "epistemic-" mode "-mode"))))))
+      (eem-handle-mode-exit mode) ; TODO: should move into exit hook, and rename to be recall-specific
+      (let ((exit-hook (lithium-mode-exit-hook
+                        (symbol-value
+                         (intern
+                          (concat "lithium-" mode "-mode"))))))
         (message "exit hook is %s" exit-hook)
         (run-hooks exit-hook))
       (hydra-set-property hydra :exiting nil))))

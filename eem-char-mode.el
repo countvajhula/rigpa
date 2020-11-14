@@ -1,3 +1,5 @@
+(require 'lithium)
+
 (evil-define-state char
   "Char state."
   :tag " <X> "
@@ -95,7 +97,6 @@
 (defhydra hydra-char (:idle 1.0
                       :columns 4
                       :color pink
-                      :body-pre (evil-char-state)
                       :post (eem--update-mode-exit-flag "char" t)
                       :after-exit (eem-hydra-signal-exit "char"))
   "Character mode"
@@ -149,6 +150,20 @@
   ("?" my-char-info "info" :exit t)
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+
+(defvar lithium-char-mode-entry-hook nil
+  "Entry hook for epistemic char mode.")
+
+(defvar lithium-char-mode-exit-hook nil
+  "Exit hook for epistemic char mode.")
+
+(defvar lithium-char-mode
+  (make-lithium-mode :enter #'hydra-char/body
+                     :entry-hook 'lithium-char-mode-entry-hook
+                     :exit-hook 'lithium-char-mode-exit-hook))
+
+;; register mode with the epistemic framework
+(eem-register-mode "char")
 
 
 (provide 'eem-char-mode)

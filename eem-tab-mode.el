@@ -1,3 +1,5 @@
+(require 'lithium)
+
 (evil-define-state tab
   "Tab state."
   :tag " <T> "
@@ -52,8 +54,7 @@ buffer mode."
 
 (defhydra hydra-tab (:color pink
                      :columns 2
-                     :body-pre (progn (setup-tab-marks-table)
-                                      (evil-tab-state))
+                     :body-pre (setup-tab-marks-table) ; maybe put in ad-hoc entry function
                      :idle 1.0
                      :post (progn (flash-to-original-tab-and-back)
                                   (eem--update-mode-exit-flag "tab" t))
@@ -96,6 +97,20 @@ buffer mode."
   ("q" return-to-original-tab "return to original" :exit t)
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+
+(defvar lithium-tab-mode-entry-hook nil
+  "Entry hook for epistemic tab mode.")
+
+(defvar lithium-tab-mode-exit-hook nil
+  "Exit hook for epistemic tab mode.")
+
+(defvar lithium-tab-mode
+  (make-lithium-mode :enter #'hydra-tab/body
+                     :entry-hook 'lithium-tab-mode-entry-hook
+                     :exit-hook 'lithium-tab-mode-exit-hook))
+
+;; register mode with the epistemic framework
+(eem-register-mode "tab")
 
 
 (provide 'eem-tab-mode)

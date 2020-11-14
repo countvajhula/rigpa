@@ -1,3 +1,5 @@
+(require 'lithium)
+
 (evil-define-state activity
   "Activity state."
   :tag " <A> "
@@ -44,7 +46,6 @@
 (defhydra hydra-activity (:color pink
                           :columns 2
                           :idle 1.0
-                          :body-pre (evil-activity-state)
                           :post (eem--update-mode-exit-flag "activity" t)
                           :after-exit (eem-hydra-signal-exit "activity"))
   "Activity mode"
@@ -61,6 +62,20 @@
   ("i" my-noop "exit" :exit t)
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+
+(defvar lithium-activity-mode-entry-hook nil
+  "Entry hook for epistemic activity mode.")
+
+(defvar lithium-activity-mode-exit-hook nil
+  "Exit hook for epistemic activity mode.")
+
+(defvar lithium-activity-mode
+  (make-lithium-mode :enter #'hydra-activity/body
+                     :entry-hook 'lithium-activity-mode-entry-hook
+                     :exit-hook 'lithium-activity-mode-exit-hook))
+
+;; register mode with the epistemic framework
+(eem-register-mode "activity")
 
 
 (provide 'eem-activity-mode)

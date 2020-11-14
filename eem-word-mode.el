@@ -1,3 +1,5 @@
+(require 'lithium)
+
 (evil-define-state word
   "Word state."
   :tag " <W> "
@@ -142,7 +144,6 @@
 
 (defhydra hydra-word (:idle 1.0
                       :columns 2
-                      :body-pre (evil-word-state)
                       :post (eem--update-mode-exit-flag "word" t)
                       :after-exit (eem-hydra-signal-exit "word"))
   "Word mode"
@@ -173,6 +174,20 @@
   ("?" dictionary-lookup-definition "lookup in dictionary" :exit t)
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+
+(defvar lithium-word-mode-entry-hook nil
+  "Entry hook for epistemic word mode.")
+
+(defvar lithium-word-mode-exit-hook nil
+  "Exit hook for epistemic word mode.")
+
+(defvar lithium-word-mode
+  (make-lithium-mode :enter #'hydra-word/body
+                     :entry-hook 'lithium-word-mode-entry-hook
+                     :exit-hook 'lithium-word-mode-exit-hook))
+
+;; register mode with the epistemic framework
+(eem-register-mode "word")
 
 
 (provide 'eem-word-mode)

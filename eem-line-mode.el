@@ -7,6 +7,8 @@
 ;; - copy line
 ;; similarly for "region-mode", possibly by invoking multiple cursors
 
+(require 'lithium)
+
 (evil-define-state line
   "Line state."
   :tag " <L> "
@@ -175,7 +177,6 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
 
 (defhydra hydra-line (:idle 1.0
                       :columns 4
-                      :body-pre (evil-line-state)
                       :post (eem--update-mode-exit-flag "line" t)
                       :after-exit (eem-hydra-signal-exit "line"))
   "Line mode"
@@ -206,6 +207,20 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   ("i" my-line-info "info" :exit t)
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+
+(defvar lithium-line-mode-entry-hook nil
+  "Entry hook for epistemic line mode.")
+
+(defvar lithium-line-mode-exit-hook nil
+  "Exit hook for epistemic line mode.")
+
+(defvar lithium-line-mode
+  (make-lithium-mode :enter #'hydra-line/body
+                     :entry-hook 'lithium-line-mode-entry-hook
+                     :exit-hook 'lithium-line-mode-exit-hook))
+
+;; register mode with the epistemic framework
+(eem-register-mode "line")
 
 
 (provide 'eem-line-mode)
