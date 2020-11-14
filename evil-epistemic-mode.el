@@ -61,7 +61,7 @@
 
 ;; the prefix that will be used in naming all buffers used
 ;; in epistemic mode representations
-(setq eem-buffer-prefix "EPISTEMIC")
+(setq eem-buffer-prefix "EPISTEMIC-META")
 
 ;; ideally, epistemic mode should be aware when any evil state is entered,
 ;; if that state is in the present tower. For now, just handle the specific

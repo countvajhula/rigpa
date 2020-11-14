@@ -1,11 +1,12 @@
+(require 'ace-window)
+(require 'winner)
+(require 'epistemic-cursor-mode)
+
 (evil-define-state window
   "Window state."
   :tag " <W> "
   :message "-- WINDOW --"
   :enable (normal))
-
-(require 'ace-window)
-(require 'winner)
 
 ;; configure home-row hotkeys to index windows in ace-window,
 ;; used as "search" feature in window mode
@@ -31,20 +32,15 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
   (other-window 1)
   (quit-window))
 
-;; Evil provides some good window navigation functionality, but these
-;; bindings aren't available in Emacs state and also consequently in
-;; Insert state if the insert mode keymap is overridden in favor of
-;; Emacs native bindings. Additionally, for the most common window
-;; operations, some of the evil mode defaults could be further
-;; improved.  This package provides evil window navigation globally as
-;; a Vim-style "mode," implemented using a hydra, and also overrides
-;; some defaults to make them faster or more useful/intuitive.
-
+;; TODO: after-exit shoudl call a true eem-window-post-exit, which can run hooks
 (defhydra hydra-window (:idle 1.0
                         :columns 4
-                        :body-pre (evil-window-state)
+                        :body-pre (progn (evil-window-state)
+                                         ;; this should be in epistemic adapter code
+                                         ;; rather than in the hydra
+                                         (run-hooks 'epistemic-window-mode-entry-hook))
                         :post (eem--update-mode-exit-flag "window" t)
-                        :after-exit (eem-hydra-signal-exit "window"))
+                        :after-exit (eem-hydra-signal-exit-too "window"))
   "Window mode"
   ("h" evil-window-left "left")
   ("j" evil-window-down "down")
@@ -79,5 +75,19 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
+(defvar epistemic-window-mode-entry-hook nil
+  "Entry hook for epistemic window mode.")
+
+(defvar epistemic-window-mode-exit-hook nil
+  "Exit hook for epistemic window mode.")
+
+(defvar epistemic-window-mode
+  (make-epistemic-cursor-mode :enter #'hydra-window/body
+                              :entry-hook 'epistemic-window-mode-entry-hook
+                              :exit-hook 'epistemic-window-mode-exit-hook))
+
+;; register mode with the epistemic framework
+(eem-register-mode "window")
 
 (provide 'eem-window-mode)
+;;; eem-window-mode.el ends here
