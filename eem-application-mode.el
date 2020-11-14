@@ -113,7 +113,7 @@
                      :exit-hook 'lithium-application-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode "application")
+(eem-register-mode lithium-application-mode)
 
 
 (provide 'eem-application-mode)

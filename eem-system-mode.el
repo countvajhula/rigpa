@@ -33,7 +33,7 @@
                      :exit-hook 'lithium-system-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode "system")
+(eem-register-mode lithium-system-mode)
 
 
 (provide 'eem-system-mode)

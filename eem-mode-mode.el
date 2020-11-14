@@ -7,12 +7,7 @@
 (defun eem-enter-mode (mode-name)
   "Enter mode MODE-NAME."
   (message "entering mode %s" mode-name)
-  (if (member mode-name (list "normal" "insert" "emacs"))
-      ;; handle the (at present, hypothetical) case of entry
-      ;; to a standard evil mode
-      ;; no hydra for standard evil modes
-      (funcall (intern (concat "evil-" mode-name "-state")))
-    (lithium-enter-mode mode-name))
+  (lithium-enter-mode mode-name)
   (message "entered mode %s" mode-name))
 
 (defun eem--enter-level (level-number)

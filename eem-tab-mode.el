@@ -110,7 +110,7 @@ buffer mode."
                      :exit-hook 'lithium-tab-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode "tab")
+(eem-register-mode lithium-tab-mode)
 
 
 (provide 'eem-tab-mode)

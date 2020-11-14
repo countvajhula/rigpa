@@ -6,21 +6,17 @@
   (entry-hook nil)
   (exit-hook nil))
 
-(defun eem-register-mode (mode-name)
+(defun eem-register-mode (mode)
   "Register MODE-NAME for use with epistemic mode."
-  (let* ((mode (symbol-value (intern (concat "lithium-" mode-name "-mode"))))
-         (entry-hook (lithium-mode-entry-hook mode))
-         (exit-hook (lithium-mode-exit-hook mode)))
+  (let ((entry-hook (lithium-mode-entry-hook mode))
+        (exit-hook (lithium-mode-exit-hook mode)))
     (add-hook exit-hook #'eem-jump-to-level-before)
     (add-hook entry-hook #'eem-jump-to-level-after)))
 
-;; TODO: write mode abstractions for and register built-in evil states
-
-(defun eem-unregister-mode (mode-name)
+(defun eem-unregister-mode (mode)
   "Unregister MODE-NAME."
-  (let* ((mode (symbol-value (intern (concat "lithium-" mode-name "-mode"))))
-         (entry-hook (lithium-mode-entry-hook mode))
-         (exit-hook (lithium-mode-exit-hook mode)))
+  (let ((entry-hook (lithium-mode-entry-hook mode))
+        (exit-hook (lithium-mode-exit-hook mode)))
     (remove-hook exit-hook #'eem-jump-to-level-before)
     (remove-hook entry-hook #'eem-jump-to-level-after)))
 

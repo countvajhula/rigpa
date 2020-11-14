@@ -187,7 +187,7 @@
                      :exit-hook 'lithium-word-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode "word")
+(eem-register-mode lithium-word-mode)
 
 
 (provide 'eem-word-mode)

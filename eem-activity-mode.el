@@ -75,7 +75,7 @@
                      :exit-hook 'lithium-activity-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode "activity")
+(eem-register-mode lithium-activity-mode)
 
 
 (provide 'eem-activity-mode)

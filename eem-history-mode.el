@@ -36,7 +36,7 @@
                      :exit-hook 'lithium-history-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode "history")
+(eem-register-mode lithium-history-mode)
 
 
 (provide 'eem-history-mode)

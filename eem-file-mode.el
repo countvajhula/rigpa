@@ -56,7 +56,7 @@ Version 2016-04-04"
                      :exit-hook 'lithium-file-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode "file")
+(eem-register-mode lithium-file-mode)
 
 
 (provide 'eem-file-mode)

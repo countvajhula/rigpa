@@ -133,7 +133,7 @@
                      :exit-hook 'lithium-view-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode "view")
+(eem-register-mode lithium-view-mode)
 
 
 (provide 'eem-view-mode)

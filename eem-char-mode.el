@@ -163,7 +163,7 @@
                      :exit-hook 'lithium-char-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode "char")
+(eem-register-mode lithium-char-mode)
 
 
 (provide 'eem-char-mode)

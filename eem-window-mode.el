@@ -83,7 +83,7 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
                      :exit-hook 'lithium-window-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode "window")
+(eem-register-mode lithium-window-mode)
 
 (provide 'eem-window-mode)
 ;;; eem-window-mode.el ends here

@@ -12,7 +12,7 @@
                      :exit-hook 'lithium-symex-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode "symex")
+(eem-register-mode lithium-symex-mode)
 
 
 (provide 'eem-symex-mode)

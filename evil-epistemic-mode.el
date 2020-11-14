@@ -38,6 +38,7 @@
 
 ;;; Code:
 
+(require 'lithium)
 (require 'eem-char-mode)
 (require 'eem-word-mode)
 (require 'eem-line-mode)
@@ -116,9 +117,30 @@ and simply toggles whether the menu is visible or not."
           (eem-hide-menu)
         (eem-show-menu)))))
 
-;; TODO: wrap all evil states in lithium modes and register them with epistemic mode
 ;; TODO: fix recall - probably reframe it in terms of exit and entry (and eliminate any
 ;; unnecessary ad hoc cases of entry to normal mode)
+
+;; wrap native evil states in lithium modes
+(defvar lithium-normal-mode
+  (make-lithium-mode :enter #'evil-normal-state
+                     :entry-hook 'evil-normal-state-entry-hook
+                     :exit-hook 'evil-normal-state-exit-hook))
+
+(defvar lithium-insert-mode
+  (make-lithium-mode :enter #'evil-insert-state
+                     :entry-hook 'evil-insert-state-entry-hook
+                     :exit-hook 'evil-insert-state-exit-hook))
+
+(defvar lithium-emacs-mode
+  (make-lithium-mode :enter #'evil-emacs-state
+                     :entry-hook 'evil-emacs-state-entry-hook
+                     :exit-hook 'evil-emacs-state-exit-hook))
+
+;; register them with the epistemic framework
+(eem-register-mode lithium-normal-mode)
+(eem-register-mode lithium-insert-mode)
+(eem-register-mode lithium-emacs-mode)
+
 
 (provide 'evil-epistemic-mode)
 ;;; evil-epistemic-mode.el ends here

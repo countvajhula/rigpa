@@ -109,7 +109,7 @@ current ('original') buffer."
                      :exit-hook 'lithium-buffer-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode "buffer")
+(eem-register-mode lithium-buffer-mode)
 
 
 (provide 'eem-buffer-mode)

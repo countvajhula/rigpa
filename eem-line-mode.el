@@ -220,7 +220,7 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
                      :exit-hook 'lithium-line-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode "line")
+(eem-register-mode lithium-line-mode)
 
 
 (provide 'eem-line-mode)

@@ -31,7 +31,7 @@
                      :exit-hook 'lithium-text-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode "text")
+(eem-register-mode lithium-text-mode)
 
 
 (provide 'eem-text-mode)
