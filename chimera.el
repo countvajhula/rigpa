@@ -30,12 +30,12 @@
         ;; maybe better to lookup modes by name
         (mode (symbol-value (intern (concat "chimera-" mode-name "-mode")))))
     (funcall evil-state-entry)
+    (funcall (chimera-mode-enter mode))
     (unless (member mode-name chimera-evil-states)
       ;; probably incorporate an optional flag in the struct
       ;; to indicate hooks are managed elsewhere, instead
       ;; `responsible-for-hooks` or something
-      (run-hooks (chimera-mode-entry-hook mode)))
-    (funcall (chimera-mode-enter mode))))
+      (run-hooks (chimera-mode-entry-hook mode)))))
 
 (defun chimera-exit-mode (mode-name)
   "Exit (interrupt) MODE-NAME."
