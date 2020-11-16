@@ -71,20 +71,20 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(defvar lithium-window-mode-entry-hook nil
+(defvar chimera-window-mode-entry-hook nil
   "Entry hook for epistemic window mode.")
 
-(defvar lithium-window-mode-exit-hook nil
+(defvar chimera-window-mode-exit-hook nil
   "Exit hook for epistemic window mode.")
 
-(defvar lithium-window-mode
-  (make-lithium-mode :name "window"
+(defvar chimera-window-mode
+  (make-chimera-mode :name "window"
                      :enter #'hydra-window/body
-                     :entry-hook 'lithium-window-mode-entry-hook
-                     :exit-hook 'lithium-window-mode-exit-hook))
+                     :entry-hook 'chimera-window-mode-entry-hook
+                     :exit-hook 'chimera-window-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode lithium-window-mode)
+(eem-register-mode chimera-window-mode)
 
 (provide 'eem-window-mode)
 ;;; eem-window-mode.el ends here

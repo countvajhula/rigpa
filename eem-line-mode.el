@@ -208,20 +208,20 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(defvar lithium-line-mode-entry-hook nil
+(defvar chimera-line-mode-entry-hook nil
   "Entry hook for epistemic line mode.")
 
-(defvar lithium-line-mode-exit-hook nil
+(defvar chimera-line-mode-exit-hook nil
   "Exit hook for epistemic line mode.")
 
-(defvar lithium-line-mode
-  (make-lithium-mode :name "line"
+(defvar chimera-line-mode
+  (make-chimera-mode :name "line"
                      :enter #'hydra-line/body
-                     :entry-hook 'lithium-line-mode-entry-hook
-                     :exit-hook 'lithium-line-mode-exit-hook))
+                     :entry-hook 'chimera-line-mode-entry-hook
+                     :exit-hook 'chimera-line-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode lithium-line-mode)
+(eem-register-mode chimera-line-mode)
 
 
 (provide 'eem-line-mode)

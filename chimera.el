@@ -8,41 +8,41 @@
 
 (defun eem-register-mode (mode)
   "Register MODE-NAME for use with epistemic mode."
-  (let ((entry-hook (lithium-mode-entry-hook mode))
-        (exit-hook (lithium-mode-exit-hook mode)))
+  (let ((entry-hook (chimera-mode-entry-hook mode))
+        (exit-hook (chimera-mode-exit-hook mode)))
     (add-hook exit-hook #'eem-set-mode-recall)
     (add-hook entry-hook #'eem-reconcile-level)))
 
 (defun eem-unregister-mode (mode)
   "Unregister MODE-NAME."
-  (let ((entry-hook (lithium-mode-entry-hook mode))
-        (exit-hook (lithium-mode-exit-hook mode)))
+  (let ((entry-hook (chimera-mode-entry-hook mode))
+        (exit-hook (chimera-mode-exit-hook mode)))
     (remove-hook exit-hook #'eem-set-mode-recall)
     (remove-hook entry-hook #'eem-reconcile-level)))
 
-(defvar lithium-evil-states
+(defvar chimera-evil-states
   (list "normal" "insert" "emacs"))
 
-(defun lithium-enter-mode (mode-name)
+(defun chimera-enter-mode (mode-name)
   "Enter MODE-NAME."
   (interactive)
   (let ((evil-state-entry (intern (concat "evil-" mode-name "-state")))
         ;; maybe better to lookup modes by name
-        (mode (symbol-value (intern (concat "lithium-" mode-name "-mode")))))
+        (mode (symbol-value (intern (concat "chimera-" mode-name "-mode")))))
     (funcall evil-state-entry)
-    (unless (member mode-name lithium-evil-states)
+    (unless (member mode-name chimera-evil-states)
       ;; probably incorporate an optional flag in the struct
       ;; to indicate hooks are managed elsewhere, instead
       ;; `responsible-for-hooks` or something
-      (run-hooks (lithium-mode-entry-hook mode)))
-    (funcall (lithium-mode-enter mode))))
+      (run-hooks (chimera-mode-entry-hook mode)))
+    (funcall (chimera-mode-enter mode))))
 
-(defun lithium-exit-mode (mode-name)
+(defun chimera-exit-mode (mode-name)
   "Exit (interrupt) MODE-NAME."
   (interactive)
-  (let ((mode (symbol-value (intern (concat "lithium-" mode-name "-mode")))))
-    (unless (member mode-name lithium-evil-states)
-      (funcall (lithium-mode-exit mode)))))
+  (let ((mode (symbol-value (intern (concat "chimera-" mode-name "-mode")))))
+    (unless (member mode-name chimera-evil-states)
+      (funcall (chimera-mode-exit mode)))))
 
-(provide 'lithium)
-;;; lithium.el ends here
+(provide 'chimera)
+;;; chimera.el ends here

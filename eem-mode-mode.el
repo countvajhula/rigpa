@@ -173,12 +173,12 @@ Recalls a prior state upon exiting MODE, if one is indicated."
   (let ((hydra (intern (concat "hydra-" mode))))
     (when (hydra-get-property hydra :exiting)
       (eem-handle-mode-exit mode) ; TODO: should move into exit hook, and rename to be recall-specific
-      (let ((exit-hook (lithium-mode-exit-hook
+      (let ((exit-hook (chimera-mode-exit-hook
                         (symbol-value
                          (intern
                           ; (a) put this in a callback, and (b) don't rely
                           ; on a particular name being present
-                          (concat "lithium-" mode "-mode"))))))
+                          (concat "chimera-" mode "-mode"))))))
         (message "exit hook is %s" exit-hook)
         (run-hooks exit-hook))
       (hydra-set-property hydra :exiting nil))))

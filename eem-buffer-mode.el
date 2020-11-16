@@ -1,4 +1,4 @@
-(require 'lithium)
+(require 'chimera)
 
 (evil-define-state buffer
   "Buffer state."
@@ -97,20 +97,20 @@ current ('original') buffer."
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(defvar lithium-buffer-mode-entry-hook nil
+(defvar chimera-buffer-mode-entry-hook nil
   "Entry hook for epistemic buffer mode.")
 
-(defvar lithium-buffer-mode-exit-hook nil
+(defvar chimera-buffer-mode-exit-hook nil
   "Exit hook for epistemic buffer mode.")
 
-(defvar lithium-buffer-mode
-  (make-lithium-mode :name "buffer"
+(defvar chimera-buffer-mode
+  (make-chimera-mode :name "buffer"
                      :enter #'hydra-buffer/body
-                     :entry-hook 'lithium-buffer-mode-entry-hook
-                     :exit-hook 'lithium-buffer-mode-exit-hook))
+                     :entry-hook 'chimera-buffer-mode-entry-hook
+                     :exit-hook 'chimera-buffer-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode lithium-buffer-mode)
+(eem-register-mode chimera-buffer-mode)
 
 
 (provide 'eem-buffer-mode)

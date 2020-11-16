@@ -1,4 +1,4 @@
-(require 'lithium)
+(require 'chimera)
 
 (evil-define-state system
   "System state."
@@ -21,20 +21,20 @@
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(defvar lithium-system-mode-entry-hook nil
+(defvar chimera-system-mode-entry-hook nil
   "Entry hook for epistemic system mode.")
 
-(defvar lithium-system-mode-exit-hook nil
+(defvar chimera-system-mode-exit-hook nil
   "Exit hook for epistemic system mode.")
 
-(defvar lithium-system-mode
-  (make-lithium-mode :name "system"
+(defvar chimera-system-mode
+  (make-chimera-mode :name "system"
                      :enter #'hydra-system/body
-                     :entry-hook 'lithium-system-mode-entry-hook
-                     :exit-hook 'lithium-system-mode-exit-hook))
+                     :entry-hook 'chimera-system-mode-entry-hook
+                     :exit-hook 'chimera-system-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode lithium-system-mode)
+(eem-register-mode chimera-system-mode)
 
 
 (provide 'eem-system-mode)

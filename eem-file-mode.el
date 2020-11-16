@@ -1,4 +1,4 @@
-(require 'lithium)
+(require 'chimera)
 
 (evil-define-state file
   "File state."
@@ -44,20 +44,20 @@ Version 2016-04-04"
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(defvar lithium-file-mode-entry-hook nil
+(defvar chimera-file-mode-entry-hook nil
   "Entry hook for epistemic file mode.")
 
-(defvar lithium-file-mode-exit-hook nil
+(defvar chimera-file-mode-exit-hook nil
   "Exit hook for epistemic file mode.")
 
-(defvar lithium-file-mode
-  (make-lithium-mode :name "file"
+(defvar chimera-file-mode
+  (make-chimera-mode :name "file"
                      :enter #'hydra-file/body
-                     :entry-hook 'lithium-file-mode-entry-hook
-                     :exit-hook 'lithium-file-mode-exit-hook))
+                     :entry-hook 'chimera-file-mode-entry-hook
+                     :exit-hook 'chimera-file-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode lithium-file-mode)
+(eem-register-mode chimera-file-mode)
 
 
 (provide 'eem-file-mode)

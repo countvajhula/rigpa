@@ -1,4 +1,4 @@
-(require 'lithium)
+(require 'chimera)
 
 (evil-define-state tab
   "Tab state."
@@ -98,20 +98,20 @@ buffer mode."
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(defvar lithium-tab-mode-entry-hook nil
+(defvar chimera-tab-mode-entry-hook nil
   "Entry hook for epistemic tab mode.")
 
-(defvar lithium-tab-mode-exit-hook nil
+(defvar chimera-tab-mode-exit-hook nil
   "Exit hook for epistemic tab mode.")
 
-(defvar lithium-tab-mode
-  (make-lithium-mode :name "tab"
+(defvar chimera-tab-mode
+  (make-chimera-mode :name "tab"
                      :enter #'hydra-tab/body
-                     :entry-hook 'lithium-tab-mode-entry-hook
-                     :exit-hook 'lithium-tab-mode-exit-hook))
+                     :entry-hook 'chimera-tab-mode-entry-hook
+                     :exit-hook 'chimera-tab-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode lithium-tab-mode)
+(eem-register-mode chimera-tab-mode)
 
 
 (provide 'eem-tab-mode)

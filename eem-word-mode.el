@@ -1,4 +1,4 @@
-(require 'lithium)
+(require 'chimera)
 
 (evil-define-state word
   "Word state."
@@ -175,20 +175,20 @@
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(defvar lithium-word-mode-entry-hook nil
+(defvar chimera-word-mode-entry-hook nil
   "Entry hook for epistemic word mode.")
 
-(defvar lithium-word-mode-exit-hook nil
+(defvar chimera-word-mode-exit-hook nil
   "Exit hook for epistemic word mode.")
 
-(defvar lithium-word-mode
-  (make-lithium-mode :name "word"
+(defvar chimera-word-mode
+  (make-chimera-mode :name "word"
                      :enter #'hydra-word/body
-                     :entry-hook 'lithium-word-mode-entry-hook
-                     :exit-hook 'lithium-word-mode-exit-hook))
+                     :entry-hook 'chimera-word-mode-entry-hook
+                     :exit-hook 'chimera-word-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode lithium-word-mode)
+(eem-register-mode chimera-word-mode)
 
 
 (provide 'eem-word-mode)

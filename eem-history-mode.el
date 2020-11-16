@@ -1,4 +1,4 @@
-(require 'lithium)
+(require 'chimera)
 
 (evil-define-state history
   "History state."
@@ -24,20 +24,20 @@
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(defvar lithium-history-mode-entry-hook nil
+(defvar chimera-history-mode-entry-hook nil
   "Entry hook for epistemic history mode.")
 
-(defvar lithium-history-mode-exit-hook nil
+(defvar chimera-history-mode-exit-hook nil
   "Exit hook for epistemic history mode.")
 
-(defvar lithium-history-mode
-  (make-lithium-mode :name "history"
+(defvar chimera-history-mode
+  (make-chimera-mode :name "history"
                      :enter #'hydra-history/body
-                     :entry-hook 'lithium-history-mode-entry-hook
-                     :exit-hook 'lithium-history-mode-exit-hook))
+                     :entry-hook 'chimera-history-mode-entry-hook
+                     :exit-hook 'chimera-history-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode lithium-history-mode)
+(eem-register-mode chimera-history-mode)
 
 
 (provide 'eem-history-mode)

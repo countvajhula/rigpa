@@ -1,4 +1,4 @@
-(require 'lithium)
+(require 'chimera)
 
 (evil-define-state char
   "Char state."
@@ -151,20 +151,20 @@
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(defvar lithium-char-mode-entry-hook nil
+(defvar chimera-char-mode-entry-hook nil
   "Entry hook for epistemic char mode.")
 
-(defvar lithium-char-mode-exit-hook nil
+(defvar chimera-char-mode-exit-hook nil
   "Exit hook for epistemic char mode.")
 
-(defvar lithium-char-mode
-  (make-lithium-mode :name "char"
+(defvar chimera-char-mode
+  (make-chimera-mode :name "char"
                      :enter #'hydra-char/body
-                     :entry-hook 'lithium-char-mode-entry-hook
-                     :exit-hook 'lithium-char-mode-exit-hook))
+                     :entry-hook 'chimera-char-mode-entry-hook
+                     :exit-hook 'chimera-char-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode lithium-char-mode)
+(eem-register-mode chimera-char-mode)
 
 
 (provide 'eem-char-mode)

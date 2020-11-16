@@ -101,20 +101,20 @@
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(defvar lithium-application-mode-entry-hook nil
+(defvar chimera-application-mode-entry-hook nil
   "Entry hook for epistemic application mode.")
 
-(defvar lithium-application-mode-exit-hook nil
+(defvar chimera-application-mode-exit-hook nil
   "Exit hook for epistemic application mode.")
 
-(defvar lithium-application-mode
-  (make-lithium-mode :name "application"
+(defvar chimera-application-mode
+  (make-chimera-mode :name "application"
                      :enter #'hydra-application/body
-                     :entry-hook 'lithium-application-mode-entry-hook
-                     :exit-hook 'lithium-application-mode-exit-hook))
+                     :entry-hook 'chimera-application-mode-entry-hook
+                     :exit-hook 'chimera-application-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode lithium-application-mode)
+(eem-register-mode chimera-application-mode)
 
 
 (provide 'eem-application-mode)

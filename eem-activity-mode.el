@@ -1,4 +1,4 @@
-(require 'lithium)
+(require 'chimera)
 
 (evil-define-state activity
   "Activity state."
@@ -63,20 +63,20 @@
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(defvar lithium-activity-mode-entry-hook nil
+(defvar chimera-activity-mode-entry-hook nil
   "Entry hook for epistemic activity mode.")
 
-(defvar lithium-activity-mode-exit-hook nil
+(defvar chimera-activity-mode-exit-hook nil
   "Exit hook for epistemic activity mode.")
 
-(defvar lithium-activity-mode
-  (make-lithium-mode :name "activity"
+(defvar chimera-activity-mode
+  (make-chimera-mode :name "activity"
                      :enter #'hydra-activity/body
-                     :entry-hook 'lithium-activity-mode-entry-hook
-                     :exit-hook 'lithium-activity-mode-exit-hook))
+                     :entry-hook 'chimera-activity-mode-entry-hook
+                     :exit-hook 'chimera-activity-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode lithium-activity-mode)
+(eem-register-mode chimera-activity-mode)
 
 
 (provide 'eem-activity-mode)

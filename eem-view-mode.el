@@ -2,7 +2,7 @@
 ;; TODO: region does not persist on entering mode, e.g. for
 ;;       use in "narrow" functionality
 
-(require 'lithium)
+(require 'chimera)
 
 (evil-define-state view
   "View state."
@@ -121,20 +121,20 @@
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(defvar lithium-view-mode-entry-hook nil
+(defvar chimera-view-mode-entry-hook nil
   "Entry hook for epistemic view mode.")
 
-(defvar lithium-view-mode-exit-hook nil
+(defvar chimera-view-mode-exit-hook nil
   "Exit hook for epistemic view mode.")
 
-(defvar lithium-view-mode
-  (make-lithium-mode :name "view"
+(defvar chimera-view-mode
+  (make-chimera-mode :name "view"
                      :enter #'hydra-view/body
-                     :entry-hook 'lithium-view-mode-entry-hook
-                     :exit-hook 'lithium-view-mode-exit-hook))
+                     :entry-hook 'chimera-view-mode-entry-hook
+                     :exit-hook 'chimera-view-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode lithium-view-mode)
+(eem-register-mode chimera-view-mode)
 
 
 (provide 'eem-view-mode)

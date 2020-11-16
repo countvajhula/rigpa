@@ -6,14 +6,14 @@
 (defvar lithium-symex-mode-exit-hook nil
   "Exit hook for epistemic symex mode.")
 
-(defvar lithium-symex-mode
-  (make-lithium-mode :name "symex"
+(defvar chimera-symex-mode
+  (make-chimera-mode :name "symex"
                      :enter #'symex-mode-interface
-                     :entry-hook 'lithium-symex-mode-entry-hook
-                     :exit-hook 'lithium-symex-mode-exit-hook))
+                     :entry-hook 'chimera-symex-mode-entry-hook
+                     :exit-hook 'chimera-symex-mode-exit-hook))
 
 ;; register mode with the epistemic framework
-(eem-register-mode lithium-symex-mode)
+(eem-register-mode chimera-symex-mode)
 
 
 (provide 'eem-symex-mode)
