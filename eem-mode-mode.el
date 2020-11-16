@@ -27,10 +27,11 @@
   (interactive)
   (message "entering lower level")
   (let ((mode-name (symbol-name evil-state)))
-    (if (member mode-name (ht-get (eem--current-tower) 'levels))
-        (progn (eem--update-mode-exit-flag mode-name)
-               (eem--enter-level (- eem--current-level
-                                    1)))
+    (if (eem-mode-position-in-tower (eem--current-tower) mode-name)
+        (progn
+          (eem-hydra-flag-mode-exit mode-name)
+          (when (> eem--current-level 0)
+            (eem--enter-level (1- eem--current-level))))
       ;; if we left a buffer in a state that isn't in its tower, then
       ;; returning to it "out of band" would find it still that way,
       ;; and Enter/Escape would assume that there is a recall to be
@@ -54,10 +55,13 @@
     ;; go up a level and clear recall; otherwise do
     ;; nothing, and the mode exit hook would call
     ;; recall if one is set
-    (if (member mode-name (ht-get (eem--current-tower) 'levels))
-        (progn (eem--update-mode-exit-flag mode-name)
-               (eem--enter-level (+ eem--current-level
-                                    1)))
+    (if (eem-mode-position-in-tower (eem--current-tower)
+                                    mode-name)
+        (progn
+          (eem-hydra-flag-mode-exit mode-name)
+          (when (< eem--current-level
+                   (1- (eem-tower-height (eem--current-tower))))
+            (eem--enter-level (1+ eem--current-level))))
       ;; see note for eem-enter-lower-level
       (evil-normal-state)))) ; TODO: sane normal
 
