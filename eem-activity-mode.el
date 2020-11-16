@@ -1,4 +1,5 @@
 (require 'chimera)
+(require 'eem-mode-adapter-hydra)
 
 (evil-define-state activity
   "Activity state."
@@ -46,8 +47,8 @@
 (defhydra hydra-activity (:color pink
                           :columns 2
                           :idle 1.0
-                          :post (eem--update-mode-exit-flag "activity" t)
-                          :after-exit (eem-hydra-signal-exit "activity"))
+                          :post (eem-hydra-flag-mode-exit "activity" t)
+                          :after-exit (eem-hydra-signal-exit "activity" #'eem-handle-mode-exit))
   "Activity mode"
   ("h" my-goto-older-change "previous change in buffer")
   ("C-j" evil-jump-backward "jump backward") ;; TODO: these jumps don't work via hydra atm

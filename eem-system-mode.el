@@ -1,4 +1,5 @@
 (require 'chimera)
+(require 'eem-mode-adapter-hydra)
 
 (evil-define-state system
   "System state."
@@ -13,8 +14,8 @@
   (display-message-or-buffer (shell-command-to-string "pmset -g batt")))
 
 (defhydra hydra-system (:exit t
-                        :post (eem--update-mode-exit-flag "system" t)
-                        :after-exit (eem-hydra-signal-exit "system"))
+                        :post (eem-hydra-flag-mode-exit "system" t)
+                        :after-exit (eem-hydra-signal-exit "system" #'eem-handle-mode-exit))
   "System information"
   ("b" my-battery-life "show power info including battery life")
   ("s-i" my-battery-life "show power info including battery life")

@@ -1,4 +1,5 @@
 (require 'chimera)
+(require 'eem-mode-adapter-hydra)
 
 (evil-define-state char
   "Char state."
@@ -97,8 +98,8 @@
 (defhydra hydra-char (:idle 1.0
                       :columns 4
                       :color pink
-                      :post (eem--update-mode-exit-flag "char" t)
-                      :after-exit (eem-hydra-signal-exit "char"))
+                      :post (eem-hydra-flag-mode-exit "char" t)
+                      :after-exit (eem-hydra-signal-exit "char" #'eem-handle-mode-exit))
   "Character mode"
   ("h" evil-backward-char "left")
   ("j" evil-next-line "down")

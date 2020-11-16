@@ -3,6 +3,7 @@
 ;;       use in "narrow" functionality
 
 (require 'chimera)
+(require 'eem-mode-adapter-hydra)
 
 (evil-define-state view
   "View state."
@@ -73,8 +74,8 @@
 
 (defhydra hydra-view (:idle 1.0
                       :columns 6
-                      :post (eem--update-mode-exit-flag "view" t)
-                      :after-exit (eem-hydra-signal-exit "view"))
+                      :post (eem-hydra-flag-mode-exit "view" t)
+                      :after-exit (eem-hydra-signal-exit "view" #'eem-handle-mode-exit))
   "View mode"
   ("j" my-scroll-down "down")
   ("k" my-scroll-up "up")

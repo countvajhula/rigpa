@@ -1,3 +1,5 @@
+(require 'eem-mode-adapter-hydra)
+
 (evil-define-state application
   "Application state."
   :tag " <A> "
@@ -90,8 +92,8 @@
 
 (defhydra hydra-application (:columns 1
                              :exit t
-                             :post (eem--update-mode-exit-flag "application" t)
-                             :after-exit (eem-hydra-signal-exit "application"))
+                             :post (eem-hydra-flag-mode-exit "application" t)
+                             :after-exit (eem-hydra-signal-exit "application" #'eem-handle-mode-exit))
   "Control application environment"
   ("t" hydra-transparency/body "transparency" :exit t)
   ("n" display-line-numbers-mode "toggle line numbers")

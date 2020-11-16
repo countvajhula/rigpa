@@ -154,34 +154,21 @@ Priority: (1) provided mode if admissible (i.e. present in tower)
                                                      'levels))))
         (eem--enter-level eem--current-level)))))
 
-;; move these to epistemic.el?
-(defun eem--update-mode-exit-flag (mode &optional value)
-  "Set a mode exit flag to indicate cleanup operations need to be performed."
-  (message "updating flag: %s %s" mode value)
-  (let ((hydra (intern (concat "hydra-" mode))))
-    (hydra-set-property hydra :exiting value)))
-
 (defun eem-handle-mode-exit (mode)
   "Take appropriate action when MODE is exited.
 
 Recalls a prior state upon exiting MODE, if one is indicated."
   (message "exiting %s with recall" mode)
-  (eem--enter-local-recall-mode))
+  (eem--enter-local-recall-mode) ; should this be done in an exit hook?
+  (let ((exit-hook (chimera-mode-exit-hook
+                    (symbol-value
+                     (intern
+                      ; (a) put this in a callback, and (b) don't rely
+                      ; on a particular name being present
+                      (concat "chimera-" mode "-mode"))))))
+    (message "exit hook is %s" exit-hook)
+    (run-hooks exit-hook)))
 
-(defun eem-hydra-signal-exit (mode)
-  "Helper function to witness hydra exit and notify epistemic mode."
-  (let ((hydra (intern (concat "hydra-" mode))))
-    (when (hydra-get-property hydra :exiting)
-      (eem-handle-mode-exit mode) ; TODO: should move into exit hook, and rename to be recall-specific
-      (let ((exit-hook (chimera-mode-exit-hook
-                        (symbol-value
-                         (intern
-                          ; (a) put this in a callback, and (b) don't rely
-                          ; on a particular name being present
-                          (concat "chimera-" mode "-mode"))))))
-        (message "exit hook is %s" exit-hook)
-        (run-hooks exit-hook))
-      (hydra-set-property hydra :exiting nil))))
 
 (defhydra hydra-mode (:idle 1.0
                       :columns 4

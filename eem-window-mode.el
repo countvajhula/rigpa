@@ -1,6 +1,7 @@
 (require 'ace-window)
 (require 'winner)
 (require 'chimera)
+(require 'eem-mode-adapter-hydra)
 
 (evil-define-state window
   "Window state."
@@ -35,8 +36,8 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
 ;; TODO: after-exit shoudl call a true eem-window-post-exit, which can run hooks
 (defhydra hydra-window (:idle 1.0
                         :columns 4
-                        :post (eem--update-mode-exit-flag "window" t)
-                        :after-exit (eem-hydra-signal-exit "window"))
+                        :post (eem-hydra-flag-mode-exit "window" t)
+                        :after-exit (eem-hydra-signal-exit "window" #'eem-handle-mode-exit))
   "Window mode"
   ("h" evil-window-left "left")
   ("j" evil-window-down "down")

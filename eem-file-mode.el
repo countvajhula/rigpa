@@ -1,4 +1,5 @@
 (require 'chimera)
+(require 'eem-mode-adapter-hydra)
 
 (evil-define-state file
   "File state."
@@ -29,8 +30,8 @@ Version 2016-04-04"
 
 (defhydra hydra-file (:idle 1.0
                       :columns 2
-                      :post (eem--update-mode-exit-flag "file" t)
-                      :after-exit (eem-hydra-signal-exit "file"))
+                      :post (eem-hydra-flag-mode-exit "file" t)
+                      :after-exit (eem-hydra-signal-exit "file" #'eem-handle-mode-exit))
   "File mode"
   ("h" evil-backward-char "backward")
   ("j" evil-next-line "down")

@@ -1,4 +1,5 @@
 (require 'chimera)
+(require 'eem-mode-adapter-hydra)
 
 (evil-define-state history
   "History state."
@@ -11,8 +12,8 @@
                          ; maybe put body-pre in ad hoc entry
                          :body-pre (unless git-timemachine-mode (git-timemachine))
                          :idle 1.0
-                         :post (eem--update-mode-exit-flag "history" t)
-                         :after-exit (eem-hydra-signal-exit "history"))
+                         :post (eem-hydra-flag-mode-exit "history" t)
+                         :after-exit (eem-hydra-signal-exit "history" #'eem-handle-mode-exit))
   "History mode"
   ("h" git-timemachine-show-previous-revision "previous")
   ("l" git-timemachine-show-next-revision "next")

@@ -1,4 +1,5 @@
 (require 'chimera)
+(require 'eem-mode-adapter-hydra)
 
 (evil-define-state text
   "Text state."
@@ -10,8 +11,8 @@
 (defhydra hydra-text (:color pink
                       :columns 2
                       :idle 1.0
-                      :post (eem--update-mode-exit-flag "text" t)
-                      :after-exit (eem-hydra-signal-exit "text"))
+                      :post (eem-hydra-flag-mode-exit "text" t)
+                      :after-exit (eem-hydra-signal-exit "text" #'eem-handle-mode-exit))
   "Text mode"
   ("z" evil-fill-and-move "justify" :exit t)
   ("s-z" evil-fill-and-move "justify" :exit t)
