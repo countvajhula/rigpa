@@ -96,26 +96,29 @@
   (evil-next-line)
   (eem--extract-selected-level))
 
-(defun eem-jump-to-level-before ()
-  "Enter MODE, but remember the previous state to return to it."
-  ;; TODO: make this a callback from an entry hook
+(defun eem-set-mode-recall ()
+  "Remember the current state to 'recall' it later."
   (interactive)
   ;; we're relying on the evil state here even though the
   ;; delegation is hydra -> evil. Probably introduce an
   ;; independent state variable, for which the evil state
   ;; variable can be treated as a proxy for now
-  (message "exiting %s with recall" (symbol-name evil-state))
+  (message "exiting %s, setting recall" (symbol-name evil-state))
   (setq-local eem-recall (symbol-name evil-state)))
 
-(defun eem-jump-to-level-after ()
-  "Post-jump."
+(defun eem-reconcile-level ()
+  "Adjust level to match current mode.
+
+If the current mode is present in the current tower, ensure that the
+current level reflects the mode's position in the tower."
   (interactive)
-  ;; update current level if still in tower
   ;; TODO: not ideal to have this decoupled - streamline if possible
   (let ((level-number
          (seq-position (ht-get (eem--current-tower)
                                'levels)
                        (symbol-name evil-state))))
+    ;; TODO: should we null out recall here instead of
+    ;; in enter-lower/-higher?
     (when level-number
       (message "updating level number")
       (setq eem--current-level level-number))))
