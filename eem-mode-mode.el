@@ -7,7 +7,7 @@
 (defun eem-enter-mode (mode-name)
   "Enter mode MODE-NAME."
   (message "entering mode %s" mode-name)
-  (lithium-enter-mode mode-name)
+  (chimera-enter-mode mode-name)
   (message "entered mode %s" mode-name))
 
 (defun eem--enter-level (level-number)

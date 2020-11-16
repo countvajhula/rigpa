@@ -7,7 +7,7 @@
 ;; - copy line
 ;; similarly for "region-mode", possibly by invoking multiple cursors
 
-(require 'lithium)
+(require 'chimera)
 
 (evil-define-state line
   "Line state."

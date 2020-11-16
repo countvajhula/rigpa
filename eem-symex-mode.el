@@ -1,9 +1,9 @@
-(require 'lithium)
+(require 'chimera)
 
-(defvar lithium-symex-mode-entry-hook nil
+(defvar chimera-symex-mode-entry-hook nil
   "Entry hook for epistemic symex mode.")
 
-(defvar lithium-symex-mode-exit-hook nil
+(defvar chimera-symex-mode-exit-hook nil
   "Exit hook for epistemic symex mode.")
 
 (defvar chimera-symex-mode

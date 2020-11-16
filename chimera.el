@@ -1,4 +1,4 @@
-(cl-defstruct lithium-mode
+(cl-defstruct chimera-mode
   "Specification for a mode."
   name
   (enter :documentation "Primitive mode entry function.")

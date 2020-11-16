@@ -1,6 +1,6 @@
 (require 'ace-window)
 (require 'winner)
-(require 'lithium)
+(require 'chimera)
 
 (evil-define-state window
   "Window state."
