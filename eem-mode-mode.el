@@ -26,10 +26,8 @@
   (message "entering lower level")
   (let ((mode-name (symbol-name evil-state)))
     (if (eem-mode-position-in-tower (eem--current-tower) mode-name)
-        (progn
-          (eem-hydra-flag-mode-exit mode-name)
-          (when (> eem--current-level 0)
-            (eem--enter-level (1- eem--current-level))))
+        (when (> eem--current-level 0)
+          (eem--enter-level (1- eem--current-level)))
       ;; if we left a buffer in a state that isn't in its tower, then
       ;; returning to it "out of band" would find it still that way,
       ;; and Enter/Escape would assume that there is a recall to be
@@ -42,7 +40,8 @@
       ;; was exited using buffer mode
       ;; TODO: Note that this is currently not safe since a tower not
       ;; containing normal mode (e.g. emacs tower) would be left in limbo
-      (evil-normal-state)))) ; TODO: fix to sane normal
+      ;; (evil-normal-state)
+      ))) ; TODO: fix to sane normal
 
 (defun eem-enter-higher-level ()
   "Enter higher level."
@@ -55,13 +54,13 @@
     ;; recall if one is set
     (if (eem-mode-position-in-tower (eem--current-tower)
                                     mode-name)
-        (progn
-          (eem-hydra-flag-mode-exit mode-name)
-          (when (< eem--current-level
-                   (1- (eem-tower-height (eem--current-tower))))
-            (eem--enter-level (1+ eem--current-level))))
+        (when (< eem--current-level
+                 (1- (eem-tower-height (eem--current-tower))))
+          (eem--enter-level (1+ eem--current-level)))
       ;; see note for eem-enter-lower-level
-      (evil-normal-state)))) ; TODO: sane normal
+      ;; (message "Not in tower, can't take the stairs; setting mode to `normal`")
+      ;; (evil-normal-state)
+      ))) ; TODO: sane normal
 
 (defun eem-enter-lowest-level ()
   "Enter lowest (manual) level."
@@ -105,15 +104,18 @@ If the current mode is present in the current tower, ensure that the
 current level reflects the mode's position in the tower."
   (interactive)
   ;; TODO: not ideal to have this decoupled - streamline if possible
-  (let ((level-number
-         (seq-position (ht-get (eem--current-tower)
-                               'levels)
-                       (symbol-name evil-state))))
-    ;; TODO: should we null out recall here instead of
-    ;; in enter-lower/-higher?
+  (let* ((mode-name (symbol-name evil-state))
+         (level-number
+          (eem-mode-position-in-tower (eem--current-tower)
+                                      mode-name)))
     (when level-number
-      (message "updating level number")
-      (setq eem--current-level level-number))))
+      (setq eem--current-level level-number)
+      (message "mode %s is in tower; updated level number to %s and clearing recall %s"
+               mode-name
+               eem--current-level
+               (and (boundp 'eem-recall) eem-recall))
+      ;; clear recall since we know we're still in the tower
+      (eem--clear-local-recall))))
 
 (defun eem--enter-appropriate-mode (&optional buffer)
   "Enter the most appropriate mode. TODO: not used at the moment.
