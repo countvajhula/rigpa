@@ -6,9 +6,7 @@
 
 (defun eem-enter-mode (mode-name)
   "Enter mode MODE-NAME."
-  (message "entering mode %s" mode-name)
-  (chimera-enter-mode mode-name)
-  (message "entered mode %s" mode-name))
+  (chimera-enter-mode mode-name))
 
 (defun eem--enter-level (level-number)
   "Enter level LEVEL-NUMBER"
@@ -100,16 +98,6 @@
   (evil-next-line)
   (eem--extract-selected-level))
 
-(defun eem-set-mode-recall ()
-  "Remember the current state to 'recall' it later."
-  (interactive)
-  ;; we're relying on the evil state here even though the
-  ;; delegation is hydra -> evil. Probably introduce an
-  ;; independent state variable, for which the evil state
-  ;; variable can be treated as a proxy for now
-  (message "exiting %s, setting recall" (symbol-name evil-state))
-  (setq-local eem-recall (symbol-name evil-state)))
-
 (defun eem-reconcile-level ()
   "Adjust level to match current mode.
 
@@ -138,40 +126,55 @@ Priority: (1) provided mode if admissible (i.e. present in tower)
       (if recall
           (eem--enter-local-recall-mode)
         ;; for now, enter the highest level in the absence of recall
-        (setq eem--current-level (1- (length (ht-get (eem--current-tower)
-                                                     'levels))))
-        (eem--enter-level eem--current-level)))))
+        (eem-enter-highest-level)))))
+
+(defun eem--clear-local-recall (&optional buffer)
+  "Clear recall flag if any."
+  (with-current-buffer (or buffer (current-buffer))
+    (setq-local eem-recall nil)
+    (message "cleared recall!")))
 
 (defun eem--enter-local-recall-mode (&optional buffer)
-  "Enter the recall mode (if any) in the BUFFER."
+  "Enter the recall mode (if any) in the BUFFER.
+
+This should generally not be called directly but rather via
+hooks. Only call it directly when entering a recall mode
+is precisely the thing to be done."
   (with-current-buffer (or buffer (current-buffer))
     (let ((recall (and (boundp 'eem-recall)
                        eem-recall)))
+      (eem--clear-local-recall)
+      (eem-enter-mode recall))))
+
+(defun eem-remember-or-recall (&optional buffer)
+  "Remember the current mode for future recall, or recall to an earlier mode."
+  ;; we're relying on the evil state here even though the
+  ;; delegation is hydra -> evil. Probably introduce an
+  ;; independent state variable, for which the evil state
+  ;; variable can be treated as a proxy for now
+  (with-current-buffer (or buffer (current-buffer))
+    (let ((mode-name (symbol-name evil-state))
+          (recall (and (boundp 'eem-recall)
+                       eem-recall)))
+      ;; recall should probably be tower-specific and
+      ;; meta-level specific, so that
+      ;; we can set it upon entry to a meta mode
       (if recall
-          ;; recall should probably be tower-specific and
-          ;; meta-level specific, so that
-          ;; we can set it upon entry to a meta mode
-          (progn (setq-local eem-recall nil)
-                 (eem-enter-mode recall))
-        ;; for now, enter the highest level in the absence of recall
-        (setq eem--current-level (1- (length (ht-get (eem--current-tower)
-                                                     'levels))))
-        (eem--enter-level eem--current-level)))))
+          ;; if recall were determined to be irrelevant, the flag
+          ;; would have been cleared by this point. If it's still here,
+          ;; then this is a transient state and we need to recall.
+          (progn (message "exiting %s, recall present: %s" mode-name recall)
+                 (eem--clear-local-recall)
+                 (eem-enter-mode recall)
+                 (message "exited %s, recalled %s" mode-name recall))
+        ;; otherwise, let's remember the current state for
+        ;; possible recall
+        (eem-set-mode-recall mode-name)
+        (message "exited %s, set recall to %s" mode-name eem-recall)))))
 
-(defun eem-handle-mode-exit (mode)
-  "Take appropriate action when MODE is exited.
-
-Recalls a prior state upon exiting MODE, if one is indicated."
-  (message "exiting %s with recall" mode)
-  (eem--enter-local-recall-mode) ; should this be done in an exit hook?
-  (let ((exit-hook (chimera-mode-exit-hook
-                    (symbol-value
-                     (intern
-                      ; (a) put this in a callback, and (b) don't rely
-                      ; on a particular name being present
-                      (concat "chimera-" mode "-mode"))))))
-    (message "exit hook is %s" exit-hook)
-    (run-hooks exit-hook)))
+(defun eem-set-mode-recall (mode-name)
+  "Remember the current state to 'recall' it later."
+  (setq-local eem-recall mode-name))
 
 
 (defhydra hydra-mode (:idle 1.0

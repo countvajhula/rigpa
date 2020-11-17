@@ -93,7 +93,7 @@
 (defhydra hydra-application (:columns 1
                              :exit t
                              :post (eem-hydra-flag-mode-exit "application" t)
-                             :after-exit (eem-hydra-signal-exit "application" #'eem-handle-mode-exit))
+                             :after-exit (eem-hydra-signal-exit "application" #'chimera-handle-hydra-exit))
   "Control application environment"
   ("t" hydra-transparency/body "transparency" :exit t)
   ("n" display-line-numbers-mode "toggle line numbers")

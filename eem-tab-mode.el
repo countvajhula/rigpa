@@ -59,7 +59,7 @@ buffer mode."
                      :idle 1.0
                      :post (progn (flash-to-original-tab-and-back)
                                   (eem-hydra-flag-mode-exit "tab" t))
-                     :after-exit (eem-hydra-signal-exit "tab" #'eem-handle-mode-exit))
+                     :after-exit (eem-hydra-signal-exit "tab" #'chimera-handle-hydra-exit))
   "Tab mode"
   ("/" centaur-tabs-counsel-switch-group "search" :exit t)
   ("h" centaur-tabs-backward "previous")

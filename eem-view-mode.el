@@ -75,7 +75,7 @@
 (defhydra hydra-view (:idle 1.0
                       :columns 6
                       :post (eem-hydra-flag-mode-exit "view" t)
-                      :after-exit (eem-hydra-signal-exit "view" #'eem-handle-mode-exit))
+                      :after-exit (eem-hydra-signal-exit "view" #'chimera-handle-hydra-exit))
   "View mode"
   ("j" my-scroll-down "down")
   ("k" my-scroll-up "up")

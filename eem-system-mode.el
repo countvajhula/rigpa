@@ -15,7 +15,7 @@
 
 (defhydra hydra-system (:exit t
                         :post (eem-hydra-flag-mode-exit "system" t)
-                        :after-exit (eem-hydra-signal-exit "system" #'eem-handle-mode-exit))
+                        :after-exit (eem-hydra-signal-exit "system" #'chimera-handle-hydra-exit))
   "System information"
   ("b" my-battery-life "show power info including battery life")
   ("s-i" my-battery-life "show power info including battery life")

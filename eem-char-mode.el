@@ -99,7 +99,7 @@
                       :columns 4
                       :color pink
                       :post (eem-hydra-flag-mode-exit "char" t)
-                      :after-exit (eem-hydra-signal-exit "char" #'eem-handle-mode-exit))
+                      :after-exit (eem-hydra-signal-exit "char" #'chimera-handle-hydra-exit))
   "Character mode"
   ("h" evil-backward-char "left")
   ("j" evil-next-line "down")

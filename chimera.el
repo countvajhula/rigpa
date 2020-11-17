@@ -10,7 +10,7 @@
   "Register MODE-NAME for use with epistemic mode."
   (let ((entry-hook (chimera-mode-entry-hook mode))
         (exit-hook (chimera-mode-exit-hook mode)))
-    (add-hook exit-hook #'eem-set-mode-recall)
+    (add-hook exit-hook #'eem-remember-or-recall)
     (add-hook entry-hook #'eem-reconcile-level)))
 
 (defun eem-unregister-mode (mode)
@@ -26,9 +26,16 @@
 (defun chimera-enter-mode (mode-name)
   "Enter MODE-NAME."
   (interactive)
+  (message "entering mode %s" mode-name)
   (let ((evil-state-entry (intern (concat "evil-" mode-name "-state")))
         ;; maybe better to lookup modes by name
         (mode (symbol-value (intern (concat "chimera-" mode-name "-mode")))))
+    ;; call a function (perform-entry-actions ...) that
+    ;; handles any provider-specific jankiness, like checking
+    ;; for hydras that didn't exit cleanly, and perform their
+    ;; exit actions (which should be in a dedicated function
+    ;; that can be called from here as well as the original
+    ;; spot in the hydra exit lifecycle phase).
     (unless (member mode-name chimera-evil-states)
       (funcall evil-state-entry))
     (funcall (chimera-mode-enter mode))
@@ -36,7 +43,9 @@
       ;; probably incorporate an optional flag in the struct
       ;; to indicate hooks are managed elsewhere, instead
       ;; `responsible-for-hooks` or something
-      (run-hooks (chimera-mode-entry-hook mode)))))
+      (message "Running entry hooks for %s mode" mode-name)
+      (run-hooks (chimera-mode-entry-hook mode))))
+  (message "entered mode %s" mode-name))
 
 (defun chimera-exit-mode (mode-name)
   "Exit (interrupt) MODE-NAME."
@@ -44,6 +53,18 @@
   (let ((mode (symbol-value (intern (concat "chimera-" mode-name "-mode")))))
     (unless (member mode-name chimera-evil-states)
       (funcall (chimera-mode-exit mode)))))
+
+(defun chimera-handle-hydra-exit (mode)
+  "Adapter helper for hydra to call hooks upon exit."
+  (let ((exit-hook (chimera-mode-exit-hook
+                    (symbol-value
+                     (intern
+                      ;; TODO: don't rely on a particular name being present
+                      (concat "chimera-" mode "-mode"))))))
+    (message "exiting hydra for mode %s, running exit hooks %s"
+             mode
+             exit-hook)
+    (run-hooks exit-hook)))
 
 (provide 'chimera)
 ;;; chimera.el ends here

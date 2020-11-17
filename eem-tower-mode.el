@@ -26,7 +26,6 @@
                                    (buffer-name))
                      eem--reference-buffer
                    (current-buffer))))
-    (message "reference buffer is %s" ref-buf)
     ref-buf))
 
 (defun eem-mode-position-in-tower (tower mode-name)

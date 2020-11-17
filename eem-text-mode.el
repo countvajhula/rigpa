@@ -12,7 +12,7 @@
                       :columns 2
                       :idle 1.0
                       :post (eem-hydra-flag-mode-exit "text" t)
-                      :after-exit (eem-hydra-signal-exit "text" #'eem-handle-mode-exit))
+                      :after-exit (eem-hydra-signal-exit "text" #'chimera-handle-hydra-exit))
   "Text mode"
   ("z" evil-fill-and-move "justify" :exit t)
   ("s-z" evil-fill-and-move "justify" :exit t)

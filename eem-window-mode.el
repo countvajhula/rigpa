@@ -37,7 +37,7 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
 (defhydra hydra-window (:idle 1.0
                         :columns 4
                         :post (eem-hydra-flag-mode-exit "window" t)
-                        :after-exit (eem-hydra-signal-exit "window" #'eem-handle-mode-exit))
+                        :after-exit (eem-hydra-signal-exit "window" #'chimera-handle-hydra-exit))
   "Window mode"
   ("h" evil-window-left "left")
   ("j" evil-window-down "down")
