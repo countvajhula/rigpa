@@ -8,7 +8,6 @@ If no VALUE is provided, this clears the flag."
       (message "updated %s flag on %s to %s" flag hydra value)
     (message "cleared %s flag on %s" flag hydra)))
 
-;; move these to epistemic.el?
 (defun eem-hydra-flag-mode-exit (mode &optional value)
   "Set a mode exit flag to indicate cleanup operations need to be performed."
   (let ((hydra (intern (concat "hydra-" mode))))

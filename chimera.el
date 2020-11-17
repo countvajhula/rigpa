@@ -21,7 +21,7 @@
     (remove-hook entry-hook #'eem-reconcile-level)))
 
 (defvar chimera-evil-states
-  (list "normal" "insert" "emacs" "symex"))
+  (list "normal" "insert" "emacs"))
 
 (defun chimera-enter-mode (mode-name)
   "Enter MODE-NAME."
