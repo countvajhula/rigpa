@@ -29,7 +29,8 @@
   (let ((evil-state-entry (intern (concat "evil-" mode-name "-state")))
         ;; maybe better to lookup modes by name
         (mode (symbol-value (intern (concat "chimera-" mode-name "-mode")))))
-    (funcall evil-state-entry)
+    (unless (member mode-name chimera-evil-states)
+      (funcall evil-state-entry))
     (funcall (chimera-mode-enter mode))
     (unless (member mode-name chimera-evil-states)
       ;; probably incorporate an optional flag in the struct
