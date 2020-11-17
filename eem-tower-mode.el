@@ -29,6 +29,19 @@
     (message "reference buffer is %s" ref-buf)
     ref-buf))
 
+(defun eem-mode-position-in-tower (tower mode-name)
+  (seq-position (ht-get tower
+                        'levels)
+                mode-name))
+
+(defun eem-tower-height (tower)
+  "Height of tower."
+  (length (ht-get tower 'levels)))
+
+(defun eem-tower-mode-at-level (tower level)
+  "Mode at LEVEL in the TOWER."
+  (nth level (ht-get tower 'levels)))
+
 (defun eem--tower (tower-id)
   "The epistemic tower corresponding to the provided index."
   (interactive)
@@ -91,21 +104,21 @@
   (interactive)
   (let ((tower-buffer (my-new-empty-buffer
                        (eem--buffer-name tower)))
-        (tower-levels (ht-get tower 'levels)))
-    (let ((tower-height (length tower-levels)))
-      (with-current-buffer tower-buffer
-       (eem--set-buffer-appearance)
-       (dolist
-           (level-number (reverse
-                          (number-sequence 0 (- tower-height
-                                                1))))
-         (let ((mode-name (nth level-number
-                               tower-levels)))
-           (insert "|―――"
-                   (number-to-string level-number)
-                   "―――|"
-                   " " mode-name "\n")))
-       (my-delete-line)))
+        (tower-height (eem-tower-height tower)))
+    (with-current-buffer tower-buffer
+      (eem--set-buffer-appearance)
+      (dolist
+          (level-number (reverse
+                         (number-sequence 0 (- tower-height
+                                               1))))
+        (let ((mode-name
+               (eem-tower-mode-at-level tower
+                                        level-number)))
+          (insert "|―――"
+                  (number-to-string level-number)
+                  "―――|"
+                  " " mode-name "\n")))
+      (my-delete-line))
     tower-buffer))
 
 (defun my-enter-tower-mode ()
