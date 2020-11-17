@@ -17,19 +17,18 @@
   "Unregister MODE-NAME."
   (let ((entry-hook (chimera-mode-entry-hook mode))
         (exit-hook (chimera-mode-exit-hook mode)))
-    (remove-hook exit-hook #'eem-set-mode-recall)
+    (remove-hook exit-hook #'eem-remember-or-recall)
     (remove-hook entry-hook #'eem-reconcile-level)))
 
 (defvar chimera-evil-states
-  (list "normal" "insert" "emacs"))
+  (list "normal" "insert" "emacs" "symex"))
 
 (defun chimera-enter-mode (mode-name)
   "Enter MODE-NAME."
   (interactive)
   (message "entering mode %s" mode-name)
-  (let ((evil-state-entry (intern (concat "evil-" mode-name "-state")))
-        ;; maybe better to lookup modes by name
-        (mode (symbol-value (intern (concat "chimera-" mode-name "-mode")))))
+  ;; maybe better to lookup modes by name
+  (let ((mode (symbol-value (intern (concat "chimera-" mode-name "-mode")))))
     ;; call a function (perform-entry-actions ...) that
     ;; handles any provider-specific jankiness, like checking
     ;; for hydras that didn't exit cleanly, and perform their
@@ -37,7 +36,8 @@
     ;; that can be called from here as well as the original
     ;; spot in the hydra exit lifecycle phase).
     (unless (member mode-name chimera-evil-states)
-      (funcall evil-state-entry))
+      (let ((evil-state-entry (intern (concat "evil-" mode-name "-state"))))
+        (funcall evil-state-entry)))
     (funcall (chimera-mode-enter mode))
     (unless (member mode-name chimera-evil-states)
       ;; probably incorporate an optional flag in the struct
