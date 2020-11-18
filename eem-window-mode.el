@@ -33,11 +33,11 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
   (other-window 1)
   (quit-window))
 
-;; TODO: after-exit shoudl call a true eem-window-post-exit, which can run hooks
 (defhydra hydra-window (:idle 1.0
                         :columns 4
-                        :post (chimera-hydra-portend-exit "window" t)
-                        :after-exit (chimera-hydra-signal-exit "window" #'chimera-handle-hydra-exit))
+                        :post (chimera-hydra-portend-exit chimera-window-mode t)
+                        :after-exit (chimera-hydra-signal-exit chimera-window-mode
+                                                               #'chimera-handle-hydra-exit))
   "Window mode"
   ("h" evil-window-left "left")
   ("j" evil-window-down "down")

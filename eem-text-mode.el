@@ -11,8 +11,9 @@
 (defhydra hydra-text (:color pink
                       :columns 2
                       :idle 1.0
-                      :post (chimera-hydra-portend-exit "text" t)
-                      :after-exit (chimera-hydra-signal-exit "text" #'chimera-handle-hydra-exit))
+                      :post (chimera-hydra-portend-exit chimera-text-mode t)
+                      :after-exit (chimera-hydra-signal-exit chimera-text-mode
+                                                             #'chimera-handle-hydra-exit))
   "Text mode"
   ("z" evil-fill-and-move "justify" :exit t)
   ("s-z" evil-fill-and-move "justify" :exit t)

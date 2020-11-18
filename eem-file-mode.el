@@ -30,8 +30,9 @@ Version 2016-04-04"
 
 (defhydra hydra-file (:idle 1.0
                       :columns 2
-                      :post (chimera-hydra-portend-exit "file" t)
-                      :after-exit (chimera-hydra-signal-exit "file" #'chimera-handle-hydra-exit))
+                      :post (chimera-hydra-portend-exit chimera-file-mode t)
+                      :after-exit (chimera-hydra-signal-exit chimera-file-mode
+                                                             #'chimera-handle-hydra-exit))
   "File mode"
   ("h" evil-backward-char "backward")
   ("j" evil-next-line "down")

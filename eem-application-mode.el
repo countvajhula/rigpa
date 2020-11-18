@@ -92,8 +92,9 @@
 
 (defhydra hydra-application (:columns 1
                              :exit t
-                             :post (chimera-hydra-portend-exit "application" t)
-                             :after-exit (chimera-hydra-signal-exit "application" #'chimera-handle-hydra-exit))
+                             :post (chimera-hydra-portend-exit chimera-application-mode t)
+                             :after-exit (chimera-hydra-signal-exit chimera-application-mode
+                                                                    #'chimera-handle-hydra-exit))
   "Control application environment"
   ("t" hydra-transparency/body "transparency" :exit t)
   ("n" display-line-numbers-mode "toggle line numbers")

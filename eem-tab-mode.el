@@ -58,8 +58,9 @@ buffer mode."
                      :body-pre (setup-tab-marks-table) ; maybe put in ad-hoc entry function
                      :idle 1.0
                      :post (progn (flash-to-original-tab-and-back)
-                                  (chimera-hydra-portend-exit "tab" t))
-                     :after-exit (chimera-hydra-signal-exit "tab" #'chimera-handle-hydra-exit))
+                                  (chimera-hydra-portend-exit chimera-tab-mode t))
+                     :after-exit (chimera-hydra-signal-exit chimera-tab-mode
+                                                            #'chimera-handle-hydra-exit))
   "Tab mode"
   ("/" centaur-tabs-counsel-switch-group "search" :exit t)
   ("h" centaur-tabs-backward "previous")

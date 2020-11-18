@@ -75,8 +75,9 @@ current ('original') buffer."
                         :columns 3
                         :body-pre (setup-buffer-marks-table) ; maybe put in ad-hoc entry
                         :post (progn (flash-to-original-and-back)
-                                     (chimera-hydra-portend-exit "buffer" t))
-                        :after-exit (chimera-hydra-signal-exit "buffer" #'chimera-handle-hydra-exit))
+                                     (chimera-hydra-portend-exit chimera-buffer-mode t))
+                        :after-exit (chimera-hydra-signal-exit chimera-buffer-mode
+                                                               #'chimera-handle-hydra-exit))
   "Buffer mode"
   ("s-b" evil-switch-to-windows-last-buffer "switch to last" :exit t)
   ("b" evil-switch-to-windows-last-buffer "switch to last" :exit t)

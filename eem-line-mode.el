@@ -178,8 +178,9 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
 
 (defhydra hydra-line (:idle 1.0
                       :columns 4
-                      :post (chimera-hydra-portend-exit "line" t)
-                      :after-exit (chimera-hydra-signal-exit "line" #'chimera-handle-hydra-exit))
+                      :post (chimera-hydra-portend-exit chimera-line-mode t)
+                      :after-exit (chimera-hydra-signal-exit chimera-line-mode
+                                                             #'chimera-handle-hydra-exit))
   "Line mode"
   ("h" evil-previous-line "previous")
   ("j" evil-next-line "next")

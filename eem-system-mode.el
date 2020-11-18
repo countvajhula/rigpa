@@ -14,8 +14,9 @@
   (display-message-or-buffer (shell-command-to-string "pmset -g batt")))
 
 (defhydra hydra-system (:exit t
-                        :post (chimera-hydra-portend-exit "system" t)
-                        :after-exit (chimera-hydra-signal-exit "system" #'chimera-handle-hydra-exit))
+                        :post (chimera-hydra-portend-exit chimera-system-mode t)
+                        :after-exit (chimera-hydra-signal-exit chimera-system-mode
+                                                               #'chimera-handle-hydra-exit))
   "System information"
   ("b" my-battery-life "show power info including battery life")
   ("s-i" my-battery-life "show power info including battery life")

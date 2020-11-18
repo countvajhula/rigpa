@@ -12,8 +12,9 @@
                          ; maybe put body-pre in ad hoc entry
                          :body-pre (unless git-timemachine-mode (git-timemachine))
                          :idle 1.0
-                         :post (chimera-hydra-portend-exit "history" t)
-                         :after-exit (chimera-hydra-signal-exit "history" #'chimera-handle-hydra-exit))
+                         :post (chimera-hydra-portend-exit chimera-history-mode t)
+                         :after-exit (chimera-hydra-signal-exit chimera-history-mode
+                                                                #'chimera-handle-hydra-exit))
   "History mode"
   ("h" git-timemachine-show-previous-revision "previous")
   ("l" git-timemachine-show-next-revision "next")

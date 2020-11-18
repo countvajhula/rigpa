@@ -98,8 +98,9 @@
 (defhydra hydra-char (:idle 1.0
                       :columns 4
                       :color pink
-                      :post (chimera-hydra-portend-exit "char" t)
-                      :after-exit (chimera-hydra-signal-exit "char" #'chimera-handle-hydra-exit))
+                      :post (chimera-hydra-portend-exit chimera-char-mode t)
+                      :after-exit (chimera-hydra-signal-exit chimera-char-mode
+                                                             #'chimera-handle-hydra-exit))
   "Character mode"
   ("h" evil-backward-char "left")
   ("j" evil-next-line "down")

@@ -47,8 +47,9 @@
 (defhydra hydra-activity (:color pink
                           :columns 2
                           :idle 1.0
-                          :post (chimera-hydra-portend-exit "activity" t)
-                          :after-exit (chimera-hydra-signal-exit "activity" #'chimera-handle-hydra-exit))
+                          :post (chimera-hydra-portend-exit chimera-activity-mode t)
+                          :after-exit (chimera-hydra-signal-exit chimera-activity-mode
+                                                                 #'chimera-handle-hydra-exit))
   "Activity mode"
   ("h" my-goto-older-change "previous change in buffer")
   ("C-j" evil-jump-backward "jump backward") ;; TODO: these jumps don't work via hydra atm

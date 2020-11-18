@@ -41,22 +41,6 @@ If not, they are expected to be run by the underlying mode provider \
   (interactive)
   (funcall (chimera-mode-exit mode)))
 
-;; TODO: pass in the mode itself here to keep it at the chimera (and not epistemic) level
-(defun chimera-handle-hydra-exit (mode-name)
-  "Adapter helper for hydra to call hooks upon exit."
-  (when (equal (symbol-name evil-state) mode-name)
-    ;; hydra has exited but we haven't gone to a new state.
-    ;; This means limbo, and we need to enter an appropriate
-    ;; state for the buffer here
-    ;; although, should we do nothing if current mode is
-    ;; already in the tower?
-    (message "hydra for mode %s exited into limbo; entering an appropriate state..."
-             mode-name)
-    (eem--enter-appropriate-mode))
-  (let ((mode (ht-get eem-modes mode-name)))
-    (when (chimera-mode-manage-hooks mode)
-      (message "Running exit hooks for %s mode" mode-name)
-      (run-hooks (chimera-mode-exit-hook mode)))))
 
 (provide 'chimera)
 ;;; chimera.el ends here

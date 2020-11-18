@@ -17,7 +17,7 @@
 (setq eem--last-tower-index 0)
 (setq eem--tower-index-on-entry 0)
 (setq eem--flashback-tower-index 0)
-(setq eem--current-level 1)  ;; TODO: set via hook in all modes incl evil modes
+(setq eem--current-level 1)
 (setq eem--reference-buffer (current-buffer))
 (make-variable-buffer-local 'eem--current-tower-index)
 (make-variable-buffer-local 'eem--last-tower-index)
