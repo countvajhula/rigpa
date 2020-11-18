@@ -28,7 +28,7 @@
                    (current-buffer))))
     ref-buf))
 
-(defun eem-mode-position-in-tower (tower mode-name)
+(defun eem-tower-level-of-mode (tower mode-name)
   (seq-position (ht-get tower
                         'levels)
                 mode-name))

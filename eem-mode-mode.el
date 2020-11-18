@@ -25,7 +25,8 @@
   (interactive)
   (message "entering lower level")
   (let ((mode-name (symbol-name evil-state)))
-    (if (eem-mode-position-in-tower (eem--current-tower) mode-name)
+    (if (eem-tower-level-of-mode (eem--current-tower)
+                                 mode-name)
         (when (> eem--current-level 0)
           (eem--enter-level (1- eem--current-level)))
       ;; if we left a buffer in a state that isn't in its tower, then
@@ -52,8 +53,8 @@
     ;; go up a level and clear recall; otherwise do
     ;; nothing, and the mode exit hook would call
     ;; recall if one is set
-    (if (eem-mode-position-in-tower (eem--current-tower)
-                                    mode-name)
+    (if (eem-tower-level-of-mode (eem--current-tower)
+                                 mode-name)
         (when (< eem--current-level
                  (1- (eem-tower-height (eem--current-tower))))
           (eem--enter-level (1+ eem--current-level)))
@@ -108,8 +109,8 @@ current level reflects the mode's position in the tower."
   ;; TODO: not ideal to have this decoupled - streamline if possible
   (let* ((mode-name (symbol-name evil-state))
          (level-number
-          (eem-mode-position-in-tower (eem--current-tower)
-                                      mode-name)))
+          (eem-tower-level-of-mode (eem--current-tower)
+                                   mode-name)))
     (when level-number
       (setq eem--current-level level-number)
       (message "mode %s is in tower; updated level number to %s and clearing recall %s"
