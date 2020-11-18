@@ -28,15 +28,18 @@
                                  mode-name)
         (when (> eem--current-level 0)
           (eem--enter-level (1- eem--current-level)))
-      ;; if we left a buffer in a state that isn't in its tower, then
+      ;; "not my tower, not my problem"
+      ;; if we exited a buffer via a state that isn't in its tower, then
       ;; returning to it "out of band" would find it still that way,
-      ;; and Enter/Escape would do nothing since the mode is still
+      ;; and Enter/Escape would a priori do nothing since the mode is still
       ;; outside the local tower. Ordinarily, we would return to this
       ;; buffer in an epistemic mode such as buffer mode, which upon
       ;; exiting would look for a recall. Since that isn't the case
-      ;; here, nothing would happen at this point. So preemptively go
-      ;; to a safe "default" as a failsafe, which would be overridden
-      ;; by a recall if there is one.
+      ;; here, nothing would happen at this point, and this is the spot
+      ;; where we could have taken some action had we been more civic
+      ;; minded. So preemptively go to a safe "default" as a failsafe,
+      ;; which would be overridden by a recall if there is one.
+      (message "Not in tower, couldn't take the stairs")
       (eem--enter-appropriate-mode))))
 
 (defun eem--enter-appropriate-mode (&optional buffer)
@@ -53,12 +56,12 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
           ;; recall if available
           (progn (eem--clear-local-recall)
                  (eem-enter-mode recall-mode)
-                 (message "Not in tower, couldn't take the stairs; invoked RECALL to %s. Level is %s."
+                 (message "Invoked RECALL to %s. Level is %s."
                           recall-mode
                           eem--current-level))
         ;; otherwise default for tower
         (eem-enter-mode default-mode)
-        (message "Not in tower, couldn't take the stairs; entered tower DEFAULT: %s. Level is %s."
+        (message "Entered tower DEFAULT: %s. Level is %s."
                  default-mode
                  eem--current-level)))))
 
@@ -67,10 +70,6 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
   (interactive)
   (message "entering higher level")
   (let ((mode-name (symbol-name evil-state)))
-    ;; if the current mode is in the current tower,
-    ;; go up a level and clear recall; otherwise do
-    ;; nothing, and the mode exit hook would call
-    ;; recall if one is set
     (if (eem-tower-level-of-mode (eem--current-tower)
                                  mode-name)
         (when (< eem--current-level
@@ -119,7 +118,6 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
 If the current mode is present in the current tower, ensure that the
 current level reflects the mode's position in the tower."
   (interactive)
-  ;; TODO: not ideal to have this decoupled - streamline if possible
   (let* ((mode-name (symbol-name evil-state))
          (level-number
           (eem-tower-level-of-mode (eem--current-tower)
@@ -167,20 +165,6 @@ is precisely the thing to be done."
       ;; recall should probably be tower-specific and
       ;; meta-level specific, so that
       ;; we can set it upon entry to a meta mode
-      ;; (when recall
-      ;;   ;; if recall were determined to be irrelevant, the flag
-      ;;   ;; would have been cleared by this point. If it's still here,
-      ;;   ;; then this is a transient state and we need to recall.
-      ;;   (progn (message "exiting %s, recall present: %s" mode-name recall)
-      ;;          (eem--clear-local-recall)
-      ;;          (eem-enter-mode recall)
-      ;;          (message "exited %s, recalled %s" mode-name recall)))
-        ;; otherwise, let's remember the current state for
-        ;; possible recall
-        ;; TODO: this is getting called after mode has already changed to
-        ;; the new one (e.g. via escape-higher), so this saves the new
-        ;; mode as recall instead of the exiting mode
-      ;; => probably fixed with transition to evil hooks
       (let ((current-mode (symbol-name evil-state)))
         ;; only set recall here if it is currently in the tower AND
         ;; going to a state outside the tower

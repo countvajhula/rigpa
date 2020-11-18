@@ -65,14 +65,6 @@
 ;; in epistemic mode representations
 (setq eem-buffer-prefix "EPISTEMIC-META")
 
-;; ideally, epistemic mode should be aware when any evil state is entered,
-;; if that state is in the present tower. For now, just handle the specific
-;; case of insert mode, since it's the one that's often entered using a
-;; non-eem entry point
-(add-hook 'evil-insert-state-entry-hook
-          (lambda (&rest args)
-            (setq eem--current-level 0)))
-
 ;;;; set tower to lisp tower in all lisp modes (emulating major mode -- TODO: improve)
 ;; (defvar lisp-modes (list 'emacs-lisp-mode
 ;;                          'scheme-mode
@@ -116,9 +108,6 @@ and simply toggles whether the menu is visible or not."
       (if (> visibility 0)
           (eem-hide-menu)
         (eem-show-menu)))))
-
-;; TODO: fix recall - probably reframe it in terms of exit and entry (and eliminate any
-;; unnecessary ad hoc cases of entry to normal mode)
 
 ;; wrap native evil states in chimera modes
 (defvar chimera-normal-mode
