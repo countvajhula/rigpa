@@ -185,16 +185,13 @@ is precisely the thing to be done."
         ;; mode as recall instead of the exiting mode
       ;; => probably fixed with transition to evil hooks
       (let ((current-mode (symbol-name evil-state)))
-        ;; TODO: potentially only set recall here if it is
-        ;; going to a state outside the tower (which, presumably,
-        ;; is already approximated by the clearing of recall
-        ;; upon entry to a mode present within the tower).
-        (eem-set-mode-recall current-mode)
-        ;; whenever this is called from the final hydra exit hook, it has _always_
-        ;; already changed to the new state if there was a new state to go to. At
-        ;; this point, it sets the recall to the _new_ state rather than the
-        ;; _original_ state as it ought to do.
-        (message "set recall to %s; next state is %s" current-mode evil-next-state)))))
+        ;; only set recall here if it is currently in the tower AND
+        ;; going to a state outside the tower
+        (when (and (eem-tower-level-of-mode (eem--current-tower) current-mode)
+                   (not (eem-tower-level-of-mode (eem--current-tower)
+                                                 (symbol-name evil-next-state))))
+          (eem-set-mode-recall current-mode)
+          (message "set recall to %s; next state is %s" current-mode evil-next-state))))))
 
 (defun eem-set-mode-recall (mode-name)
   "Remember the current state to 'recall' it later."
