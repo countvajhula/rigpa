@@ -7,6 +7,12 @@
   :message "-- TOWER --"
   :enable (normal))
 
+(cl-defstruct editing-tower
+  "Specification for an editing tower."
+  name
+  (levels :documentation "A list of levels in the tower.")
+  (default :documentation "The default mode for the tower."))
+
 (setq eem--current-tower-index 0)
 (setq eem--last-tower-index 0)
 (setq eem--tower-index-on-entry 0)
@@ -29,21 +35,20 @@
     ref-buf))
 
 (defun eem-tower-level-of-mode (tower mode-name)
-  (seq-position (ht-get tower
-                        'levels)
+  (seq-position (editing-tower-levels tower)
                 mode-name))
 
 (defun eem-tower-height (tower)
   "Height of tower."
-  (length (ht-get tower 'levels)))
+  (length (editing-tower-levels tower)))
 
 (defun eem-tower-mode-at-level (tower level)
   "Mode at LEVEL in the TOWER."
-  (nth level (ht-get tower 'levels)))
+  (nth level (editing-tower-levels tower)))
 
 (defun eem-tower-default-mode (tower)
   "The default mode for tower."
-  (ht-get tower 'default))
+  (editing-tower-default tower))
 
 (defun eem--tower (tower-id)
   "The epistemic tower corresponding to the provided index."
@@ -85,7 +90,7 @@
 
 (defun eem--buffer-name (tower)
   "Buffer name to use for a given tower."
-  (concat eem-buffer-prefix "-" (ht-get tower 'name)))
+  (concat eem-buffer-prefix "-" (editing-tower-name tower)))
 
 (defun eem--set-buffer-appearance ()
   "Configure mode mode appearance."

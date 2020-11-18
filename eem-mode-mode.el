@@ -11,12 +11,11 @@
 (defun eem--enter-level (level-number)
   "Enter level LEVEL-NUMBER"
   (let* ((tower (eem--current-tower))
-         (levels (ht-get tower 'levels))
-         (tower-height (length levels))
+         (tower-height (eem-tower-height tower))
          (level-number (max (min level-number
                                  (1- tower-height))
                             0)))
-    (let ((mode-name (nth level-number levels)))
+    (let ((mode-name (eem-tower-mode-at-level tower level-number)))
       (eem-enter-mode mode-name)
       (setq eem--current-level level-number))))
 
@@ -74,8 +73,7 @@
   "Enter highest level."
   (interactive)
   (let* ((tower (eem--current-tower))
-         (levels (ht-get tower 'levels))
-         (tower-height (length levels)))
+         (tower-height (eem-tower-height tower)))
     (eem--enter-level (- tower-height
                          1))))
 
