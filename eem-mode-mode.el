@@ -30,18 +30,18 @@
           (eem--enter-level (1- eem--current-level)))
       ;; if we left a buffer in a state that isn't in its tower, then
       ;; returning to it "out of band" would find it still that way,
-      ;; and Enter/Escape would assume that there is a recall to be
-      ;; returned to. If we did nothing here, then since there is in
-      ;; fact no recall, nothing would happen. So preemptively go
-      ;; to a safe "normal" as a failsafe, which would be overridden
+      ;; and Enter/Escape would do nothing since the mode is still
+      ;; outside the local tower. Ordinarily, we would return to this
+      ;; buffer in an epistemic mode such as buffer mode, which upon
+      ;; exiting would look for a recall. Since that isn't the case
+      ;; here, nothing would happen at this point. So preemptively go
+      ;; to a safe "default" as a failsafe, which would be overridden
       ;; by a recall if there is one.
-      ;; to reproduce: use C-] to jump to definition, to a buffer
-      ;; that doesn't contain buffer mode in the tower, but which
-      ;; was exited using buffer mode
-      ;; TODO: Note that this is currently not safe since a tower not
-      ;; containing normal mode (e.g. emacs tower) would be left in limbo
-      ;; (evil-normal-state)
-      ))) ; TODO: fix to sane normal
+      (let ((default-mode (eem-tower-default-mode (eem--current-tower))))
+        (eem-enter-mode default-mode)
+        (message "Not in tower, couldn't take the stairs; entered tower default: %s. Level is %s."
+                 default-mode
+                 eem--current-level)))))
 
 (defun eem-enter-higher-level ()
   "Enter higher level."
@@ -58,9 +58,11 @@
                  (1- (eem-tower-height (eem--current-tower))))
           (eem--enter-level (1+ eem--current-level)))
       ;; see note for eem-enter-lower-level
-      ;; (message "Not in tower, can't take the stairs; setting mode to `normal`")
-      ;; (evil-normal-state)
-      ))) ; TODO: sane normal
+      (let ((default-mode (eem-tower-default-mode (eem--current-tower))))
+        (eem-enter-mode default-mode)
+        (message "Not in tower, couldn't take the stairs; entered tower default: %s. Level is %s."
+                 default-mode
+                 eem--current-level)))))
 
 (defun eem-enter-lowest-level ()
   "Enter lowest (manual) level."
@@ -161,18 +163,20 @@ is precisely the thing to be done."
       ;; recall should probably be tower-specific and
       ;; meta-level specific, so that
       ;; we can set it upon entry to a meta mode
-      (if recall
-          ;; if recall were determined to be irrelevant, the flag
-          ;; would have been cleared by this point. If it's still here,
-          ;; then this is a transient state and we need to recall.
-          (progn (message "exiting %s, recall present: %s" mode-name recall)
-                 (eem--clear-local-recall)
-                 (eem-enter-mode recall)
-                 (message "exited %s, recalled %s" mode-name recall))
+      (when recall
+        ;; if recall were determined to be irrelevant, the flag
+        ;; would have been cleared by this point. If it's still here,
+        ;; then this is a transient state and we need to recall.
+        (progn (message "exiting %s, recall present: %s" mode-name recall)
+               (eem--clear-local-recall)
+               (eem-enter-mode recall)
+               (message "exited %s, recalled %s" mode-name recall))
         ;; otherwise, let's remember the current state for
         ;; possible recall
-        (eem-set-mode-recall mode-name)
-        (message "exited %s, set recall to %s" mode-name eem-recall)))))
+        ;; TODO: this is getting called after mode has already changed to
+        ;; the new one (e.g. via escape-higher), so this saves the new
+        ;; mode as recall instead of the exiting mode
+        ))))
 
 (defun eem-set-mode-recall (mode-name)
   "Remember the current state to 'recall' it later."

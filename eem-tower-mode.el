@@ -41,6 +41,10 @@
   "Mode at LEVEL in the TOWER."
   (nth level (ht-get tower 'levels)))
 
+(defun eem-tower-default-mode (tower)
+  "The default mode for tower."
+  (ht-get tower 'default))
+
 (defun eem--tower (tower-id)
   "The epistemic tower corresponding to the provided index."
   (interactive)
