@@ -4,7 +4,8 @@
   (enter :documentation "Primitive mode entry function.")
   (exit nil :documentation "Primitive mode exit function.") ; we don't need to rely on exit being defined
   (entry-hook nil)
-  (exit-hook nil))
+  (exit-hook nil)
+  (manage-hooks nil))
 
 (defun eem-register-mode (mode)
   "Register MODE-NAME for use with epistemic mode."
@@ -23,9 +24,6 @@
 (defvar chimera-evil-states
   (list "normal" "insert" "emacs"))
 
-(defvar chimera-hook-modes
-  nil)
-
 (defun chimera-enter-mode (mode-name)
   "Enter MODE-NAME."
   (interactive)
@@ -43,12 +41,9 @@
         (funcall evil-state-entry)
         (message "changed to %s state" mode-name)))
     (funcall (chimera-mode-enter mode))
-    (when (member mode-name chimera-hook-modes)
+    (when (chimera-mode-manage-hooks mode)
       ;; for now, we rely on evil hooks for all modes (incl.
       ;; hydra-based ones), and this should never be called.
-      ;; probably incorporate an optional flag in the mode struct
-      ;; to indicate hooks are managed elsewhere, instead,
-      ;; `responsible-for-hooks` or something
       (message "Running entry hooks for %s mode" mode-name)
       (run-hooks (chimera-mode-entry-hook mode))))
   (message "entered mode %s" mode-name))
@@ -71,11 +66,12 @@
     (message "hydra for mode %s exited into limbo; entering an appropriate state..."
              mode-name)
     (eem--enter-appropriate-mode))
-  (when (member mode-name chimera-hook-modes)
-    (let ((mode (symbol-value
-                 (intern
-                  ;; TODO: don't rely on a particular name being present
-                  (concat "chimera-" mode-name "-mode")))))
+  (let ((mode (symbol-value
+               (intern
+                ;; TODO: don't rely on a particular name being present
+                (concat "chimera-" mode-name "-mode")))))
+    (when (chimera-mode-manage-hooks mode)
+      (message "Running exit hooks for %s mode" mode-name)
       (run-hooks (chimera-mode-exit-hook mode)))))
 
 (provide 'chimera)
