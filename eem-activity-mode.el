@@ -76,8 +76,5 @@
                      :entry-hook 'evil-activity-state-entry-hook
                      :exit-hook 'evil-activity-state-exit-hook))
 
-;; register mode with the epistemic framework
-(eem-register-mode chimera-activity-mode)
-
 
 (provide 'eem-activity-mode)

@@ -164,8 +164,5 @@
                      :entry-hook 'evil-char-state-entry-hook
                      :exit-hook 'evil-char-state-exit-hook))
 
-;; register mode with the epistemic framework
-(eem-register-mode chimera-char-mode)
-
 
 (provide 'eem-char-mode)

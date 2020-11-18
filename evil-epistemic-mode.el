@@ -133,6 +133,22 @@ and simply toggles whether the menu is visible or not."
 (eem-register-mode chimera-insert-mode)
 (eem-register-mode chimera-emacs-mode)
 
+;; register all the other modes
+(eem-register-mode chimera-application-mode)
+(eem-register-mode chimera-line-mode)
+(eem-register-mode chimera-view-mode)
+(eem-register-mode chimera-activity-mode)
+(eem-register-mode chimera-history-mode)
+(eem-register-mode chimera-tab-mode)
+(eem-register-mode chimera-word-mode)
+(eem-register-mode chimera-window-mode)
+(eem-register-mode chimera-char-mode)
+(eem-register-mode chimera-system-mode)
+(eem-register-mode chimera-buffer-mode)
+(eem-register-mode chimera-file-mode)
+(eem-register-mode chimera-text-mode)
+(eem-register-mode chimera-symex-mode)
+
 
 (provide 'evil-epistemic-mode)
 ;;; evil-epistemic-mode.el ends here

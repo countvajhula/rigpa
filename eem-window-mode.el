@@ -84,8 +84,6 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
                      :entry-hook 'evil-window-state-entry-hook
                      :exit-hook 'evil-window-state-exit-hook))
 
-;; register mode with the epistemic framework
-(eem-register-mode chimera-window-mode)
 
 (provide 'eem-window-mode)
 ;;; eem-window-mode.el ends here

@@ -37,8 +37,5 @@
                      :entry-hook 'evil-history-state-entry-hook
                      :exit-hook 'evil-history-state-exit-hook))
 
-;; register mode with the epistemic framework
-(eem-register-mode chimera-history-mode)
-
 
 (provide 'eem-history-mode)

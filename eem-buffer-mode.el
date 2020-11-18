@@ -110,8 +110,5 @@ current ('original') buffer."
                      :entry-hook 'evil-buffer-state-entry-hook
                      :exit-hook 'evil-buffer-state-exit-hook))
 
-;; register mode with the epistemic framework
-(eem-register-mode chimera-buffer-mode)
-
 
 (provide 'eem-buffer-mode)

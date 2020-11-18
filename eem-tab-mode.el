@@ -111,8 +111,5 @@ buffer mode."
                      :entry-hook 'evil-tab-state-entry-hook
                      :exit-hook 'evil-tab-state-exit-hook))
 
-;; register mode with the epistemic framework
-(eem-register-mode chimera-tab-mode)
-
 
 (provide 'eem-tab-mode)

@@ -115,8 +115,5 @@
                      :entry-hook 'evil-application-state-entry-hook
                      :exit-hook 'evil-application-state-exit-hook))
 
-;; register mode with the epistemic framework
-(eem-register-mode chimera-application-mode)
-
 
 (provide 'eem-application-mode)

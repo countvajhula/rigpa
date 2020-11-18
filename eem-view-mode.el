@@ -134,8 +134,5 @@
                      :entry-hook 'evil-view-state-entry-hook
                      :exit-hook 'evil-view-state-exit-hook))
 
-;; register mode with the epistemic framework
-(eem-register-mode chimera-view-mode)
-
 
 (provide 'eem-view-mode)

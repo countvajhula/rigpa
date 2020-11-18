@@ -221,8 +221,5 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
                      :entry-hook 'evil-line-state-entry-hook
                      :exit-hook 'evil-line-state-exit-hook))
 
-;; register mode with the epistemic framework
-(eem-register-mode chimera-line-mode)
-
 
 (provide 'eem-line-mode)

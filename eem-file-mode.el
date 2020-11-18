@@ -57,8 +57,5 @@ Version 2016-04-04"
                      :entry-hook 'evil-file-state-entry-hook
                      :exit-hook 'evil-file-state-exit-hook))
 
-;; register mode with the epistemic framework
-(eem-register-mode chimera-file-mode)
-
 
 (provide 'eem-file-mode)

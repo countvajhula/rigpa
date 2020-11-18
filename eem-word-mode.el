@@ -188,8 +188,5 @@
                      :entry-hook 'evil-word-state-entry-hook
                      :exit-hook 'evil-word-state-exit-hook))
 
-;; register mode with the epistemic framework
-(eem-register-mode chimera-word-mode)
-
 
 (provide 'eem-word-mode)

@@ -34,8 +34,5 @@
                      :entry-hook 'evil-system-state-entry-hook
                      :exit-hook 'evil-system-state-exit-hook))
 
-;; register mode with the epistemic framework
-(eem-register-mode chimera-system-mode)
-
 
 (provide 'eem-system-mode)

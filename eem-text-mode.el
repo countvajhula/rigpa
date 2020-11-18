@@ -32,8 +32,5 @@
                      :entry-hook 'evil-text-state-entry-hook
                      :exit-hook 'evil-text-state-exit-hook))
 
-;; register mode with the epistemic framework
-(eem-register-mode chimera-text-mode)
-
 
 (provide 'eem-text-mode)
