@@ -126,12 +126,9 @@ current level reflects the mode's position in the tower."
                                    mode-name)))
     (when level-number
       (setq eem--current-level level-number)
-      (message "mode %s is in tower; updated level number to %s and clearing recall %s"
+      (message "mode %s is in tower; updated level number to %s"
                mode-name
-               eem--current-level
-               (and (boundp 'eem-recall) eem-recall))
-      ;; clear recall since we know we're still in the tower
-      (eem--clear-local-recall))))
+               eem--current-level))))
 
 (defun eem--clear-local-recall (&optional buffer)
   "Clear recall flag if any."
