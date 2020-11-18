@@ -37,9 +37,28 @@
       ;; here, nothing would happen at this point. So preemptively go
       ;; to a safe "default" as a failsafe, which would be overridden
       ;; by a recall if there is one.
-      (let ((default-mode (eem-tower-default-mode (eem--current-tower))))
+      (eem--enter-appropriate-mode))))
+
+(defun eem--enter-appropriate-mode (&optional buffer)
+  "Enter the most appropriate mode in BUFFER.
+
+Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
+          (2) recall if present
+          (3) default level for tower (which could default to lowest
+              if unspecified - TODO)."
+  (with-current-buffer (or buffer (current-buffer))
+    (let ((recall-mode (eem--local-recall-mode))
+          (default-mode (eem-tower-default-mode (eem--current-tower))))
+      (if recall-mode
+          ;; recall if available
+          (progn (eem--clear-local-recall)
+                 (eem-enter-mode recall-mode)
+                 (message "Not in tower, couldn't take the stairs; invoked RECALL to %s. Level is %s."
+                          recall-mode
+                          eem--current-level))
+        ;; otherwise default for tower
         (eem-enter-mode default-mode)
-        (message "Not in tower, couldn't take the stairs; entered tower default: %s. Level is %s."
+        (message "Not in tower, couldn't take the stairs; entered tower DEFAULT: %s. Level is %s."
                  default-mode
                  eem--current-level)))))
 
@@ -58,11 +77,7 @@
                  (1- (eem-tower-height (eem--current-tower))))
           (eem--enter-level (1+ eem--current-level)))
       ;; see note for eem-enter-lower-level
-      (let ((default-mode (eem-tower-default-mode (eem--current-tower))))
-        (eem-enter-mode default-mode)
-        (message "Not in tower, couldn't take the stairs; entered tower default: %s. Level is %s."
-                 default-mode
-                 eem--current-level)))))
+      (eem--enter-appropriate-mode))))
 
 (defun eem-enter-lowest-level ()
   "Enter lowest (manual) level."
@@ -118,24 +133,17 @@ current level reflects the mode's position in the tower."
       ;; clear recall since we know we're still in the tower
       (eem--clear-local-recall))))
 
-(defun eem--enter-appropriate-mode (&optional buffer)
-  "Enter the most appropriate mode. TODO: not used at the moment.
-
-Priority: (1) provided mode if admissible (i.e. present in tower)
-(2) recall if present, (3) lowest level (or maybe 'tower home level' which defaults to lowest)."
-  (with-current-buffer (or buffer (current-buffer))
-    (let ((recall (and (boundp 'eem-recall)
-                       eem-recall)))
-      (if recall
-          (eem--enter-local-recall-mode)
-        ;; for now, enter the highest level in the absence of recall
-        (eem-enter-highest-level)))))
-
 (defun eem--clear-local-recall (&optional buffer)
   "Clear recall flag if any."
   (with-current-buffer (or buffer (current-buffer))
     (setq-local eem-recall nil)
     (message "cleared recall!")))
+
+(defun eem--local-recall-mode (&optional buffer)
+  "Get the recall mode (if any) in the BUFFER."
+  (with-current-buffer (or buffer (current-buffer))
+    (and (boundp 'eem-recall)
+         eem-recall)))
 
 (defun eem--enter-local-recall-mode (&optional buffer)
   "Enter the recall mode (if any) in the BUFFER.
@@ -162,20 +170,31 @@ is precisely the thing to be done."
       ;; recall should probably be tower-specific and
       ;; meta-level specific, so that
       ;; we can set it upon entry to a meta mode
-      (when recall
-        ;; if recall were determined to be irrelevant, the flag
-        ;; would have been cleared by this point. If it's still here,
-        ;; then this is a transient state and we need to recall.
-        (progn (message "exiting %s, recall present: %s" mode-name recall)
-               (eem--clear-local-recall)
-               (eem-enter-mode recall)
-               (message "exited %s, recalled %s" mode-name recall))
+      ;; (when recall
+      ;;   ;; if recall were determined to be irrelevant, the flag
+      ;;   ;; would have been cleared by this point. If it's still here,
+      ;;   ;; then this is a transient state and we need to recall.
+      ;;   (progn (message "exiting %s, recall present: %s" mode-name recall)
+      ;;          (eem--clear-local-recall)
+      ;;          (eem-enter-mode recall)
+      ;;          (message "exited %s, recalled %s" mode-name recall)))
         ;; otherwise, let's remember the current state for
         ;; possible recall
         ;; TODO: this is getting called after mode has already changed to
         ;; the new one (e.g. via escape-higher), so this saves the new
         ;; mode as recall instead of the exiting mode
-        ))))
+      ;; => probably fixed with transition to evil hooks
+      (let ((current-mode (symbol-name evil-state)))
+        ;; TODO: potentially only set recall here if it is
+        ;; going to a state outside the tower (which, presumably,
+        ;; is already approximated by the clearing of recall
+        ;; upon entry to a mode present within the tower).
+        (eem-set-mode-recall current-mode)
+        ;; whenever this is called from the final hydra exit hook, it has _always_
+        ;; already changed to the new state if there was a new state to go to. At
+        ;; this point, it sets the recall to the _new_ state rather than the
+        ;; _original_ state as it ought to do.
+        (message "set recall to %s; next state is %s" current-mode evil-next-state)))))
 
 (defun eem-set-mode-recall (mode-name)
   "Remember the current state to 'recall' it later."

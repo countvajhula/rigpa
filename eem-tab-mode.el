@@ -108,8 +108,8 @@ buffer mode."
 (defvar chimera-tab-mode
   (make-chimera-mode :name "tab"
                      :enter #'hydra-tab/body
-                     :entry-hook 'chimera-tab-mode-entry-hook
-                     :exit-hook 'chimera-tab-mode-exit-hook))
+                     :entry-hook 'evil-tab-state-entry-hook
+                     :exit-hook 'evil-tab-state-exit-hook))
 
 ;; register mode with the epistemic framework
 (eem-register-mode chimera-tab-mode)

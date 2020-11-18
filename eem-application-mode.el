@@ -112,8 +112,8 @@
 (defvar chimera-application-mode
   (make-chimera-mode :name "application"
                      :enter #'hydra-application/body
-                     :entry-hook 'chimera-application-mode-entry-hook
-                     :exit-hook 'chimera-application-mode-exit-hook))
+                     :entry-hook 'evil-application-state-entry-hook
+                     :exit-hook 'evil-application-state-exit-hook))
 
 ;; register mode with the epistemic framework
 (eem-register-mode chimera-application-mode)

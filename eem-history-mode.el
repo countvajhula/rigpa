@@ -34,8 +34,8 @@
 (defvar chimera-history-mode
   (make-chimera-mode :name "history"
                      :enter #'hydra-history/body
-                     :entry-hook 'chimera-history-mode-entry-hook
-                     :exit-hook 'chimera-history-mode-exit-hook))
+                     :entry-hook 'evil-history-state-entry-hook
+                     :exit-hook 'evil-history-state-exit-hook))
 
 ;; register mode with the epistemic framework
 (eem-register-mode chimera-history-mode)

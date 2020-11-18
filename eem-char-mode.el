@@ -161,8 +161,8 @@
 (defvar chimera-char-mode
   (make-chimera-mode :name "char"
                      :enter #'hydra-char/body
-                     :entry-hook 'chimera-char-mode-entry-hook
-                     :exit-hook 'chimera-char-mode-exit-hook))
+                     :entry-hook 'evil-char-state-entry-hook
+                     :exit-hook 'evil-char-state-exit-hook))
 
 ;; register mode with the epistemic framework
 (eem-register-mode chimera-char-mode)

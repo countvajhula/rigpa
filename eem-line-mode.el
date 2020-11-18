@@ -218,8 +218,8 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
 (defvar chimera-line-mode
   (make-chimera-mode :name "line"
                      :enter #'hydra-line/body
-                     :entry-hook 'chimera-line-mode-entry-hook
-                     :exit-hook 'chimera-line-mode-exit-hook))
+                     :entry-hook 'evil-line-state-entry-hook
+                     :exit-hook 'evil-line-state-exit-hook))
 
 ;; register mode with the epistemic framework
 (eem-register-mode chimera-line-mode)

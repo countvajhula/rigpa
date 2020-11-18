@@ -31,8 +31,8 @@
 (defvar chimera-system-mode
   (make-chimera-mode :name "system"
                      :enter #'hydra-system/body
-                     :entry-hook 'chimera-system-mode-entry-hook
-                     :exit-hook 'chimera-system-mode-exit-hook))
+                     :entry-hook 'evil-system-state-entry-hook
+                     :exit-hook 'evil-system-state-exit-hook))
 
 ;; register mode with the epistemic framework
 (eem-register-mode chimera-system-mode)

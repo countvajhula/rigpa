@@ -37,14 +37,16 @@
     ;; spot in the hydra exit lifecycle phase).
     (unless (member mode-name chimera-evil-states)
       (let ((evil-state-entry (intern (concat "evil-" mode-name "-state"))))
-        (funcall evil-state-entry)))
+        (funcall evil-state-entry)
+        (message "changed to %s state" mode-name)))
     (funcall (chimera-mode-enter mode))
     (unless (member mode-name chimera-evil-states)
       ;; probably incorporate an optional flag in the struct
       ;; to indicate hooks are managed elsewhere, instead
       ;; `responsible-for-hooks` or something
       (message "Running entry hooks for %s mode" mode-name)
-      (run-hooks (chimera-mode-entry-hook mode))))
+      ;; (run-hooks (chimera-mode-entry-hook mode))
+      ))
   (message "entered mode %s" mode-name))
 
 (defun chimera-exit-mode (mode-name)
@@ -61,10 +63,13 @@
                      (intern
                       ;; TODO: don't rely on a particular name being present
                       (concat "chimera-" mode "-mode"))))))
-    (message "exiting hydra for mode %s, running exit hooks %s"
-             mode
-             exit-hook)
-    (run-hooks exit-hook)))
+    (when (equal (symbol-name evil-state) mode)
+      ;; hydra has exited but we haven't gone to
+      ;; a new state. This means limbo, and we need
+      ;; to enter an appropriate state for the buffer here
+      (message "hydra for mode %s exited into limbo; entering an appropriate state..."
+               mode)
+      (eem--enter-appropriate-mode))))
 
 (provide 'chimera)
 ;;; chimera.el ends here

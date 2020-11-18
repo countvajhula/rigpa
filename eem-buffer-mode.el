@@ -107,8 +107,8 @@ current ('original') buffer."
 (defvar chimera-buffer-mode
   (make-chimera-mode :name "buffer"
                      :enter #'hydra-buffer/body
-                     :entry-hook 'chimera-buffer-mode-entry-hook
-                     :exit-hook 'chimera-buffer-mode-exit-hook))
+                     :entry-hook 'evil-buffer-state-entry-hook
+                     :exit-hook 'evil-buffer-state-exit-hook))
 
 ;; register mode with the epistemic framework
 (eem-register-mode chimera-buffer-mode)

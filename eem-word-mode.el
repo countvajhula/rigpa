@@ -185,8 +185,8 @@
 (defvar chimera-word-mode
   (make-chimera-mode :name "word"
                      :enter #'hydra-word/body
-                     :entry-hook 'chimera-word-mode-entry-hook
-                     :exit-hook 'chimera-word-mode-exit-hook))
+                     :entry-hook 'evil-word-state-entry-hook
+                     :exit-hook 'evil-word-state-exit-hook))
 
 ;; register mode with the epistemic framework
 (eem-register-mode chimera-word-mode)

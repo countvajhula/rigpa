@@ -29,8 +29,8 @@
 (defvar chimera-text-mode
   (make-chimera-mode :name "text"
                      :enter #'hydra-text/body
-                     :entry-hook 'chimera-text-mode-entry-hook
-                     :exit-hook 'chimera-text-mode-exit-hook))
+                     :entry-hook 'evil-text-state-entry-hook
+                     :exit-hook 'evil-text-state-exit-hook))
 
 ;; register mode with the epistemic framework
 (eem-register-mode chimera-text-mode)

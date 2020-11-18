@@ -131,8 +131,8 @@
 (defvar chimera-view-mode
   (make-chimera-mode :name "view"
                      :enter #'hydra-view/body
-                     :entry-hook 'chimera-view-mode-entry-hook
-                     :exit-hook 'chimera-view-mode-exit-hook))
+                     :entry-hook 'evil-view-state-entry-hook
+                     :exit-hook 'evil-view-state-exit-hook))
 
 ;; register mode with the epistemic framework
 (eem-register-mode chimera-view-mode)

@@ -81,8 +81,8 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
 (defvar chimera-window-mode
   (make-chimera-mode :name "window"
                      :enter #'hydra-window/body
-                     :entry-hook 'chimera-window-mode-entry-hook
-                     :exit-hook 'chimera-window-mode-exit-hook))
+                     :entry-hook 'evil-window-state-entry-hook
+                     :exit-hook 'evil-window-state-exit-hook))
 
 ;; register mode with the epistemic framework
 (eem-register-mode chimera-window-mode)

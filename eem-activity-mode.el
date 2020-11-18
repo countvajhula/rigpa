@@ -73,8 +73,8 @@
 (defvar chimera-activity-mode
   (make-chimera-mode :name "activity"
                      :enter #'hydra-activity/body
-                     :entry-hook 'chimera-activity-mode-entry-hook
-                     :exit-hook 'chimera-activity-mode-exit-hook))
+                     :entry-hook 'evil-activity-state-entry-hook
+                     :exit-hook 'evil-activity-state-exit-hook))
 
 ;; register mode with the epistemic framework
 (eem-register-mode chimera-activity-mode)

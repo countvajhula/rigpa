@@ -9,8 +9,8 @@
 (defvar chimera-symex-mode
   (make-chimera-mode :name "symex"
                      :enter #'symex-mode-interface
-                     :entry-hook 'chimera-symex-mode-entry-hook
-                     :exit-hook 'chimera-symex-mode-exit-hook))
+                     :entry-hook 'evil-symex-state-entry-hook
+                     :exit-hook 'evil-symex-state-exit-hook))
 
 ;; register mode with the epistemic framework
 (eem-register-mode chimera-symex-mode)
