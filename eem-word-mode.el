@@ -1,5 +1,5 @@
 (require 'chimera)
-(require 'eem-mode-adapter-hydra)
+(require 'chimera-hydra)
 
 (evil-define-state word
   "Word state."
@@ -145,8 +145,8 @@
 
 (defhydra hydra-word (:idle 1.0
                       :columns 2
-                      :post (eem-hydra-flag-mode-exit "word" t)
-                      :after-exit (eem-hydra-signal-exit "word" #'chimera-handle-hydra-exit))
+                      :post (chimera-hydra-portend-exit "word" t)
+                      :after-exit (chimera-hydra-signal-exit "word" #'chimera-handle-hydra-exit))
   "Word mode"
   ("h" evil-backward-WORD-begin "backward")
   ("j" evil-next-line "down")

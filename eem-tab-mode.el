@@ -1,5 +1,5 @@
 (require 'chimera)
-(require 'eem-mode-adapter-hydra)
+(require 'chimera-hydra)
 
 (evil-define-state tab
   "Tab state."
@@ -58,8 +58,8 @@ buffer mode."
                      :body-pre (setup-tab-marks-table) ; maybe put in ad-hoc entry function
                      :idle 1.0
                      :post (progn (flash-to-original-tab-and-back)
-                                  (eem-hydra-flag-mode-exit "tab" t))
-                     :after-exit (eem-hydra-signal-exit "tab" #'chimera-handle-hydra-exit))
+                                  (chimera-hydra-portend-exit "tab" t))
+                     :after-exit (chimera-hydra-signal-exit "tab" #'chimera-handle-hydra-exit))
   "Tab mode"
   ("/" centaur-tabs-counsel-switch-group "search" :exit t)
   ("h" centaur-tabs-backward "previous")

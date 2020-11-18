@@ -4,9 +4,31 @@
   :message "-- MODE --"
   :enable (normal))
 
+;; registry of known modes
+(defvar eem-modes
+  (ht))
+
+(defun eem-register-mode (mode)
+  "Register MODE-NAME for use with epistemic mode."
+  (let ((name (chimera-mode-name mode))
+        (entry-hook (chimera-mode-entry-hook mode))
+        (exit-hook (chimera-mode-exit-hook mode)))
+    (ht-set! eem-modes name mode)
+    (add-hook exit-hook #'eem-remember-or-recall)
+    (add-hook entry-hook #'eem-reconcile-level)))
+
+(defun eem-unregister-mode (mode)
+  "Unregister MODE-NAME."
+  (let ((name (chimera-mode-name mode))
+        (entry-hook (chimera-mode-entry-hook mode))
+        (exit-hook (chimera-mode-exit-hook mode)))
+    (ht-remove! eem-modes name)
+    (remove-hook exit-hook #'eem-remember-or-recall)
+    (remove-hook entry-hook #'eem-reconcile-level)))
+
 (defun eem-enter-mode (mode-name)
   "Enter mode MODE-NAME."
-  (chimera-enter-mode mode-name))
+  (chimera-enter-mode (ht-get eem-modes mode-name)))
 
 (defun eem--enter-level (level-number)
   "Enter level LEVEL-NUMBER"
