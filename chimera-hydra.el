@@ -13,7 +13,7 @@ If no VALUE is provided, this clears the flag."
   (let ((hydra (intern (concat "hydra-" mode))))
     (chimera--hydra-set-flag hydra :exiting value)))
 
-(defun eem-hydra-signal-exit (mode callback)
+(defun chimera-hydra-signal-exit (mode callback)
   "Helper function to witness hydra exit and notify epistemic mode."
   (let ((hydra (intern (concat "hydra-" mode))))
     (when (hydra-get-property hydra :exiting)
