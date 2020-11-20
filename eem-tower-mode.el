@@ -91,6 +91,11 @@
                                              eem-recall)
                     0)))
     (switch-to-buffer (eem--buffer-name tower))
+    (let ((start (progn (evil-goto-line 1) (line-beginning-position)))
+          (end (progn (evil-goto-line tower-height) (line-end-position))))
+      ;; only show the region that can be interacted with, don't show
+      ;; the name of the tower
+      (narrow-to-region start end))
     (evil-goto-line (- tower-height level))
     (with-current-buffer (eem--get-reference-buffer)
       (setq eem--current-tower-index tower-id))
