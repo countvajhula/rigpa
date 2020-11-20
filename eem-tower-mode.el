@@ -130,13 +130,20 @@
                       "|―――"
                       (number-to-string level-number)
                       "―――|"
-                      " " mode-name "\n"))))
-    (string-trim tower-str)))
+                      " " (if (equal mode-name (eem-tower-default-mode tower))
+                              (concat "[" mode-name "]")
+                              mode-name)
+                      "\n"))))
+    (concat (string-trim tower-str)
+            "\n"
+            "\n-" (upcase (editing-tower-name tower)) "-")))
 
 (defun eem-tower-string-to-tower (tower-str)
   "Derive a tower struct from a string representation."
-  (make-editing-tower :name "blah"
-                      :default "normal"
+  (make-editing-tower :name (parsec-with-input tower-str
+                              (eem--parse-tower-name))
+                      :default (parsec-with-input tower-str
+                                 (eem--parse-tower-default-mode))
                       :levels (parsec-with-input tower-str
                                 (eem--parse-tower-level-names))))
 
