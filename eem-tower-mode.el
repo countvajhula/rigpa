@@ -107,26 +107,33 @@
   (hl-line-mode -1)
   (blink-cursor-mode 1))
 
+(defun eem-tower-to-string (tower)
+  "A string representation of a tower."
+  (let ((tower-height (eem-tower-height tower))
+        (tower-str ""))
+    (dolist
+        (level-number (reverse
+                       (number-sequence 0 (- tower-height
+                                             1))))
+      (let ((mode-name
+             (eem-tower-mode-at-level tower
+                                      level-number)))
+        (setq tower-str
+              (concat tower-str
+                      "|―――"
+                      (number-to-string level-number)
+                      "―――|"
+                      " " mode-name "\n"))))
+    (string-trim tower-str)))
+
 (defun eem-render-tower (tower)
   "Render a text representation of an epistemic editing tower."
   (interactive)
   (let ((tower-buffer (my-new-empty-buffer
-                       (eem--buffer-name tower)))
-        (tower-height (eem-tower-height tower)))
+                       (eem--buffer-name tower))))
     (with-current-buffer tower-buffer
       (eem--set-buffer-appearance)
-      (dolist
-          (level-number (reverse
-                         (number-sequence 0 (- tower-height
-                                               1))))
-        (let ((mode-name
-               (eem-tower-mode-at-level tower
-                                        level-number)))
-          (insert "|―――"
-                  (number-to-string level-number)
-                  "―――|"
-                  " " mode-name "\n")))
-      (my-delete-line))
+      (insert (eem-tower-to-string tower)))
     tower-buffer))
 
 (defun my-enter-tower-mode ()

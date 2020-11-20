@@ -25,6 +25,7 @@ If no VALUE is provided, this clears the flag."
 (defun chimera-handle-hydra-exit (mode)
   "Adapter helper for hydra to call hooks upon exit."
   (let ((mode-name (chimera-mode-name mode)))
+    (message "Hydra %s exited." mode-name)
     (when (equal (symbol-name evil-state) mode-name)
       ;; hydra has exited but we haven't gone to a new state.
       ;; This means limbo, and we need to enter an appropriate
