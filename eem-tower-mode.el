@@ -126,6 +126,13 @@
                       " " mode-name "\n"))))
     (string-trim tower-str)))
 
+(defun eem-tower-string-to-tower (tower-str)
+  "Derive a tower struct from a string representation."
+  (make-editing-tower :name "blah"
+                      :default "normal"
+                      :levels (parsec-with-input tower-str
+                                (eem--parse-tower-level-names))))
+
 (defun eem-render-tower (tower)
   "Render a text representation of an epistemic editing tower."
   (interactive)
