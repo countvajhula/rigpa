@@ -82,8 +82,16 @@
 (defun eem--switch-to-tower (tower-id)
   "Switch to the tower indicated"
   (interactive)
-  (let ((tower (eem--tower tower-id)))
+  (let* ((tower (eem--tower tower-id))
+         (tower-height (eem-tower-height tower))
+         (current-mode-name (symbol-name evil-state))
+         (level (or (eem-tower-level-of-mode tower
+                                             current-mode-name)
+                    (eem-tower-level-of-mode tower
+                                             eem-recall)
+                    0)))
     (switch-to-buffer (eem--buffer-name tower))
+    (evil-goto-line (- tower-height level))
     (with-current-buffer (eem--get-reference-buffer)
       (setq eem--current-tower-index tower-id))
     (eem--extract-selected-level)))
@@ -113,8 +121,7 @@
         (tower-str ""))
     (dolist
         (level-number (reverse
-                       (number-sequence 0 (- tower-height
-                                             1))))
+                       (number-sequence 0 (1- tower-height))))
       (let ((mode-name
              (eem-tower-mode-at-level tower
                                       level-number)))
