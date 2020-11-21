@@ -10,8 +10,8 @@
 (cl-defstruct editing-ensemble
   "Specification for an editing ensemble."
   name
-  (members :documentation "A list of members of the editing ensemble.")
-  (default :documentation "The canonical member of the tower."))
+  (members nil :documentation "A list of members of the editing ensemble.")
+  (default nil :documentation "The canonical member of the tower."))
 
 (defvar eem--current-tower-index 0)
 (defvar eem--last-tower-index 0)

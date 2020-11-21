@@ -1,7 +1,7 @@
 (cl-defstruct chimera-mode
   "Specification for a mode."
   name
-  (enter :documentation "Primitive mode entry function.")
+  (enter nil :documentation "Primitive mode entry function.") ; this is required
   (exit nil :documentation "Primitive mode exit function.") ; we don't need to rely on exit being defined
   (entry-hook nil)
   (exit-hook nil)
