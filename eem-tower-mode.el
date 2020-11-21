@@ -7,11 +7,11 @@
   :message "-- TOWER --"
   :enable (normal))
 
-(cl-defstruct editing-tower
-  "Specification for an editing tower."
+(cl-defstruct editing-ensemble
+  "Specification for an editing ensemble."
   name
-  (levels :documentation "A list of levels in the tower.")
-  (default :documentation "The default mode for the tower."))
+  (members :documentation "A list of members of the editing ensemble.")
+  (default :documentation "The canonical member of the tower."))
 
 (defvar eem--current-tower-index 0)
 (defvar eem--last-tower-index 0)
@@ -35,20 +35,20 @@
     ref-buf))
 
 (defun eem-tower-level-of-mode (tower mode-name)
-  (seq-position (editing-tower-levels tower)
+  (seq-position (editing-ensemble-members tower)
                 mode-name))
 
 (defun eem-tower-height (tower)
   "Height of tower."
-  (length (editing-tower-levels tower)))
+  (length (editing-ensemble-members tower)))
 
 (defun eem-tower-mode-at-level (tower level)
   "Mode at LEVEL in the TOWER."
-  (nth level (editing-tower-levels tower)))
+  (nth level (editing-ensemble-members tower)))
 
 (defun eem-tower-default-mode (tower)
   "The default mode for tower."
-  (editing-tower-default tower))
+  (editing-ensemble-default tower))
 
 (defun eem--tower (tower-id)
   "The epistemic tower corresponding to the provided index."
@@ -106,7 +106,7 @@
 
 (defun eem--buffer-name (tower)
   "Buffer name to use for a given tower."
-  (concat eem-buffer-prefix "-" (editing-tower-name tower)))
+  (concat eem-buffer-prefix "-" (editing-ensemble-name tower)))
 
 (defun eem-tower-to-string (tower)
   "A string representation of a tower."
@@ -129,16 +129,16 @@
                       "\n"))))
     (concat (string-trim tower-str)
             "\n"
-            "\n-" (upcase (editing-tower-name tower)) "-")))
+            "\n-" (upcase (editing-ensemble-name tower)) "-")))
 
 (defun eem-tower-string-to-tower (tower-str)
   "Derive a tower struct from a string representation."
-  (make-editing-tower :name (parsec-with-input tower-str
-                              (eem--parse-tower-name))
-                      :default (parsec-with-input tower-str
-                                 (eem--parse-tower-default-mode))
-                      :levels (parsec-with-input tower-str
-                                (eem--parse-tower-level-names))))
+  (make-editing-ensemble :name (parsec-with-input tower-str
+                                 (eem--parse-tower-name))
+                         :default (parsec-with-input tower-str
+                                    (eem--parse-tower-default-mode))
+                         :members (parsec-with-input tower-str
+                                    (eem--parse-tower-level-names))))
 
 (defun eem--set-meta-buffer-appearance ()
   "Configure meta mode buffer appearance."
