@@ -13,12 +13,12 @@
   (levels :documentation "A list of levels in the tower.")
   (default :documentation "The default mode for the tower."))
 
-(setq eem--current-tower-index 0)
-(setq eem--last-tower-index 0)
-(setq eem--tower-index-on-entry 0)
-(setq eem--flashback-tower-index 0)
-(setq eem--current-level 1)
-(setq eem--reference-buffer (current-buffer))
+(defvar eem--current-tower-index 0)
+(defvar eem--last-tower-index 0)
+(defvar eem--tower-index-on-entry 0)
+(defvar eem--flashback-tower-index 0)
+(defvar eem--current-level 1)
+(defvar eem--reference-buffer (current-buffer))
 (make-variable-buffer-local 'eem--current-tower-index)
 (make-variable-buffer-local 'eem--last-tower-index)
 (make-variable-buffer-local 'eem--tower-index-on-entry)
@@ -59,6 +59,9 @@
   "The epistemic editing tower we are currently in."
   (interactive)
   (with-current-buffer (eem--get-reference-buffer)
+    ;; TODO: sometimes at this point reference buffer
+    ;; is *LV* (hydra menu display) instead of the
+    ;; actual buffer
     (eem--tower eem--current-tower-index)))
 
 (defun eem-previous-tower ()
@@ -105,21 +108,6 @@
   "Buffer name to use for a given tower."
   (concat eem-buffer-prefix "-" (editing-tower-name tower)))
 
-(defun eem--set-buffer-appearance ()
-  "Configure mode mode appearance."
-  (buffer-face-set 'eem-face)
-  (text-scale-set 5)
-  ;;(setq cursor-type nil))
-  (hl-line-mode)
-  (blink-cursor-mode -1)
-  (internal-show-cursor nil nil)
-  (display-line-numbers-mode 'toggle))
-
-(defun eem--revert-buffer-appearance ()
-  "Revert buffer appearance to settings prior to entering mode mode."
-  (hl-line-mode -1)
-  (blink-cursor-mode 1))
-
 (defun eem-tower-to-string (tower)
   "A string representation of a tower."
   (let ((tower-height (eem-tower-height tower))
@@ -152,15 +140,33 @@
                       :levels (parsec-with-input tower-str
                                 (eem--parse-tower-level-names))))
 
+(defun eem--set-meta-buffer-appearance ()
+  "Configure meta mode buffer appearance."
+  (buffer-face-set 'eem-face)
+  (text-scale-set 5)
+  ;;(setq cursor-type nil))
+  (internal-show-cursor nil nil)
+  (display-line-numbers-mode 'toggle)
+  (hl-line-mode))
+
 (defun eem-render-tower (tower)
-  "Render a text representation of an epistemic editing tower."
+  "Render a text representation of an epistemic editing tower in a buffer."
   (interactive)
-  (let ((tower-buffer (my-new-empty-buffer
-                       (eem--buffer-name tower))))
+  (let ((tower-buffer
+         (my-new-empty-buffer (eem--buffer-name tower))))
     (with-current-buffer tower-buffer
-      (eem--set-buffer-appearance)
+      (eem--set-meta-buffer-appearance)
       (insert (eem-tower-to-string tower)))
     tower-buffer))
+
+(defun eem--set-ui-for-meta-modes ()
+  "Set (for now, global) UI parameters for meta modes."
+  ;; should ideally be perspective-specific
+  (blink-cursor-mode -1))
+
+(defun eem--revert-ui ()
+  "Revert buffer appearance to settings prior to entering mode mode."
+  (blink-cursor-mode 1))
 
 (defun my-enter-tower-mode ()
   "Enter a buffer containing a textual representation of the
@@ -179,6 +185,7 @@ initial epistemic tower."
     (setq eem--flashback-tower-index eem--tower-index-on-entry)
     (setq eem--tower-index-on-entry eem--current-tower-index)
     (eem--switch-to-tower eem--current-tower-index))
+  (eem--set-ui-for-meta-modes)
   (evil-tower-state))
 
 (defun my-exit-tower-mode ()
@@ -188,7 +195,7 @@ initial epistemic tower."
     (with-current-buffer ref-buf
       (setq eem--last-tower-index eem--tower-index-on-entry)
       (evil-normal-state))     ; TODO: FIX
-    (eem--revert-buffer-appearance)
+    (eem--revert-ui)
     (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t)
     (switch-to-buffer ref-buf)))
 
