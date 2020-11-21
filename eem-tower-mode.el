@@ -1,12 +1,5 @@
 (require 'eem-mode-mode)
 
-;; Define evil states for each epistemic mode
-(evil-define-state tower
-  "Tower state."
-  :tag " <塔> "
-  :message "-- TOWER --"
-  :enable (normal))
-
 (cl-defstruct editing-ensemble
   "Specification for an editing ensemble."
   name
@@ -185,8 +178,7 @@ initial epistemic tower."
     (setq eem--flashback-tower-index eem--tower-index-on-entry)
     (setq eem--tower-index-on-entry eem--current-tower-index)
     (eem--switch-to-tower eem--current-tower-index))
-  (eem--set-ui-for-meta-modes)
-  (evil-tower-state))
+  (eem--set-ui-for-meta-modes))
 
 (defun my-exit-tower-mode ()
   "Exit tower mode."
