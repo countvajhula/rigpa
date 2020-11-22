@@ -172,7 +172,8 @@ is precisely the thing to be done."
     (let ((recall (and (boundp 'eem-recall)
                        eem-recall)))
       (eem--clear-local-recall)
-      (eem-enter-mode recall))))
+      (when recall
+        (eem-enter-mode recall)))))
 
 (defun eem-remember-or-recall (&optional buffer)
   "Remember the current mode for future recall, or recall to an earlier mode."
