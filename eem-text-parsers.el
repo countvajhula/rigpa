@@ -10,15 +10,16 @@
                               (parsec-try
                                (parsec-string "|"))))
 
-(defun eem--parse-level-number ()
+(defun eem--level-number-parser ()
   "Parser for level number."
   (parsec-many1-as-string (parsec-digit)))
 
 (defun eem--parse-level-left-delimiter ()
-  (parsec-and (parsec-string "|")
-              (parsec-many-till-as-string (parsec-string "―") ; note: not usual dash
-                                          (parsec-lookahead
-                                           (eem--parse-level-number)))))
+  (parsec-collect-as-string
+   (parsec-string "|")
+   (parsec-many-till-as-string (parsec-string "―") ; note: not usual dash
+                               (parsec-lookahead
+                                (eem--level-number-parser)))))
 
 (defun eem--parse-default-mode ()
   "Parse default mode."
@@ -49,23 +50,28 @@
 (defun eem--parse-level ()
   "Parse a level as a list containing its number and name."
   (parsec-collect* (parsec-and (eem--parse-level-left-delimiter)
-                               (eem--parse-level-number))
+                               (eem--level-number-parser))
                    (parsec-and (eem--parse-level-right-delimiter)
                                (parsec-optional* (eem--parse-whitespace))
                                (eem--parse-level-name))))
 
 (defun eem--parse-level-name-only ()
-  "Parse a level as a list containing its number and name."
+  "Parse the name of a level."
   (parsec-and (eem--parse-level-left-delimiter)
-              (eem--parse-level-number)
+              (eem--level-number-parser)
               (eem--parse-level-right-delimiter)
               (parsec-optional* (eem--parse-whitespace))
               (eem--parse-level-name)))
 
+(defun eem--parse-level-number-only ()
+  "Parse the number of a level."
+  (parsec-and (eem--parse-level-left-delimiter)
+              (eem--level-number-parser)))
+
 (defun eem--parse-level-name-only-if-default ()
   "Parse a level and extract the name if it's the default for the tower."
   (parsec-and (eem--parse-level-left-delimiter)
-              (eem--parse-level-number)
+              (eem--level-number-parser)
               (eem--parse-level-right-delimiter)
               (parsec-optional* (eem--parse-whitespace))
               (eem--parse-default-level-name)))

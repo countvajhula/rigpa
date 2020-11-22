@@ -117,9 +117,9 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
   "Extract the selected level from the current representation"
   (interactive)
   (let* ((level-str (thing-at-point 'line t))
-         (level-number (string-to-number (progn (string-match "[[:digit:]]+"
-                                                              level-str)
-                                                (match-string 0 level-str)))))
+         (level-number (string-to-number
+                        (parsec-with-input level-str
+                          (eem--parse-level-number-only)))))
     (setq eem--selected-level level-number)))
 
 (defun eem-select-previous-level ()
