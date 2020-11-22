@@ -3,6 +3,7 @@
 (cl-defstruct editing-ensemble
   "Specification for an editing ensemble."
   name
+  ;; TODO: members should be structs implementing an "entity" interface
   (members nil :documentation "A list of members of the editing ensemble.")
   (default nil :documentation "The canonical member of the tower."))
 
@@ -211,7 +212,7 @@ monadic verb in the 'switch buffer' navigation."
       (setq eem--current-tower-index eem--flashback-tower-index)
       (setq eem--flashback-tower-index original-tower-index))
     ;; enter the appropriate level in the new tower
-    (eem--enter-local-recall-mode)))
+    (eem--enter-appropriate-mode)))
 
 (defun eem-enter-selected-level ()
   "Enter selected level"
