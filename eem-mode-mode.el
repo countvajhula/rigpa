@@ -75,7 +75,7 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
               if unspecified - TODO)."
   (with-current-buffer (or buffer (current-buffer))
     (let ((recall-mode (eem--local-recall-mode))
-          (default-mode (eem-tower-default-mode (eem--current-tower))))
+          (default-mode (editing-ensemble-default (eem--current-tower))))
       (if recall-mode
           ;; recall if available
           (progn (eem--clear-local-recall)

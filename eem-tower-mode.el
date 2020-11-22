@@ -40,10 +40,6 @@
   "Mode at LEVEL in the TOWER."
   (nth level (editing-ensemble-members tower)))
 
-(defun eem-tower-default-mode (tower)
-  "The default mode for tower."
-  (editing-ensemble-default tower))
-
 (defun eem--tower (tower-id)
   "The epistemic tower corresponding to the provided index."
   (interactive)
@@ -116,7 +112,7 @@
                       "|―――"
                       (number-to-string level-number)
                       "―――|"
-                      " " (if (equal mode-name (eem-tower-default-mode tower))
+                      " " (if (equal mode-name (editing-ensemble-default tower))
                               (concat "[" mode-name "]")
                               mode-name)
                       "\n"))))
