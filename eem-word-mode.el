@@ -142,6 +142,26 @@
   (evil-forward-paragraph)
   (evil-backward-WORD-begin))
 
+(defun my-add-to-word-after ()
+  "Add to the end of this word."
+  (interactive)
+  (evil-forward-WORD-end)
+  (evil-insert-state))
+
+(defun my-add-word-after ()
+  "Add a word after this one."
+  (interactive)
+  (evil-forward-WORD-begin)
+  (insert " ")
+  (backward-char)
+  (evil-insert-state))
+
+(defun my-add-to-word-before ()
+  "Add to the beginning of this word."
+  (interactive)
+  (evil-backward-WORD-begin)
+  (evil-insert-state))
+
 
 (defhydra hydra-word (:idle 1.0
                       :columns 2
@@ -167,6 +187,10 @@
   ("K" my-move-word-up "move up")
   ("x" my-delete-word "delete")
   ("c" my-change-word "change" :exit t)
+  ("a" my-add-to-word-after "append" :exit t)
+  ("i" my-add-to-word-before "insert" :exit t)
+  ("A" my-add-word-after "add after" :exit t)
+  ("I" my-add-word-before "add before" :exit t)
   ("~" my-toggle-case "toggle case")
   ("U" my-upper-case "upper case")
   ("u" my-lower-case "lower case")
