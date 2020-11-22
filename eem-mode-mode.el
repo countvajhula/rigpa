@@ -1,3 +1,5 @@
+(require 'eem-text-parsers)
+
 (evil-define-state mode
   "Mode state."
   :tag " <M> "
