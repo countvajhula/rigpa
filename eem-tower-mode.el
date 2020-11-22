@@ -186,8 +186,7 @@ initial epistemic tower."
   (interactive)
   (let ((ref-buf (eem--get-reference-buffer)))
     (with-current-buffer ref-buf
-      (setq eem--last-tower-index eem--tower-index-on-entry)
-      (evil-normal-state))     ; TODO: FIX
+      (setq eem--last-tower-index eem--tower-index-on-entry))
     (eem--revert-ui)
     (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t)
     (switch-to-buffer ref-buf)))
