@@ -82,18 +82,14 @@
 (defun my-move-line-very-bottom ()
   "Move line to bottom"
   (interactive)
-  (my-delete-line)
-  (goto-char (point-max))
-  (if (bolp)
-      (evil-paste-before 1)
-    (evil-paste-after 1)))
+  (evil-execute-in-normal-state)
+  (execute-kbd-macro (kbd ":.m$")))
 
 (defun my-move-line-very-top ()
   "Move line to top"
   (interactive)
-  (my-delete-line)
-  (goto-char (point-min))
-  (evil-paste-before 1))
+  (evil-execute-in-normal-state)
+  (execute-kbd-macro (kbd ":.m0")))
 
 (defun my-delete-line ()
   "Delete line"
