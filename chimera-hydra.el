@@ -1,4 +1,7 @@
 
+(defun chimera--hydra-for-state (mode-name)
+  (intern (concat "hydra-" mode-name)))
+
 (defun chimera--hydra-set-flag (hydra flag &optional value)
   "Set a FLAG on the HYDRA with the value VALUE.
 
@@ -11,13 +14,13 @@ If no VALUE is provided, this clears the flag."
 (defun chimera-hydra-portend-exit (mode &optional value)
   "Set a mode exit flag to indicate cleanup operations need to be performed."
   (let* ((mode-name (chimera-mode-name mode))
-         (hydra (intern (concat "hydra-" mode-name))))
+         (hydra (chimera--hydra-for-state mode-name)))
     (chimera--hydra-set-flag hydra :exiting value)))
 
 (defun chimera-hydra-signal-exit (mode callback)
   "Helper function to witness hydra exit and notify epistemic mode."
   (let* ((mode-name (chimera-mode-name mode))
-         (hydra (intern (concat "hydra-" mode-name))))
+         (hydra (chimera--hydra-for-state mode-name)))
     (when (hydra-get-property hydra :exiting)
       (funcall callback mode)
       (chimera--hydra-set-flag hydra :exiting))))

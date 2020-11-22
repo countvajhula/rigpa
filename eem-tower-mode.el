@@ -101,7 +101,7 @@
   "Buffer name to use for a given tower."
   (concat eem-buffer-prefix "-" (editing-ensemble-name tower)))
 
-(defun eem-tower-to-string (tower)
+(defun eem-serialize-tower (tower)
   "A string representation of a tower."
   (let ((tower-height (eem-tower-height tower))
         (tower-str ""))
@@ -124,7 +124,7 @@
             "\n"
             "\n-" (upcase (editing-ensemble-name tower)) "-")))
 
-(defun eem-tower-string-to-tower (tower-str)
+(defun eem-parse-tower (tower-str)
   "Derive a tower struct from a string representation."
   (make-editing-ensemble :name (parsec-with-input tower-str
                                  (eem--parse-tower-name))
@@ -149,7 +149,7 @@
          (my-new-empty-buffer (eem--buffer-name tower))))
     (with-current-buffer tower-buffer
       (eem--set-meta-buffer-appearance)
-      (insert (eem-tower-to-string tower)))
+      (insert (eem-serialize-tower tower)))
     tower-buffer))
 
 (defun eem--set-ui-for-meta-modes ()
