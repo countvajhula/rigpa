@@ -116,23 +116,9 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
 (defun eem--extract-selected-level ()
   "Extract the selected level from the current representation"
   (interactive)
-  (let* ((level-str (thing-at-point 'line t))
-         (level-number (string-to-number
-                        (parsec-with-input level-str
-                          (eem--parse-level-number-only)))))
-    (setq eem--selected-level level-number)))
-
-(defun eem-select-previous-level ()
-  "Select previous level"
-  (interactive)
-  (evil-previous-line)
-  (eem--extract-selected-level))
-
-(defun eem-select-next-level ()
-  "Select next level"
-  (interactive)
-  (evil-next-line)
-  (eem--extract-selected-level))
+  (let* ((level-str (thing-at-point 'line t)))
+    (string-to-number (parsec-with-input level-str
+                        (eem--parse-level-number-only)))))
 
 (defun eem-reconcile-level ()
   "Adjust level to match current mode.
