@@ -12,23 +12,27 @@
 (defvar eem--tower-index-on-entry 0)
 (defvar eem--flashback-tower-index 0)
 (defvar eem--current-level 1)
-(defvar eem--reference-buffer (current-buffer))
+;; the "ground" of buffers is a priori themselves,
+;; representing a termination of the chain of reference
+(defvar-local eem--ground-buffer nil)
 (make-variable-buffer-local 'eem--current-tower-index)
 (make-variable-buffer-local 'eem--last-tower-index)
 (make-variable-buffer-local 'eem--tower-index-on-entry)
 (make-variable-buffer-local 'eem--flashback-tower-index)
 (make-variable-buffer-local 'eem--current-level)
 
-(defun eem--get-reference-buffer ()
-  "Get the buffer in reference to which epistemic mode is operating."
-  (let ((ref-buf (if (string-match (format "^%s"
-                                           eem-buffer-prefix)
-                                   (buffer-name))
-                     eem--reference-buffer
-                   (current-buffer))))
-    ref-buf))
+(defun eem--get-ground-buffer ()
+  "Get the ground buffer.
 
-(cl-defgeneric eem-editing-entity-name (entity))
+At the lowest level, the buffer is expected to refer to itself
+to terminate the reference chain."
+  (unless eem--ground-buffer
+    (setq eem--ground-buffer (current-buffer)))
+  eem--ground-buffer)
+
+(cl-defgeneric eem-editing-entity-name (entity)
+  "A generic function to access the name of any editing
+entity, such as modes, towers or complexes.")
 
 (cl-defmethod eem-editing-entity-name ((entity chimera-mode))
   (chimera-mode-name entity))
@@ -57,7 +61,7 @@
 (defun eem--current-tower ()
   "The epistemic editing tower we are currently in."
   (interactive)
-  (with-current-buffer (eem--get-reference-buffer)
+  (with-current-buffer (eem--get-ground-buffer)
     ;; TODO: sometimes at this point reference buffer
     ;; is *LV* (hydra menu display) instead of the
     ;; actual buffer
@@ -66,7 +70,7 @@
 (defun eem-previous-tower ()
   "Previous tower"
   (interactive)
-  (with-current-buffer (eem--get-reference-buffer)
+  (with-current-buffer (eem--get-ground-buffer)
     (let ((tower-id (mod (- eem--current-tower-index
                            1)
                         (eem-ensemble-size eem-general-complex))))
@@ -75,7 +79,7 @@
 (defun eem-next-tower ()
   "Next tower"
   (interactive)
-  (with-current-buffer (eem--get-reference-buffer)
+  (with-current-buffer (eem--get-ground-buffer)
     (let ((tower-id (mod (+ eem--current-tower-index
                            1)
                         (eem-ensemble-size eem-general-complex))))
@@ -99,7 +103,7 @@
       ;; the name of the tower
       (narrow-to-region start end))
     (evil-goto-line (- tower-height level))
-    (with-current-buffer (eem--get-reference-buffer)
+    (with-current-buffer (eem--get-ground-buffer)
       (setq eem--current-tower-index tower-id))))
 
 (defun eem--buffer-name (tower)
@@ -151,9 +155,14 @@
 (defun eem-render-tower (tower)
   "Render a text representation of an epistemic editing tower in a buffer."
   (interactive)
-  (let ((tower-buffer
+  (let ((inherited-ground-buffer (eem--get-ground-buffer))
+        (tower-buffer
          (my-new-empty-buffer (eem--buffer-name tower))))
     (with-current-buffer tower-buffer
+      ;; ground buffer is inherited from the original
+      ;; to define the chain of reference
+      (setq eem--ground-buffer
+            inherited-ground-buffer)
       (eem--set-meta-buffer-appearance)
       (insert (eem-serialize-tower tower)))
     tower-buffer))
@@ -171,10 +180,11 @@
   "Enter a buffer containing a textual representation of the
 initial epistemic tower."
   (interactive)
-  (setq eem--reference-buffer (current-buffer))
   (dolist (tower (editing-ensemble-members eem-general-complex))
     (eem-render-tower tower))
-  (with-current-buffer (eem--get-reference-buffer)
+  (with-current-buffer (eem--get-ground-buffer)
+    ;; TODO: is it necessary to reference ground buffer here?
+    ;;
     ;; Store "previous" previous tower to support flashback
     ;; feature seamlessly. This is to get around hydra executing
     ;; functions after exiting rather than before, which loses
@@ -189,12 +199,11 @@ initial epistemic tower."
 (defun my-exit-tower-mode ()
   "Exit tower mode."
   (interactive)
-  (let ((ref-buf (eem--get-reference-buffer)))
-    (with-current-buffer ref-buf
-      (setq eem--last-tower-index eem--tower-index-on-entry))
-    (eem--revert-ui)
-    (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t)
-    (switch-to-buffer ref-buf)))
+  (with-current-buffer (eem--get-ground-buffer)
+    (setq eem--last-tower-index eem--tower-index-on-entry))
+  (eem--revert-ui)
+  (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t)
+  (switch-to-buffer (eem--get-ground-buffer)))
 
 (defun eem-flashback-to-last-tower ()
   "Switch to the last tower used.
@@ -204,7 +213,7 @@ of buffer mode when in epistemic mode, or alternatively,
 and perhaps equivalently, by treating 'switch tower' as the
 monadic verb in the 'switch buffer' navigation."
   (interactive)
-  (with-current-buffer (eem--get-reference-buffer)
+  (with-current-buffer (eem--get-ground-buffer)
     ;; setting hydra to exit here would be ideal, but it seems
     ;; the hydra exits prior to this function being run, and there's
     ;; no epistemic buffer to switch to. so for now, options are
@@ -222,7 +231,7 @@ monadic verb in the 'switch buffer' navigation."
   "Enter selected level"
   (interactive)
   (let ((selected-level (eem--extract-selected-level)))
-    (with-current-buffer (eem--get-reference-buffer)
+    (with-current-buffer (eem--get-ground-buffer)
       (message "entering level %s in tower %s in buffer %s"
                selected-level
                eem--current-tower-index
