@@ -106,11 +106,14 @@ entity, such as modes, towers or complexes.")
     (with-current-buffer (eem--get-ground-buffer)
       (setq eem--current-tower-index tower-id))))
 
-(defun eem--buffer-name (tower)
-  "Buffer name to use for a given tower."
-  (concat eem-buffer-prefix "-" (editing-ensemble-name tower)))
+(defun eem--buffer-name (ensemble)
+  "Buffer name to use for a given ensemble."
+  (concat eem-buffer-prefix "-" (eem-editing-entity-name ensemble)))
 
-(defun eem-serialize-tower (tower)
+;; TODO: this produces a representation in a single buffer
+;; which is only the case for towers - for complexes and
+;; beyond we'd need perspectives
+(defun eem-serialize-ensemble (tower)
   "A string representation of a tower."
   (let ((tower-height (eem-ensemble-size tower))
         (tower-str ""))
@@ -152,20 +155,19 @@ entity, such as modes, towers or complexes.")
   (display-line-numbers-mode 'toggle)
   (hl-line-mode))
 
-(defun eem-render-tower (tower)
-  "Render a text representation of an epistemic editing tower in a buffer."
+(defun eem-render-ensemble (ensemble)
+  "Render a text representation of an epistemic ensemble in a buffer."
   (interactive)
   (let ((inherited-ground-buffer (eem--get-ground-buffer))
-        (tower-buffer
-         (my-new-empty-buffer (eem--buffer-name tower))))
-    (with-current-buffer tower-buffer
+        (buffer (my-new-empty-buffer (eem--buffer-name ensemble))))
+    (with-current-buffer buffer
       ;; ground buffer is inherited from the original
       ;; to define the chain of reference
       (setq eem--ground-buffer
             inherited-ground-buffer)
       (eem--set-meta-buffer-appearance)
-      (insert (eem-serialize-tower tower)))
-    tower-buffer))
+      (insert (eem-serialize-ensemble ensemble)))
+    buffer))
 
 (defun eem--set-ui-for-meta-modes ()
   "Set (for now, global) UI parameters for meta modes."
@@ -199,11 +201,12 @@ initial epistemic tower."
 (defun my-exit-tower-mode ()
   "Exit tower mode."
   (interactive)
-  (with-current-buffer (eem--get-ground-buffer)
-    (setq eem--last-tower-index eem--tower-index-on-entry))
-  (eem--revert-ui)
-  (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t)
-  (switch-to-buffer (eem--get-ground-buffer)))
+  (let ((ref-buf (eem--get-ground-buffer)))
+    (with-current-buffer ref-buf
+      (setq eem--last-tower-index eem--tower-index-on-entry))
+    (eem--revert-ui)
+    (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t)
+    (switch-to-buffer ref-buf)))
 
 (defun eem-flashback-to-last-tower ()
   "Switch to the last tower used.

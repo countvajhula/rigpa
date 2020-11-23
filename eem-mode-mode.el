@@ -191,6 +191,38 @@ is precisely the thing to be done."
   "Remember the current state to 'recall' it later."
   (setq-local eem-recall mode-name))
 
+;; TODO: should have a single function that enters
+;; any meta-level, incl. mode, tower, etc.
+;; this is the function that does the "vertical" escape
+(defun my-enter-mode-mode ()
+  "Enter a buffer containing a textual representation of the
+current epistemic tower."
+  (interactive)
+  (eem-render-ensemble (eem--current-tower))
+  (with-current-buffer (eem--get-ground-buffer)
+    ;; TODO: is it necessary to reference ground buffer here?
+    ;;
+    ;; Store "previous" previous tower to support flashback
+    ;; feature seamlessly. This is to get around hydra executing
+    ;; functions after exiting rather than before, which loses
+    ;; information about the previous tower if flashback is
+    ;; being invoked. This is a hacky fix, but it works for now.
+    ;; Improve this eventually.
+    (setq eem--flashback-tower-index eem--tower-index-on-entry)
+    (setq eem--tower-index-on-entry eem--current-tower-index)
+    (eem--switch-to-tower eem--current-tower-index))
+  (eem--set-ui-for-meta-modes))
+
+(defun my-exit-mode-mode ()
+  "Exit mode mode."
+  (interactive)
+  (let ((ref-buf (eem--get-ground-buffer)))
+    (with-current-buffer ref-buf
+      (setq eem--last-tower-index eem--tower-index-on-entry))
+    (eem--revert-ui)
+    (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t)
+    (switch-to-buffer ref-buf)))
+
 
 (defhydra hydra-mode (:idle 1.0
                       :columns 4
