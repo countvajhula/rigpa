@@ -52,7 +52,7 @@
 (defun eem--tower (tower-id)
   "The epistemic tower corresponding to the provided index."
   (interactive)
-  (nth tower-id (editing-ensemble-members eem-towers)))
+  (nth tower-id (editing-ensemble-members eem-general-complex)))
 
 (defun eem--current-tower ()
   "The epistemic editing tower we are currently in."
@@ -69,7 +69,7 @@
   (with-current-buffer (eem--get-reference-buffer)
     (let ((tower-id (mod (- eem--current-tower-index
                            1)
-                        (eem-ensemble-size eem-towers))))
+                        (eem-ensemble-size eem-general-complex))))
      (eem--switch-to-tower tower-id))))
 
 (defun eem-next-tower ()
@@ -78,7 +78,7 @@
   (with-current-buffer (eem--get-reference-buffer)
     (let ((tower-id (mod (+ eem--current-tower-index
                            1)
-                        (eem-ensemble-size eem-towers))))
+                        (eem-ensemble-size eem-general-complex))))
      (eem--switch-to-tower tower-id))))
 
 (defun eem--switch-to-tower (tower-id)
@@ -172,7 +172,7 @@
 initial epistemic tower."
   (interactive)
   (setq eem--reference-buffer (current-buffer))
-  (dolist (tower (editing-ensemble-members eem-towers))
+  (dolist (tower (editing-ensemble-members eem-general-complex))
     (eem-render-tower tower))
   (with-current-buffer (eem--get-reference-buffer)
     ;; Store "previous" previous tower to support flashback
