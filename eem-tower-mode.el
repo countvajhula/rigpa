@@ -1,11 +1,5 @@
 (require 'eem-mode-mode)
-
-(cl-defstruct editing-ensemble
-  "Specification for an editing ensemble."
-  name
-  ;; TODO: members should be structs implementing an "entity" interface
-  (members nil :documentation "A list of members of the editing ensemble.")
-  (default nil :documentation "The canonical member of the tower."))
+(require 'eem-types)
 
 (defvar eem--current-tower-index 0)
 (defvar eem--last-tower-index 0)
@@ -20,38 +14,6 @@
 (make-variable-buffer-local 'eem--tower-index-on-entry)
 (make-variable-buffer-local 'eem--flashback-tower-index)
 (make-variable-buffer-local 'eem--current-level)
-
-(defun eem--get-ground-buffer ()
-  "Get the ground buffer.
-
-At the lowest level, the buffer is expected to refer to itself
-to terminate the reference chain."
-  (unless eem--ground-buffer
-    (setq eem--ground-buffer (current-buffer)))
-  eem--ground-buffer)
-
-(cl-defgeneric eem-editing-entity-name (entity)
-  "A generic function to access the name of any editing
-entity, such as modes, towers or complexes.")
-
-(cl-defmethod eem-editing-entity-name ((entity chimera-mode))
-  (chimera-mode-name entity))
-
-(cl-defmethod eem-editing-entity-name ((entity editing-ensemble))
-  (editing-ensemble-name entity))
-
-(defun eem-ensemble-member-position-by-name (ensemble name)
-  (seq-position (seq-map #'eem-editing-entity-name
-                         (editing-ensemble-members ensemble))
-                name))
-
-(defun eem-ensemble-size (ensemble)
-  "Size of ensemble (e.g. height of a tower)."
-  (length (editing-ensemble-members ensemble)))
-
-(defun eem-ensemble-member-at-position (tower position)
-  "Mode at LEVEL in the TOWER."
-  (nth position (editing-ensemble-members tower)))
 
 (defun eem--tower (tower-id)
   "The epistemic tower corresponding to the provided index."
@@ -71,18 +33,16 @@ entity, such as modes, towers or complexes.")
   "Previous tower"
   (interactive)
   (with-current-buffer (eem--get-ground-buffer)
-    (let ((tower-id (mod (- eem--current-tower-index
-                           1)
-                        (eem-ensemble-size eem-general-complex))))
+    (let ((tower-id (mod (1- eem--current-tower-index)
+                         (eem-ensemble-size eem-general-complex))))
      (eem--switch-to-tower tower-id))))
 
 (defun eem-next-tower ()
   "Next tower"
   (interactive)
   (with-current-buffer (eem--get-ground-buffer)
-    (let ((tower-id (mod (+ eem--current-tower-index
-                           1)
-                        (eem-ensemble-size eem-general-complex))))
+    (let ((tower-id (mod (1+ eem--current-tower-index)
+                         (eem-ensemble-size eem-general-complex))))
      (eem--switch-to-tower tower-id))))
 
 (defun eem--switch-to-tower (tower-id)
@@ -106,32 +66,18 @@ entity, such as modes, towers or complexes.")
     (with-current-buffer (eem--get-ground-buffer)
       (setq eem--current-tower-index tower-id))))
 
-(defun eem--buffer-name (ensemble)
-  "Buffer name to use for a given ensemble."
-  (concat eem-buffer-prefix "-" (eem-editing-entity-name ensemble)))
-
-;; TODO: this produces a representation in a single buffer
-;; which is only the case for towers - for complexes and
-;; beyond we'd need perspectives
-(defun eem-serialize-ensemble (tower)
+(defun eem-serialize-tower (tower)
   "A string representation of a tower."
   (let ((tower-height (eem-ensemble-size tower))
         (tower-str ""))
     (dolist
         (level-number (reverse
                        (number-sequence 0 (1- tower-height))))
-      (let ((mode-name
-             (eem-editing-entity-name
-              (eem-ensemble-member-at-position tower
-                                               level-number))))
+      (let ((mode (eem-ensemble-member-at-position tower
+                                                   level-number)))
         (setq tower-str
               (concat tower-str
-                      "|―――"
-                      (number-to-string level-number)
-                      "―――|"
-                      " " (if (equal mode-name (editing-ensemble-default tower))
-                              (concat "[" mode-name "]")
-                              mode-name)
+                      (eem-serialize-mode mode)
                       "\n"))))
     (concat (string-trim tower-str)
             "\n"
@@ -146,37 +92,19 @@ entity, such as modes, towers or complexes.")
                          :members (parsec-with-input tower-str
                                     (eem--parse-tower-level-names))))
 
-(defun eem--set-meta-buffer-appearance ()
-  "Configure meta mode buffer appearance."
-  (buffer-face-set 'eem-face)
-  (text-scale-set 5)
-  ;;(setq cursor-type nil))
-  (internal-show-cursor nil nil)
-  (display-line-numbers-mode 'toggle)
-  (hl-line-mode))
-
-(defun eem-render-ensemble (ensemble)
-  "Render a text representation of an epistemic ensemble in a buffer."
+(defun eem-render-tower (tower)
+  "Render a text representation of an editing tower in a buffer."
   (interactive)
   (let ((inherited-ground-buffer (eem--get-ground-buffer))
-        (buffer (my-new-empty-buffer (eem--buffer-name ensemble))))
+        (buffer (my-new-empty-buffer (eem--buffer-name tower))))
     (with-current-buffer buffer
       ;; ground buffer is inherited from the original
       ;; to define the chain of reference
       (setq eem--ground-buffer
             inherited-ground-buffer)
       (eem--set-meta-buffer-appearance)
-      (insert (eem-serialize-ensemble ensemble)))
+      (insert (eem-serialize-tower tower)))
     buffer))
-
-(defun eem--set-ui-for-meta-modes ()
-  "Set (for now, global) UI parameters for meta modes."
-  ;; should ideally be perspective-specific
-  (blink-cursor-mode -1))
-
-(defun eem--revert-ui ()
-  "Revert buffer appearance to settings prior to entering mode mode."
-  (blink-cursor-mode 1))
 
 (defun my-enter-tower-mode ()
   "Enter a buffer containing a textual representation of the
@@ -229,17 +157,5 @@ monadic verb in the 'switch buffer' navigation."
       (setq eem--flashback-tower-index original-tower-index))
     ;; enter the appropriate level in the new tower
     (eem--enter-appropriate-mode)))
-
-(defun eem-enter-selected-level ()
-  "Enter selected level"
-  (interactive)
-  (let ((selected-level (eem--extract-selected-level)))
-    (with-current-buffer (eem--get-ground-buffer)
-      (message "entering level %s in tower %s in buffer %s"
-               selected-level
-               eem--current-tower-index
-               (current-buffer))
-      (eem--enter-level selected-level))))
-
 
 (provide 'eem-tower-mode)

@@ -1,4 +1,5 @@
 (require 'eem-text-parsers)
+(require 'eem-meta)
 
 (evil-define-state mode
   "Mode state."
@@ -123,6 +124,17 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
     (string-to-number (parsec-with-input level-str
                         (eem--parse-level-number-only)))))
 
+(defun eem-enter-selected-level ()
+  "Enter selected level"
+  (interactive)
+  (let ((selected-level (eem--extract-selected-level)))
+    (with-current-buffer (eem--get-ground-buffer)
+      (message "entering level %s in tower %s in buffer %s"
+               selected-level
+               eem--current-tower-index
+               (current-buffer))
+      (eem--enter-level selected-level))))
+
 (defun eem-reconcile-level ()
   "Adjust level to match current mode.
 
@@ -191,14 +203,26 @@ is precisely the thing to be done."
   "Remember the current state to 'recall' it later."
   (setq-local eem-recall mode-name))
 
+(defun eem-serialize-mode (mode)
+  "A string representation of a mode."
+  (let ((name (eem-editing-entity-name mode)))
+    (concat "|―――"
+            (number-to-string level-number)
+            "―――|"
+            " " (if (equal name (editing-ensemble-default tower))
+                    (concat "[" name "]")
+                  name))))
+
 ;; TODO: should have a single function that enters
 ;; any meta-level, incl. mode, tower, etc.
 ;; this is the function that does the "vertical" escape
+;; some may enter new buffers while other may enter new perspectives
+;; for now we can just do a simple dispatch here
 (defun my-enter-mode-mode ()
   "Enter a buffer containing a textual representation of the
 current epistemic tower."
   (interactive)
-  (eem-render-ensemble (eem--current-tower))
+  (eem-render-tower (eem--current-tower))
   (with-current-buffer (eem--get-ground-buffer)
     ;; TODO: is it necessary to reference ground buffer here?
     ;;
@@ -255,3 +279,4 @@ current epistemic tower."
 ;; maybe tower mode should only operate on towers - and mode mode could take advantage of a similar (but more minimal) representation as tower mode currently has
 
 (provide 'eem-mode-mode)
+;;; eem-mode-mode.el ends here
