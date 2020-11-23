@@ -39,7 +39,7 @@
          (level-number (max (min level-number
                                  (1- tower-height))
                             0)))
-    (let ((mode-name (chimera-mode-name
+    (let ((mode-name (eem-editing-entity-name
                       (eem-ensemble-member-at-position tower level-number))))
       (eem-enter-mode mode-name)
       (setq eem--current-level level-number))))

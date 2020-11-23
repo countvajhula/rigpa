@@ -28,13 +28,16 @@
                    (current-buffer))))
     ref-buf))
 
-(defun eem--ensemblish-name (ebl)
-  (if (editing-ensemble-p ebl)
-      (editing-ensemble-name ebl)
-    (chimera-mode-name ebl)))
+(cl-defgeneric eem-editing-entity-name (entity))
+
+(cl-defmethod eem-editing-entity-name ((entity chimera-mode))
+  (chimera-mode-name entity))
+
+(cl-defmethod eem-editing-entity-name ((entity editing-ensemble))
+  (editing-ensemble-name entity))
 
 (defun eem-ensemble-member-position-by-name (ensemble name)
-  (seq-position (seq-map #'eem--ensemblish-name
+  (seq-position (seq-map #'eem-editing-entity-name
                          (editing-ensemble-members ensemble))
                 name))
 
@@ -111,7 +114,7 @@
         (level-number (reverse
                        (number-sequence 0 (1- tower-height))))
       (let ((mode-name
-             (chimera-mode-name
+             (eem-editing-entity-name
               (eem-ensemble-member-at-position tower
                                                level-number))))
         (setq tower-str
