@@ -16,7 +16,7 @@
         (entry-hook (chimera-mode-entry-hook mode))
         (exit-hook (chimera-mode-exit-hook mode)))
     (ht-set! eem-modes name mode)
-    (add-hook exit-hook #'eem-remember-or-recall)
+    (add-hook exit-hook #'eem-remember-for-recall)
     (add-hook entry-hook #'eem-reconcile-level)))
 
 (defun eem-unregister-mode (mode)
@@ -25,7 +25,7 @@
         (entry-hook (chimera-mode-entry-hook mode))
         (exit-hook (chimera-mode-exit-hook mode)))
     (ht-remove! eem-modes name)
-    (remove-hook exit-hook #'eem-remember-or-recall)
+    (remove-hook exit-hook #'eem-remember-for-recall)
     (remove-hook entry-hook #'eem-reconcile-level)))
 
 (defun eem-enter-mode (mode-name)
@@ -35,11 +35,12 @@
 (defun eem--enter-level (level-number)
   "Enter level LEVEL-NUMBER"
   (let* ((tower (eem--current-tower))
-         (tower-height (eem-tower-height tower))
+         (tower-height (eem-ensemble-size tower))
          (level-number (max (min level-number
                                  (1- tower-height))
                             0)))
-    (let ((mode-name (eem-tower-mode-at-level tower level-number)))
+    (let ((mode-name (chimera-mode-name
+                      (eem-ensemble-member-at-position tower level-number))))
       (eem-enter-mode mode-name)
       (setq eem--current-level level-number))))
 
@@ -48,8 +49,8 @@
   (interactive)
   (message "entering lower level")
   (let ((mode-name (symbol-name evil-state)))
-    (if (eem-tower-level-of-mode (eem--current-tower)
-                                 mode-name)
+    (if (eem-ensemble-member-position-by-name (eem--current-tower)
+                                              mode-name)
         (when (> eem--current-level 0)
           (eem--enter-level (1- eem--current-level)))
       ;; "not my tower, not my problem"
@@ -94,10 +95,10 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
   (interactive)
   (message "entering higher level")
   (let ((mode-name (symbol-name evil-state)))
-    (if (eem-tower-level-of-mode (eem--current-tower)
-                                 mode-name)
+    (if (eem-ensemble-member-position-by-name (eem--current-tower)
+                                              mode-name)
         (when (< eem--current-level
-                 (1- (eem-tower-height (eem--current-tower))))
+                 (1- (eem-ensemble-size (eem--current-tower))))
           (eem--enter-level (1+ eem--current-level)))
       ;; see note for eem-enter-lower-level
       (eem--enter-appropriate-mode))))
@@ -111,7 +112,7 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
   "Enter highest level."
   (interactive)
   (let* ((tower (eem--current-tower))
-         (tower-height (eem-tower-height tower)))
+         (tower-height (eem-ensemble-size tower)))
     (eem--enter-level (- tower-height
                          1))))
 
@@ -130,8 +131,8 @@ current level reflects the mode's position in the tower."
   (interactive)
   (let* ((mode-name (symbol-name evil-state))
          (level-number
-          (eem-tower-level-of-mode (eem--current-tower)
-                                   mode-name)))
+          (eem-ensemble-member-position-by-name (eem--current-tower)
+                                                mode-name)))
     (when level-number
       (setq eem--current-level level-number)
       (message "mode %s is in tower; updated level number to %s"
@@ -163,27 +164,28 @@ is precisely the thing to be done."
       (when recall
         (eem-enter-mode recall)))))
 
-(defun eem-remember-or-recall (&optional buffer)
-  "Remember the current mode for future recall, or recall to an earlier mode."
+(defun eem-remember-for-recall (&optional buffer)
+  "Remember the current mode for future recall."
   ;; we're relying on the evil state here even though the
   ;; delegation is hydra -> evil. Probably introduce an
   ;; independent state variable, for which the evil state
   ;; variable can be treated as a proxy for now
   (with-current-buffer (or buffer (current-buffer))
     (let ((mode-name (symbol-name evil-state))
+          ;; recall should probably be tower-specific and
+          ;; meta-level specific, so that
+          ;; we can set it upon entry to a meta mode
           (recall (and (boundp 'eem-recall)
                        eem-recall)))
-      ;; recall should probably be tower-specific and
-      ;; meta-level specific, so that
-      ;; we can set it upon entry to a meta mode
-      (let ((current-mode (symbol-name evil-state)))
-        ;; only set recall here if it is currently in the tower AND
-        ;; going to a state outside the tower
-        (when (and (eem-tower-level-of-mode (eem--current-tower) current-mode)
-                   (not (eem-tower-level-of-mode (eem--current-tower)
-                                                 (symbol-name evil-next-state))))
-          (eem-set-mode-recall current-mode)
-          (message "set recall to %s; next state is %s" current-mode evil-next-state))))))
+      ;; only set recall here if it is currently in the tower AND
+      ;; going to a state outside the tower
+      (when (and (eem-ensemble-member-position-by-name (eem--current-tower)
+                                                       mode-name)
+                 (not (eem-ensemble-member-position-by-name
+                       (eem--current-tower)
+                       (symbol-name evil-next-state))))
+        (eem-set-mode-recall mode-name)
+        (message "set recall to %s; next state is %s" mode-name evil-next-state)))))
 
 (defun eem-set-mode-recall (mode-name)
   "Remember the current state to 'recall' it later."

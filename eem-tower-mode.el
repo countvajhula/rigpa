@@ -28,22 +28,28 @@
                    (current-buffer))))
     ref-buf))
 
-(defun eem-tower-level-of-mode (tower mode-name)
-  (seq-position (editing-ensemble-members tower)
-                mode-name))
+(defun eem--ensemblish-name (ebl)
+  (if (editing-ensemble-p ebl)
+      (editing-ensemble-name ebl)
+    (chimera-mode-name ebl)))
 
-(defun eem-tower-height (tower)
-  "Height of tower."
-  (length (editing-ensemble-members tower)))
+(defun eem-ensemble-member-position-by-name (ensemble name)
+  (seq-position (seq-map #'eem--ensemblish-name
+                         (editing-ensemble-members ensemble))
+                name))
 
-(defun eem-tower-mode-at-level (tower level)
+(defun eem-ensemble-size (ensemble)
+  "Size of ensemble (e.g. height of a tower)."
+  (length (editing-ensemble-members ensemble)))
+
+(defun eem-ensemble-member-at-position (tower position)
   "Mode at LEVEL in the TOWER."
-  (nth level (editing-ensemble-members tower)))
+  (nth position (editing-ensemble-members tower)))
 
 (defun eem--tower (tower-id)
   "The epistemic tower corresponding to the provided index."
   (interactive)
-  (nth tower-id eem-towers))
+  (nth tower-id (editing-ensemble-members eem-towers)))
 
 (defun eem--current-tower ()
   "The epistemic editing tower we are currently in."
@@ -60,7 +66,7 @@
   (with-current-buffer (eem--get-reference-buffer)
     (let ((tower-id (mod (- eem--current-tower-index
                            1)
-                        (length eem-towers))))
+                        (eem-ensemble-size eem-towers))))
      (eem--switch-to-tower tower-id))))
 
 (defun eem-next-tower ()
@@ -69,19 +75,19 @@
   (with-current-buffer (eem--get-reference-buffer)
     (let ((tower-id (mod (+ eem--current-tower-index
                            1)
-                        (length eem-towers))))
+                        (eem-ensemble-size eem-towers))))
      (eem--switch-to-tower tower-id))))
 
 (defun eem--switch-to-tower (tower-id)
   "Switch to the tower indicated"
   (interactive)
   (let* ((tower (eem--tower tower-id))
-         (tower-height (eem-tower-height tower))
+         (tower-height (eem-ensemble-size tower))
          (current-mode-name (symbol-name evil-state))
-         (level (or (eem-tower-level-of-mode tower
-                                             current-mode-name)
-                    (eem-tower-level-of-mode tower
-                                             eem-recall)
+         (level (or (eem-ensemble-member-position-by-name tower
+                                                          current-mode-name)
+                    (eem-ensemble-member-position-by-name tower
+                                                          eem-recall)
                     0)))
     (switch-to-buffer (eem--buffer-name tower))
     (let ((start (progn (evil-goto-line 1) (line-beginning-position)))
@@ -99,14 +105,15 @@
 
 (defun eem-serialize-tower (tower)
   "A string representation of a tower."
-  (let ((tower-height (eem-tower-height tower))
+  (let ((tower-height (eem-ensemble-size tower))
         (tower-str ""))
     (dolist
         (level-number (reverse
                        (number-sequence 0 (1- tower-height))))
       (let ((mode-name
-             (eem-tower-mode-at-level tower
-                                      level-number)))
+             (chimera-mode-name
+              (eem-ensemble-member-at-position tower
+                                               level-number))))
         (setq tower-str
               (concat tower-str
                       "|―――"
@@ -162,7 +169,7 @@
 initial epistemic tower."
   (interactive)
   (setq eem--reference-buffer (current-buffer))
-  (dolist (tower eem-towers)
+  (dolist (tower (editing-ensemble-members eem-towers))
     (eem-render-tower tower))
   (with-current-buffer (eem--get-reference-buffer)
     ;; Store "previous" previous tower to support flashback
