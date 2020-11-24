@@ -141,9 +141,8 @@ and simply toggles whether the menu is visible or not."
                      :entry-hook 'evil-replace-state-entry-hook
                      :exit-hook 'evil-replace-state-exit-hook))
 
-;; should make this optional via a defcustom flag
-;; or potentially even have it in a separate evil-adapter package
-(when (and (boundp 'evil-mode) evil-mode)
+(defun eem--integrate-evil ()
+  "Map standard evil state entry and exit points so they're managed by epistemic."
   ;; evil interop keybindings
   (define-key evil-normal-state-map [escape] 'eem-enter-higher-level)
   (define-key evil-normal-state-map [return] 'eem-enter-lower-level)
@@ -159,7 +158,7 @@ and simply toggles whether the menu is visible or not."
   (define-key evil-emacs-state-map [escape] 'eem-enter-higher-level))
 
 (defun eem--register-modes ()
-  "Register the standard modes."
+  "Register the standard modes with the framework."
   ;; register evil chimera states with the epistemic framework
   (eem-register-mode chimera-normal-mode)
   (eem-register-mode chimera-insert-mode)
@@ -240,16 +239,48 @@ and simply toggles whether the menu is visible or not."
          :default "meta-mode"
          :members (list eem-meta-mode-tower))))
 
+(defun eem--provide-editing-structures ()
+  "Register editing structures so they're used in relevant major modes."
+  ;; change these to use a state struct instead of globals
+  ;; that state struct must specify
+  ;;  (1) the complex, as an object (this should take care of default tower
+  ;;      so there's no need to set the tower index initially)
+  ;;  (2) the tower index
+  ;;  (3) the level index
+  ;; and eventually make these "coordinates" generic
+  (when (boundp 'symex-mode)
+    (dolist (mode-name symex-lisp-modes)
+      (let ((mode-hook (intern (concat (symbol-name mode-name)
+                                       "-hook"))))
+        (add-hook mode-hook (lambda ()
+                              (setq eem--current-tower-index 2)
+                              (setq eem--current-level 2)))))))
+
 (defun eem-initialize ()
   "Initialize epistemic mode."
   (interactive)
   (eem--register-modes)
+  ;; should make this optional via a defcustom flag
+  ;; or potentially even have it in a separate evil-adapter package
+  (when (boundp 'evil-mode)
+    (eem--integrate-evil))
   (eem--create-editing-structures)
+  (eem--provide-editing-structures)
   (if (and (boundp 'epistemic-show-menus) epistemic-show-menus)
       (dolist (mode (ht-values eem-modes))
         (eem-show-menu (chimera-mode-name mode)))
     (dolist (mode (ht-values eem-modes))
       (eem-hide-menu (chimera-mode-name mode)))))
+
+(defun eem-disable ()
+  "Disable epistemic."
+  (interactive)
+  ;; TODO:
+  ;; remap evil keybindings
+  ;; unregister major mode hooks
+  ;; unregister all modes (including esp evil states)
+  nil)
+
 
 (eem-initialize)
 
