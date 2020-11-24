@@ -27,9 +27,11 @@
 (defun my-move-line-up (&optional count)
   "Move line up"
   (interactive)
-  (unless count (setq count 1))
-  (transpose-lines count)
-  (evil-previous-line 2))
+  (unless (save-excursion (beginning-of-line)
+                          (bobp))
+    (unless count (setq count 1))
+    (transpose-lines count)
+    (evil-previous-line 2)))
 
 (defun my-move-line-left (&optional count)
   "Move line left"
