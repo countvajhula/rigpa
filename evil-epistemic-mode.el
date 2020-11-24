@@ -141,6 +141,23 @@ and simply toggles whether the menu is visible or not."
                      :entry-hook 'evil-replace-state-entry-hook
                      :exit-hook 'evil-replace-state-exit-hook))
 
+;; should make this optional via a defcustom flag
+;; or potentially even have it in a separate evil-adapter package
+(when (and (boundp 'evil-mode) evil-mode)
+  ;; evil interop keybindings
+  (define-key evil-normal-state-map [escape] 'eem-enter-higher-level)
+  (define-key evil-normal-state-map [return] 'eem-enter-lower-level)
+  (define-key evil-visual-state-map [escape] 'eem-enter-higher-level)
+  (define-key evil-visual-state-map [return] 'eem-enter-lower-level)
+  (define-key evil-replace-state-map [escape] 'eem-enter-higher-level)
+  (define-key evil-replace-state-map [return] 'eem-enter-lower-level)
+  (define-key evil-insert-state-map [escape] 'eem-enter-higher-level)
+  ;; TODO: this keybinding should be dependent on whether there are any
+  ;; other modes in the tower. If not, then this shouldn't be bound
+  ;; IOW this keybinding (and some class of bindings more generally)
+  ;; is tower-specific
+  (define-key evil-emacs-state-map [escape] 'eem-enter-higher-level))
+
 
 (defun eem-initialize ()
   "Initialize epistemic mode."
