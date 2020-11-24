@@ -35,7 +35,7 @@
 
 (defun eem--enter-level (level-number)
   "Enter level LEVEL-NUMBER"
-  (let* ((tower (eem--current-tower))
+  (let* ((tower (eem--ground-tower))
          (tower-height (eem-ensemble-size tower))
          (level-number (max (min level-number
                                  (1- tower-height))
@@ -50,7 +50,7 @@
   (interactive)
   (message "entering lower level")
   (let ((mode-name (symbol-name evil-state)))
-    (if (eem-ensemble-member-position-by-name (eem--current-tower)
+    (if (eem-ensemble-member-position-by-name (eem--ground-tower)
                                               mode-name)
         (when (> eem--current-level 0)
           (eem--enter-level (1- eem--current-level)))
@@ -77,7 +77,7 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
               if unspecified - TODO)."
   (with-current-buffer (or buffer (current-buffer))
     (let ((recall-mode (eem--local-recall-mode))
-          (default-mode (editing-ensemble-default (eem--current-tower))))
+          (default-mode (editing-ensemble-default (eem--ground-tower))))
       (if recall-mode
           ;; recall if available
           (progn (eem--clear-local-recall)
@@ -96,10 +96,10 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
   (interactive)
   (message "entering higher level")
   (let ((mode-name (symbol-name evil-state)))
-    (if (eem-ensemble-member-position-by-name (eem--current-tower)
+    (if (eem-ensemble-member-position-by-name (eem--ground-tower)
                                               mode-name)
         (when (< eem--current-level
-                 (1- (eem-ensemble-size (eem--current-tower))))
+                 (1- (eem-ensemble-size (eem--ground-tower))))
           (eem--enter-level (1+ eem--current-level)))
       ;; see note for eem-enter-lower-level
       (eem--enter-appropriate-mode))))
@@ -112,7 +112,7 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
 (defun eem-enter-highest-level ()
   "Enter highest level."
   (interactive)
-  (let* ((tower (eem--current-tower))
+  (let* ((tower (eem--ground-tower))
          (tower-height (eem-ensemble-size tower)))
     (eem--enter-level (- tower-height
                          1))))
@@ -143,7 +143,7 @@ current level reflects the mode's position in the tower."
   (interactive)
   (let* ((mode-name (symbol-name evil-state))
          (level-number
-          (eem-ensemble-member-position-by-name (eem--current-tower)
+          (eem-ensemble-member-position-by-name (eem--ground-tower)
                                                 mode-name)))
     (when level-number
       (setq eem--current-level level-number)
@@ -191,10 +191,10 @@ is precisely the thing to be done."
                        eem-recall)))
       ;; only set recall here if it is currently in the tower AND
       ;; going to a state outside the tower
-      (when (and (eem-ensemble-member-position-by-name (eem--current-tower)
+      (when (and (eem-ensemble-member-position-by-name (eem--ground-tower)
                                                        mode-name)
                  (not (eem-ensemble-member-position-by-name
-                       (eem--current-tower)
+                       (eem--ground-tower)
                        (symbol-name evil-next-state))))
         (eem-set-mode-recall mode-name)
         (message "set recall to %s; next state is %s" mode-name evil-next-state)))))
@@ -222,7 +222,7 @@ is precisely the thing to be done."
   "Enter a buffer containing a textual representation of the
 current epistemic tower."
   (interactive)
-  (eem-render-tower (eem--current-tower))
+  (eem-render-tower (eem--ground-tower))
   (with-current-buffer (eem--get-ground-buffer)
     ;; TODO: is it necessary to reference ground buffer here?
     ;;
