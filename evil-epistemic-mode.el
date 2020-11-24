@@ -65,18 +65,6 @@
 ;; in epistemic mode representations
 (setq eem-buffer-prefix "EPISTEMIC-META")
 
-;;;; set tower to lisp tower in all lisp modes (emulating major mode -- TODO: improve)
-;; (defvar lisp-modes (list 'emacs-lisp-mode
-;;                          'scheme-mode
-;;                          'racket-mode))
-
-;; (dolist (mode lisp-modes)
-;;   (let ((hook (intern (concat (symbol-name mode)
-;;                               "-hook"))))
-;;     (add-hook hook (lambda (&rest)
-;;                      (setq eem--current-tower-index 2)
-;;                      (setq eem--current-level 2)))))
-
 (defun eem-hide-menu (mode-name)
   "Hide current mode menu."
   (unless (member mode-name chimera-evil-states)
@@ -254,7 +242,9 @@ and simply toggles whether the menu is visible or not."
                                        "-hook"))))
         (add-hook mode-hook (lambda ()
                               (setq eem--current-tower-index 2)
-                              (setq eem--current-level 2)))))))
+                              (setq eem--current-level 2))))))
+  (add-hook 'epistemic-meta-mode-hook (lambda ()
+                                        (setq eem--complex eem-meta-complex))))
 
 (defun eem-initialize ()
   "Initialize epistemic mode."

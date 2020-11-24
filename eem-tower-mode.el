@@ -111,7 +111,8 @@
       (setq eem--ground-buffer
             inherited-ground-buffer)
       (eem--set-meta-buffer-appearance)
-      (insert (eem-serialize-tower tower)))
+      (insert (eem-serialize-tower tower))
+      (eem--enter-appropriate-mode))
     buffer))
 
 (defun my-enter-tower-mode ()
