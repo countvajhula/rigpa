@@ -124,6 +124,19 @@ and simply toggles whether the menu is visible or not."
                      :entry-hook 'evil-emacs-state-entry-hook
                      :exit-hook 'evil-emacs-state-exit-hook))
 
+(defvar chimera-visual-mode
+  (make-chimera-mode :name "visual"
+                     :enter #'evil-visual-state
+                     :entry-hook 'evil-visual-state-entry-hook
+                     :exit-hook 'evil-visual-state-exit-hook))
+
+(defvar chimera-replace-mode
+  (make-chimera-mode :name "replace"
+                     :enter #'evil-replace-state
+                     :entry-hook 'evil-replace-state-entry-hook
+                     :exit-hook 'evil-replace-state-exit-hook))
+
+
 (defun eem-initialize ()
   "Initialize epistemic mode."
   (interactive)
@@ -131,8 +144,8 @@ and simply toggles whether the menu is visible or not."
   (eem-register-mode chimera-normal-mode)
   (eem-register-mode chimera-insert-mode)
   (eem-register-mode chimera-emacs-mode)
-  ;; (eem-register-mode chimera-visual-mode)
-  ;; (eem-register-mode chimera-replace-mode)
+  (eem-register-mode chimera-visual-mode)
+  (eem-register-mode chimera-replace-mode)
 
   ;; register all the other modes
   (eem-register-mode chimera-application-mode)

@@ -11,7 +11,7 @@ If not, they are expected to be run by the underlying mode provider \
 (e.g. evil or hydra)."))
 
 (defvar chimera-evil-states
-  (list "normal" "insert" "emacs"))
+  (list "normal" "insert" "emacs" "visual" "replace"))
 
 (defun chimera-enter-mode (mode)
   "Enter MODE."
