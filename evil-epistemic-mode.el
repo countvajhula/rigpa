@@ -77,22 +77,19 @@
 ;;                      (setq eem--current-tower-index 2)
 ;;                      (setq eem--current-level 2)))))
 
-(defun eem-hide-menu ()
+(defun eem-hide-menu (mode-name)
   "Hide current mode menu."
-  (let ((current-mode-name (symbol-name evil-state)))
-    (message "mode is %s" (concat "hydra-" current-mode-name))
-    (hydra-set-property
-     (intern (concat "hydra-"
-                     current-mode-name))
-     :verbosity 0)))
+  (unless (member mode-name chimera-evil-states)
+    ;; only supported for hydra
+    (let ((mode-hydra (intern (concat "hydra-" mode-name))))
+      (hydra-set-property mode-hydra :verbosity 0))))
 
-(defun eem-show-menu ()
+(defun eem-show-menu (mode-name)
   "Show current mode menu."
-  (let ((current-mode-name (symbol-name evil-state)))
-    (hydra-set-property
-     (intern (concat "hydra-"
-                     current-mode-name))
-     :verbosity 2)))
+  (unless (member mode-name chimera-evil-states)
+    ;; only supported for hydra
+    (let ((mode-hydra (intern (concat "hydra-" mode-name))))
+      (hydra-set-property mode-hydra :verbosity 2))))
 
 (defun eem-toggle-menu ()
   "Show/hide the current mode menu.
@@ -100,14 +97,13 @@
 Note that hiding the menu still retains the current editing mode,
 and simply toggles whether the menu is visible or not."
   (interactive)
-  (let ((current-mode-name (symbol-name evil-state)))
-    (let ((visibility (hydra-get-property
-                       (intern (concat "hydra-"
-                                       current-mode-name))
-                       :verbosity)))
-      (if (> visibility 0)
-          (eem-hide-menu)
-        (eem-show-menu)))))
+  (let* ((mode-name (symbol-name evil-state))
+         (mode-hydra (intern (concat "hydra-" mode-name))))
+    (let ((visibility (hydra-get-property mode-hydra :verbosity)))
+      (if (or (eq nil visibility)
+              (> visibility 0))
+          (eem-hide-menu mode-name)
+        (eem-show-menu mode-name)))))
 
 ;; wrap native evil states in chimera modes
 (defvar chimera-normal-mode
