@@ -124,26 +124,39 @@ and simply toggles whether the menu is visible or not."
                      :entry-hook 'evil-emacs-state-entry-hook
                      :exit-hook 'evil-emacs-state-exit-hook))
 
-;; register them with the epistemic framework
-(eem-register-mode chimera-normal-mode)
-(eem-register-mode chimera-insert-mode)
-(eem-register-mode chimera-emacs-mode)
+(defun eem-initialize ()
+  "Initialize epistemic mode."
+  (interactive)
+  ;; register evil chimera states with the epistemic framework
+  (eem-register-mode chimera-normal-mode)
+  (eem-register-mode chimera-insert-mode)
+  (eem-register-mode chimera-emacs-mode)
+  ;; (eem-register-mode chimera-visual-mode)
+  ;; (eem-register-mode chimera-replace-mode)
 
-;; register all the other modes
-(eem-register-mode chimera-application-mode)
-(eem-register-mode chimera-line-mode)
-(eem-register-mode chimera-view-mode)
-(eem-register-mode chimera-activity-mode)
-(eem-register-mode chimera-history-mode)
-(eem-register-mode chimera-tab-mode)
-(eem-register-mode chimera-word-mode)
-(eem-register-mode chimera-window-mode)
-(eem-register-mode chimera-char-mode)
-(eem-register-mode chimera-system-mode)
-(eem-register-mode chimera-buffer-mode)
-(eem-register-mode chimera-file-mode)
-(eem-register-mode chimera-text-mode)
-(eem-register-mode chimera-symex-mode)
+  ;; register all the other modes
+  (eem-register-mode chimera-application-mode)
+  (eem-register-mode chimera-line-mode)
+  (eem-register-mode chimera-view-mode)
+  (eem-register-mode chimera-activity-mode)
+  (eem-register-mode chimera-history-mode)
+  (eem-register-mode chimera-tab-mode)
+  (eem-register-mode chimera-word-mode)
+  (eem-register-mode chimera-window-mode)
+  (eem-register-mode chimera-char-mode)
+  (eem-register-mode chimera-system-mode)
+  (eem-register-mode chimera-buffer-mode)
+  (eem-register-mode chimera-file-mode)
+  (eem-register-mode chimera-text-mode)
+  (eem-register-mode chimera-symex-mode)
+
+  (if (and (boundp 'epistemic-show-menus) epistemic-show-menus)
+      (dolist (mode (ht-values eem-modes))
+        (eem-show-menu (chimera-mode-name mode)))
+    (dolist (mode (ht-values eem-modes))
+      (eem-hide-menu (chimera-mode-name mode)))))
+
+(eem-initialize)
 
 
 (provide 'evil-epistemic-mode)
