@@ -28,8 +28,7 @@ Version 2016-04-04"
   (interactive)
   (set-mark-command t))
 
-(defhydra hydra-file (:idle 1.0
-                      :columns 2
+(defhydra hydra-file (:columns 2
                       :post (chimera-hydra-portend-exit chimera-file-mode t)
                       :after-exit (chimera-hydra-signal-exit chimera-file-mode
                                                              #'chimera-handle-hydra-exit))

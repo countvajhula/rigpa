@@ -176,8 +176,7 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   (indent-rigidly-right-to-tab-stop (line-beginning-position)
                                     (line-end-position)))
 
-(defhydra hydra-line (:idle 1.0
-                      :columns 4
+(defhydra hydra-line (:columns 4
                       :post (chimera-hydra-portend-exit chimera-line-mode t)
                       :after-exit (chimera-hydra-signal-exit chimera-line-mode
                                                              #'chimera-handle-hydra-exit))

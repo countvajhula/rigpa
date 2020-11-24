@@ -33,8 +33,7 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
   (other-window 1)
   (quit-window))
 
-(defhydra hydra-window (:idle 1.0
-                        :columns 4
+(defhydra hydra-window (:columns 4
                         :post (chimera-hydra-portend-exit chimera-window-mode t)
                         :after-exit (chimera-hydra-signal-exit chimera-window-mode
                                                                #'chimera-handle-hydra-exit))

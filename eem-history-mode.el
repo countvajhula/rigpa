@@ -7,11 +7,9 @@
   :message "-- x→o --"
   :enable (normal))
 
-(defhydra hydra-history (:color pink
-                         :columns 2
+(defhydra hydra-history (:columns 2
                          ; maybe put body-pre in ad hoc entry
                          :body-pre (unless git-timemachine-mode (git-timemachine))
-                         :idle 1.0
                          :post (chimera-hydra-portend-exit chimera-history-mode t)
                          :after-exit (chimera-hydra-signal-exit chimera-history-mode
                                                                 #'chimera-handle-hydra-exit))

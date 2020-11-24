@@ -71,8 +71,7 @@ current ('original') buffer."
 ;; this should be an independent utility library so that it can be used
 ;; in all modes that need an intuitive way to keep track of recency
 ;; maybe `recency-ring`, has a nice... ring to it
-(defhydra hydra-buffer (:idle 1.0
-                        :columns 3
+(defhydra hydra-buffer (:columns 3
                         :body-pre (setup-buffer-marks-table) ; maybe put in ad-hoc entry
                         :post (progn (flash-to-original-and-back)
                                      (chimera-hydra-portend-exit chimera-buffer-mode t))

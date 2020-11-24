@@ -44,9 +44,7 @@
   (call-interactively 'goto-last-change-reverse))
 
 
-(defhydra hydra-activity (:color pink
-                          :columns 2
-                          :idle 1.0
+(defhydra hydra-activity (:columns 2
                           :post (chimera-hydra-portend-exit chimera-activity-mode t)
                           :after-exit (chimera-hydra-signal-exit chimera-activity-mode
                                                                  #'chimera-handle-hydra-exit))

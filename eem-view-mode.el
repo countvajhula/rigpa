@@ -72,8 +72,7 @@
     (narrow-to-defun)))
 
 
-(defhydra hydra-view (:idle 1.0
-                      :columns 5
+(defhydra hydra-view (:columns 5
                       :post (chimera-hydra-portend-exit chimera-view-mode t)
                       :after-exit (chimera-hydra-signal-exit chimera-view-mode
                                                              #'chimera-handle-hydra-exit))

@@ -248,8 +248,7 @@ current epistemic tower."
     (switch-to-buffer ref-buf)))
 
 
-(defhydra hydra-mode (:idle 1.0
-                      :columns 4
+(defhydra hydra-mode (:columns 4
                       :body-pre (evil-mode-state))
   "Mode mode"
   ("j" eem-mode-down "down")

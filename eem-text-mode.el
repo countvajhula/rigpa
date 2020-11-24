@@ -8,9 +8,7 @@
   :enable (normal))
 
 
-(defhydra hydra-text (:color pink
-                      :columns 2
-                      :idle 1.0
+(defhydra hydra-text (:columns 2
                       :post (chimera-hydra-portend-exit chimera-text-mode t)
                       :after-exit (chimera-hydra-signal-exit chimera-text-mode
                                                              #'chimera-handle-hydra-exit))

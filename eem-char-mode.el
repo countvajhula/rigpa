@@ -95,9 +95,7 @@
   (interactive)
   (evil-invert-char (point) (+ (point) 1) (quote exclusive)))
 
-(defhydra hydra-char (:idle 1.0
-                      :columns 4
-                      :color pink
+(defhydra hydra-char (:columns 4
                       :post (chimera-hydra-portend-exit chimera-char-mode t)
                       :after-exit (chimera-hydra-signal-exit chimera-char-mode
                                                              #'chimera-handle-hydra-exit))

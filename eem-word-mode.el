@@ -163,8 +163,7 @@
   (evil-insert-state))
 
 
-(defhydra hydra-word (:idle 1.0
-                      :columns 2
+(defhydra hydra-word (:columns 2
                       :post (chimera-hydra-portend-exit chimera-word-mode t)
                       :after-exit (chimera-hydra-signal-exit chimera-word-mode
                                                              #'chimera-handle-hydra-exit))

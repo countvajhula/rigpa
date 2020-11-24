@@ -53,10 +53,8 @@ buffer mode."
   (interactive)
   (load-tab 'original))
 
-(defhydra hydra-tab (:color pink
-                     :columns 2
+(defhydra hydra-tab (:columns 2
                      :body-pre (setup-tab-marks-table) ; maybe put in ad-hoc entry function
-                     :idle 1.0
                      :post (progn (flash-to-original-tab-and-back)
                                   (chimera-hydra-portend-exit chimera-tab-mode t))
                      :after-exit (chimera-hydra-signal-exit chimera-tab-mode
