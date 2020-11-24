@@ -158,10 +158,8 @@ and simply toggles whether the menu is visible or not."
   ;; is tower-specific
   (define-key evil-emacs-state-map [escape] 'eem-enter-higher-level))
 
-
-(defun eem-initialize ()
-  "Initialize epistemic mode."
-  (interactive)
+(defun eem--register-modes ()
+  "Register the standard modes."
   ;; register evil chimera states with the epistemic framework
   (eem-register-mode chimera-normal-mode)
   (eem-register-mode chimera-insert-mode)
@@ -183,8 +181,70 @@ and simply toggles whether the menu is visible or not."
   (eem-register-mode chimera-buffer-mode)
   (eem-register-mode chimera-file-mode)
   (eem-register-mode chimera-text-mode)
-  (eem-register-mode chimera-symex-mode)
+  (eem-register-mode chimera-symex-mode))
 
+(defun eem--create-editing-structures ()
+  "Create standard editing structures."
+
+  ;; towers in base editing levels
+  (setq eem-complete-tower
+        (make-editing-ensemble :name "complete"
+                               :default "normal"
+                               :members (list chimera-insert-mode
+                                              chimera-char-mode
+                                              chimera-word-mode
+                                              chimera-line-mode
+                                              chimera-activity-mode
+                                              chimera-normal-mode
+                                              chimera-view-mode
+                                              chimera-window-mode
+                                              chimera-file-mode
+                                              chimera-buffer-mode
+                                              chimera-system-mode
+                                              chimera-application-mode)))
+
+  (setq eem-vim-tower
+        (make-editing-ensemble :name "vim"
+                               :default "normal"
+                               :members (list chimera-insert-mode
+                                              chimera-normal-mode)))
+  (setq eem-emacs-tower
+        (make-editing-ensemble :name "emacs"
+                               :default "emacs"
+                               :members (list chimera-emacs-mode)))
+  (setq eem-lisp-tower
+        (make-editing-ensemble :name "lisp"
+                               :default "symex"
+                               :members (list chimera-insert-mode
+                                              chimera-symex-mode
+                                              chimera-normal-mode)))
+
+  ;; complexes for base editing levels
+  (setq eem-general-complex
+        (make-editing-ensemble
+         :name "general"
+         :default "vim"
+         :members (list eem-vim-tower
+                        eem-complete-tower
+                        eem-lisp-tower
+                        eem-emacs-tower)))
+
+  ;; towers and complexes for meta levels
+  (setq eem-meta-mode-tower
+        (make-editing-ensemble :name "meta-mode"
+                               :default "line"
+                               :members (list chimera-line-mode)))
+  (setq eem-meta-complex
+        (make-editing-ensemble
+         :name "meta"
+         :default "meta-mode"
+         :members (list eem-meta-mode-tower))))
+
+(defun eem-initialize ()
+  "Initialize epistemic mode."
+  (interactive)
+  (eem--register-modes)
+  (eem--create-editing-structures)
   (if (and (boundp 'epistemic-show-menus) epistemic-show-menus)
       (dolist (mode (ht-values eem-modes))
         (eem-show-menu (chimera-mode-name mode)))
@@ -192,6 +252,11 @@ and simply toggles whether the menu is visible or not."
       (eem-hide-menu (chimera-mode-name mode)))))
 
 (eem-initialize)
+
+;; the editing complex to use in a buffer
+;; by default this is general complex unless a more tailored one
+;; has been set (e.g. via major mode hook)
+(defvar-local eem--complex eem-general-complex)
 
 
 (provide 'evil-epistemic-mode)

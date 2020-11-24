@@ -9,26 +9,16 @@
 ;; the "ground" of buffers is a priori themselves,
 ;; representing a termination of the chain of reference
 (defvar-local eem--ground-buffer nil)
-;; the editing complex to use in a buffer
-(defvar-local eem--complex nil)
 (make-variable-buffer-local 'eem--current-tower-index)
 (make-variable-buffer-local 'eem--last-tower-index)
 (make-variable-buffer-local 'eem--tower-index-on-entry)
 (make-variable-buffer-local 'eem--flashback-tower-index)
 (make-variable-buffer-local 'eem--current-level)
 
-(defun eem--get-local-complex ()
-  "The local editing complex."
-  (if eem--complex
-      eem--complex
-    ;; defaults to general complex unless a more tailored one
-    ;; has been set (e.g. via major mode hook)
-    eem-general-complex))
-
 (defun eem--tower (tower-id)
   "The epistemic tower corresponding to the provided index."
   (interactive)
-  (nth tower-id (editing-ensemble-members (eem--get-local-complex))))
+  (nth tower-id (editing-ensemble-members eem--complex)))
 
 (defun eem--ground-tower ()
   "The editing tower we are currently in, in relation to the ground buffer."
@@ -44,7 +34,7 @@
   (interactive)
   (with-current-buffer (eem--get-ground-buffer)
     (let ((tower-id (mod (1- eem--current-tower-index)
-                         (eem-ensemble-size (eem--get-local-complex)))))
+                         (eem-ensemble-size eem--complex))))
      (eem--switch-to-tower tower-id))))
 
 (defun eem-next-tower ()
@@ -52,7 +42,7 @@
   (interactive)
   (with-current-buffer (eem--get-ground-buffer)
     (let ((tower-id (mod (1+ eem--current-tower-index)
-                         (eem-ensemble-size (eem--get-local-complex)))))
+                         (eem-ensemble-size eem--complex))))
      (eem--switch-to-tower tower-id))))
 
 (defun eem--switch-to-tower (tower-id)
@@ -121,7 +111,7 @@
   "Enter a buffer containing a textual representation of the
 initial epistemic tower."
   (interactive)
-  (dolist (tower (editing-ensemble-members (eem--get-local-complex)))
+  (dolist (tower (editing-ensemble-members eem--complex))
     (eem-render-tower tower))
   (with-current-buffer (eem--get-ground-buffer)
     ;; TODO: is it necessary to reference ground buffer here?
