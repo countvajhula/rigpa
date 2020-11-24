@@ -19,10 +19,16 @@
 (defun my-move-line-down (&optional count)
   "Move line down"
   (interactive)
-  (unless count (setq count 1))
-  (evil-next-line)
-  (transpose-lines count)
-  (evil-previous-line))
+  (unless (save-excursion
+            (end-of-line)
+            (or (eobp)
+                (save-excursion
+                  (evil-next-line)
+                  (eobp))))
+    (unless count (setq count 1))
+    (evil-next-line)
+    (transpose-lines count)
+    (evil-previous-line)))
 
 (defun my-move-line-up (&optional count)
   "Move line up"
