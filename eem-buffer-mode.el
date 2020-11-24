@@ -84,8 +84,8 @@ current ('original') buffer."
   ("l" next-buffer "next")
   ("n" (lambda ()
          (interactive)
-         (my-new-empty-buffer nil
-                              :switch-p t)) "new" :exit t)
+         (my-new-empty-buffer nil nil :switch-p t))
+   "new" :exit t)
   ("m" my-buffer-set-mark "set mark")
   ("'" my-buffer-return-to-mark "return to mark" :exit t)
   ("`" my-buffer-return-to-mark "return to mark" :exit t)

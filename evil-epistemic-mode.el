@@ -105,6 +105,11 @@ and simply toggles whether the menu is visible or not."
           (eem-hide-menu mode-name)
         (eem-show-menu mode-name)))))
 
+(define-derived-mode epistemic-meta-mode
+  special-mode "Meta"
+  "Major mode for meta modes"
+  (read-only-mode -1))
+
 ;; wrap native evil states in chimera modes
 (defvar chimera-normal-mode
   (make-chimera-mode :name "normal"

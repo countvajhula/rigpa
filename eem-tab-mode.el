@@ -90,8 +90,8 @@ buffer mode."
                   my-tab-marks-hash)) "switch to last" :exit t)
   ("n" (lambda ()
          (interactive)
-         (my-new-empty-buffer nil
-                              :switch-p t)) "new" :exit t)
+         (my-new-empty-buffer nil nil :switch-p t))
+   "new" :exit t)
   ("x" kill-buffer "delete")
   ("?" my-buffer-info "info" :exit t)
   ("q" return-to-original-tab "return to original" :exit t)

@@ -96,7 +96,8 @@
   "Render a text representation of an editing tower in a buffer."
   (interactive)
   (let ((inherited-ground-buffer (eem--get-ground-buffer))
-        (buffer (my-new-empty-buffer (eem--buffer-name tower))))
+        (buffer (my-new-empty-buffer (eem--buffer-name tower)
+                                     #'epistemic-meta-mode)))
     (with-current-buffer buffer
       ;; ground buffer is inherited from the original
       ;; to define the chain of reference
