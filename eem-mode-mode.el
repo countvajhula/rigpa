@@ -223,18 +223,7 @@ is precisely the thing to be done."
 current epistemic tower."
   (interactive)
   (eem-render-tower (eem--local-tower))
-  (with-current-buffer (eem--get-ground-buffer)
-    ;; TODO: is it necessary to reference ground buffer here?
-    ;;
-    ;; Store "previous" previous tower to support flashback
-    ;; feature seamlessly. This is to get around hydra executing
-    ;; functions after exiting rather than before, which loses
-    ;; information about the previous tower if flashback is
-    ;; being invoked. This is a hacky fix, but it works for now.
-    ;; Improve this eventually.
-    (setq eem--flashback-tower-index eem--tower-index-on-entry)
-    (setq eem--tower-index-on-entry eem--current-tower-index)
-    (eem--switch-to-tower eem--current-tower-index))
+  (eem--switch-to-tower eem--current-tower-index) ; TODO: base this on "state" instead
   (eem--set-ui-for-meta-modes))
 
 (defun my-exit-mode-mode ()

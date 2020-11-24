@@ -53,7 +53,8 @@
      (eem--switch-to-tower tower-id))))
 
 (defun eem--switch-to-tower (tower-id)
-  "Switch to the tower indicated"
+  "View the tower indicated, reflecting the state of the ground buffer."
+  ;; "view" tower
   (interactive)
   (let* ((tower (eem--tower tower-id))
          (tower-height (eem-ensemble-size tower))

@@ -243,8 +243,12 @@ and simply toggles whether the menu is visible or not."
         (add-hook mode-hook (lambda ()
                               (setq eem--current-tower-index 2)
                               (setq eem--current-level 2))))))
-  (add-hook 'epistemic-meta-mode-hook (lambda ()
-                                        (setq eem--complex eem-meta-complex))))
+  (add-hook 'epistemic-meta-mode-hook
+            ;; TODO: dispatch here based on meta level. If the level
+            ;; is 1 use line mode / buffers, if it's 2,
+            ;; use buffer mode / perspectives?
+            (lambda ()
+              (setq eem--complex eem-meta-complex))))
 
 (defun eem-initialize ()
   "Initialize epistemic mode."
