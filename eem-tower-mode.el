@@ -1,11 +1,12 @@
 (require 'eem-mode-mode)
 (require 'eem-types)
 
+;; make these buffer-local first before abstracting "state"
 (defvar eem--current-tower-index 0)
 (defvar eem--last-tower-index 0)
 (defvar eem--tower-index-on-entry 0)
 (defvar eem--flashback-tower-index 0)
-(defvar eem--current-level 1)
+(defvar eem--current-level 0)
 ;; the "ground" of buffers is a priori themselves,
 ;; representing a termination of the chain of reference
 (defvar-local eem--ground-buffer nil)
@@ -27,6 +28,12 @@
     ;; TODO: sometimes at this point reference buffer
     ;; is *LV* (hydra menu display) instead of the
     ;; actual buffer
+    (eem--tower eem--current-tower-index)))
+
+(defun eem--local-tower (&optional buffer)
+  "The editing tower we are in, in relation to the present buffer."
+  (interactive)
+  (with-current-buffer (or buffer (current-buffer))
     (eem--tower eem--current-tower-index)))
 
 (defun eem-previous-tower ()
