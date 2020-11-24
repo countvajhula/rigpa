@@ -20,6 +20,7 @@
   "System information"
   ("b" my-battery-life "show power info including battery life")
   ("s-i" my-battery-life "show power info including battery life")
+  ("H-m" eem-toggle-menu "show/hide this menu" :exit nil)
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 

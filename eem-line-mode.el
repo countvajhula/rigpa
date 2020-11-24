@@ -207,6 +207,7 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   ("y" my-yank-line "yank (copy)")
   (";" my-toggle-comment-line "toggle comment")
   ("i" my-line-info "info" :exit t)
+  ("H-m" eem-toggle-menu "show/hide this menu")
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 

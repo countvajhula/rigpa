@@ -198,6 +198,7 @@
   ("s-r" my-delete-word "delete" :exit t)
   ("s-o" my-delete-other-words "delete other words" :exit t)
   ("?" dictionary-lookup-definition "lookup in dictionary" :exit t)
+  ("H-m" eem-toggle-menu "show/hide this menu")
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 

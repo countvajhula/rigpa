@@ -62,6 +62,7 @@
   ("a" my-goto-older-change "previous change in buffer" :exit t)
   ("s-a" my-goto-older-change "previous change in buffer" :exit t)
   ("i" my-noop "exit" :exit t)
+  ("H-m" eem-toggle-menu "show/hide this menu")
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 

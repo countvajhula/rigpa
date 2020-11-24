@@ -23,6 +23,7 @@
   ("/" git-timemachine-show-revision-fuzzy "search")
   ("?" git-timemachine-show-commit "help (show commit)")
   ("q" git-timemachine-quit "return to the present" :exit t)
+  ("H-m" eem-toggle-menu "show/hide this menu")
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 

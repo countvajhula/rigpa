@@ -43,6 +43,7 @@ Version 2016-04-04"
   ("C-h" xah-pop-local-mark-ring "previous mark")
   ("C-l" unpop-to-mark-command "next mark")
   ("i" nil "exit" :exit t)
+  ("H-m" eem-toggle-menu "show/hide this menu")
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 

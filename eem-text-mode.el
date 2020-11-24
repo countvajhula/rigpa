@@ -18,6 +18,7 @@
   ("z" evil-fill-and-move "justify" :exit t)
   ("s-z" evil-fill-and-move "justify" :exit t)
   ("i" nil "exit" :exit t)
+  ("H-m" eem-toggle-menu "show/hide this menu")
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 

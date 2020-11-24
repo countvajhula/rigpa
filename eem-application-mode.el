@@ -96,13 +96,14 @@
                              :after-exit (chimera-hydra-signal-exit chimera-application-mode
                                                                     #'chimera-handle-hydra-exit))
   "Control application environment"
-  ("t" hydra-transparency/body "transparency" :exit t)
+  ("t" hydra-transparency/body "transparency")
   ("n" display-line-numbers-mode "toggle line numbers")
   ("b" my-toggle-alarm-bell "toggle alarm bell")
   ("l" hl-line-mode "toggle highlight line")
   ("c" counsel-load-theme "change color scheme")
-  ("<return>" eem-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+  ("H-m" eem-toggle-menu "show/hide this menu" :exit nil)
+  ("<return>" eem-enter-lower-level "enter lower level")
+  ("<escape>" eem-enter-higher-level "escape to higher level"))
 
 (defvar chimera-application-mode-entry-hook nil
   "Entry hook for epistemic application mode.")

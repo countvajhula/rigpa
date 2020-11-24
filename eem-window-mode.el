@@ -69,6 +69,7 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
   ("R" evil-window-rotate-upwards "rotate upwards")
   ("f" ffap-other-window "go to file in other window" :exit t)
   ("i" nil "exit" :exit t)
+  ("H-m" eem-toggle-menu "show/hide this menu")
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
