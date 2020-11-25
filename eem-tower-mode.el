@@ -52,26 +52,37 @@
                          (eem-ensemble-size eem--complex))))
      (eem--switch-to-tower tower-id))))
 
+(defun eem--set-tower-view (tower)
+  "Narrow view to actionable part, and reflect ground state."
+  (let* ((tower-height (eem-ensemble-size tower))
+         (start (progn (evil-goto-line 1) (line-beginning-position)))
+         (end (progn (evil-goto-line tower-height) (line-end-position)))
+         (ground-buffer (eem--get-ground-buffer))
+         (ground-mode-name (with-current-buffer ground-buffer
+                             (symbol-name evil-state)))
+         (ground-recall (with-current-buffer ground-buffer
+                          eem-recall))
+         (level (or (eem-ensemble-member-position-by-name tower
+                                                          ground-mode-name)
+                    (and ground-recall
+                         (eem-ensemble-member-position-by-name tower
+                                                               ground-recall))
+                    0)))
+    ;; only show the region that can be interacted with, don't show
+    ;; the name of the tower
+    (narrow-to-region start end)
+    (evil-goto-line (- tower-height level))))
+
 (defun eem--switch-to-tower (tower-id)
   "View the tower indicated, reflecting the state of the ground buffer."
   ;; "view" tower
+  ;; this should be replaced with meta buffer mode and any applicable side-effects
   (interactive)
-  (let* ((tower (eem--tower tower-id))
-         (tower-height (eem-ensemble-size tower))
-         (current-mode-name (symbol-name evil-state))
-         (level (or (eem-ensemble-member-position-by-name tower
-                                                          current-mode-name)
-                    (eem-ensemble-member-position-by-name tower
-                                                          eem-recall)
-                    0)))
+  (let ((tower (eem--tower tower-id)))
     (switch-to-buffer (eem--buffer-name tower))
-    (let ((start (progn (evil-goto-line 1) (line-beginning-position)))
-          (end (progn (evil-goto-line tower-height) (line-end-position))))
-      ;; only show the region that can be interacted with, don't show
-      ;; the name of the tower
-      (narrow-to-region start end))
-    (evil-goto-line (- tower-height level))
+    (eem--set-tower-view tower)
     (with-current-buffer (eem--get-ground-buffer)
+      ;; ad hoc modeling of buffer mode side effect here
       (setq eem--current-tower-index tower-id))))
 
 (defun eem-serialize-tower (tower)
@@ -93,12 +104,26 @@
 
 (defun eem-parse-tower (tower-str)
   "Derive a tower struct from a string representation."
-  (make-editing-ensemble :name (parsec-with-input tower-str
-                                 (eem--parse-tower-name))
-                         :default (parsec-with-input tower-str
-                                    (eem--parse-tower-default-mode))
-                         :members (parsec-with-input tower-str
-                                    (eem--parse-tower-level-names))))
+  (message "Current buffer is %s" (current-buffer))
+  (message "Parser received string: %s $$" tower-str)
+  (let* ((level-names (parsec-with-input tower-str
+                        (eem--parse-tower-level-names)))
+         (levels (seq-map (lambda (name)
+                            (ht-get eem-modes name))
+                          level-names)))
+    (make-editing-ensemble :name (parsec-with-input tower-str
+                                   (eem--parse-tower-name))
+                           :default (parsec-with-input tower-str
+                                      (eem--parse-tower-default-mode))
+                           :members levels)))
+
+(defun eem-parse-tower-from-buffer (&optional buffer)
+  "Parse a tower struct from a BUFFER containing a text representation of it."
+  (with-current-buffer (or buffer (current-buffer))
+    (widen)
+    (let ((tower (eem-parse-tower (buffer-string))))
+      (eem--set-tower-view tower)
+      tower)))
 
 (defun eem-render-tower (tower)
   "Render a text representation of an editing tower in a buffer."

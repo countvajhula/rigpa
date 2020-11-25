@@ -124,12 +124,16 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
   "Extract the selected level from the current representation"
   (interactive)
   (let* ((level-str (thing-at-point 'line t)))
-    (string-to-number (parsec-with-input level-str
-                        (eem--parse-level-number-only)))))
+    (message "### About to extract number from %s" level-str)
+    (let ((num (string-to-number (parsec-with-input level-str
+                                   (eem--parse-level-number-only)))))
+      (message "### Extracted level %d" num)
+      num)))
 
 (defun eem-enter-selected-level ()
   "Enter selected level"
   (interactive)
+  (message "### About to enter selected level")
   (let ((selected-level (eem--extract-selected-level)))
     (with-current-buffer (eem--get-ground-buffer)
       (message "entering level %s in tower %s in buffer %s"
@@ -213,6 +217,39 @@ is precisely the thing to be done."
                     (concat "[" name "]")
                   name))))
 
+(defun eem--reload-tower ()
+  "Reparse and reload tower."
+  (message "### RELOADING TOWER, current state is: %s" (buffer-string))
+  (let* ((fresh-tower (eem-parse-tower-from-buffer))
+         (name (eem-editing-entity-name fresh-tower)))
+    (set (intern (concat "eem-" name "-tower")) fresh-tower)
+    ;; update complex too
+    (message "NAME IS %s" name)
+    (with-current-buffer (eem--get-ground-buffer)
+      (setf (nth (seq-position (seq-map #'eem-editing-entity-name
+                                        (editing-ensemble-members eem--complex))
+                               name)
+                 (editing-ensemble-members eem--complex))
+            fresh-tower))
+    (setf (buffer-string) "")
+    (insert (eem-serialize-tower fresh-tower))
+    (eem--set-tower-view fresh-tower)))
+
+(defun eem--meta-buffer-change-handler (start end length)
+  "A liaison to listen for buffer changes and take appropriate action."
+  (message "BUFFER CHANGE HANDLER CALLED")
+  (when (string-prefix-p eem-buffer-prefix
+                         (buffer-name (current-buffer)))
+    (eem--reload-tower)))
+
+(defun eem--add-meta-side-effects ()
+  "Add side effects for primitive mode operations while in meta mode."
+  (add-hook 'after-change-functions #'eem--meta-buffer-change-handler))
+
+(defun eem--remove-meta-side-effects ()
+  "Remove side effects for primitive mode operations that were added for meta modes."
+  (remove-hook 'after-change-functions #'eem--meta-buffer-change-handler))
+
 ;; TODO: should have a single function that enters
 ;; any meta-level, incl. mode, tower, etc.
 ;; this is the function that does the "vertical" escape
@@ -224,15 +261,15 @@ current epistemic tower."
   (interactive)
   (eem-render-tower (eem--local-tower))
   (eem--switch-to-tower eem--current-tower-index) ; TODO: base this on "state" instead
-  (eem--set-ui-for-meta-modes))
+  (eem--set-ui-for-meta-modes)
+  (eem--add-meta-side-effects))
 
 (defun my-exit-mode-mode ()
   "Exit mode mode."
   (interactive)
   (let ((ref-buf (eem--get-ground-buffer)))
-    (with-current-buffer ref-buf
-      (setq eem--last-tower-index eem--tower-index-on-entry))
     (eem--revert-ui)
+    (eem--remove-meta-side-effects)
     (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t)
     (switch-to-buffer ref-buf)))
 
