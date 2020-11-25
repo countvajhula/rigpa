@@ -52,12 +52,9 @@
                          (eem-ensemble-size eem--complex))))
      (eem--switch-to-tower tower-id))))
 
-(defun eem--set-tower-view (tower)
-  "Narrow view to actionable part, and reflect ground state."
-  (let* ((tower-height (eem-ensemble-size tower))
-         (start (progn (evil-goto-line 1) (line-beginning-position)))
-         (end (progn (evil-goto-line tower-height) (line-end-position)))
-         (ground-buffer (eem--get-ground-buffer))
+(defun eem--tower-view-reflect-ground (tower)
+  "Assuming a representation of TOWER in the present buffer, reflect ground state in it."
+  (let* ((ground-buffer (eem--get-ground-buffer))
          (ground-mode-name (with-current-buffer ground-buffer
                              (symbol-name evil-state)))
          (ground-recall (with-current-buffer ground-buffer
@@ -67,11 +64,21 @@
                     (and ground-recall
                          (eem-ensemble-member-position-by-name tower
                                                                ground-recall))
-                    0)))
+                    0))
+         (tower-height (eem-ensemble-size tower)))
+    (evil-goto-line (- tower-height level))))
+
+(defun eem--tower-view-narrow (tower)
+  "Narrow view to actionable part, and reflect ground state."
+  (let* ((tower-height (eem-ensemble-size tower))
+         (start (save-excursion (goto-char (point-min))
+                                (point)))
+         (end (save-excursion (goto-char (point-min))
+                              (forward-line tower-height)
+                              (line-end-position))))
     ;; only show the region that can be interacted with, don't show
     ;; the name of the tower
-    (narrow-to-region start end)
-    (evil-goto-line (- tower-height level))))
+    (narrow-to-region start end)))
 
 (defun eem--switch-to-tower (tower-id)
   "View the tower indicated, reflecting the state of the ground buffer."
@@ -80,7 +87,8 @@
   (interactive)
   (let ((tower (eem--tower tower-id)))
     (switch-to-buffer (eem--buffer-name tower))
-    (eem--set-tower-view tower)
+    (eem--tower-view-narrow tower)
+    (eem--tower-view-reflect-ground tower)
     (with-current-buffer (eem--get-ground-buffer)
       ;; ad hoc modeling of buffer mode side effect here
       (setq eem--current-tower-index tower-id))))
@@ -122,7 +130,7 @@
   (with-current-buffer (or buffer (current-buffer))
     (widen)
     (let ((tower (eem-parse-tower (buffer-string))))
-      (eem--set-tower-view tower)
+      (eem--tower-view-narrow tower)
       tower)))
 
 (defun eem-render-tower (tower)

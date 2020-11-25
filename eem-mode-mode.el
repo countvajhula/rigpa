@@ -219,9 +219,14 @@ is precisely the thing to be done."
 
 (defun eem--reload-tower ()
   "Reparse and reload tower."
-  (message "### RELOADING TOWER, current state is: %s" (buffer-string))
+  (message "### RELOADING TOWER, current state is: %s, line nubmer is %d" (buffer-string) (line-number-at-pos))
   (let* ((fresh-tower (eem-parse-tower-from-buffer))
-         (name (eem-editing-entity-name fresh-tower)))
+         (name (eem-editing-entity-name fresh-tower))
+         (original-line-number (line-number-at-pos)))
+    (message "original line number is %d, point is %s, buffer is %s"
+             (line-number-at-pos)
+             (point)
+             (current-buffer))
     (set (intern (concat "eem-" name "-tower")) fresh-tower)
     ;; update complex too
     (message "NAME IS %s" name)
@@ -233,22 +238,19 @@ is precisely the thing to be done."
             fresh-tower))
     (setf (buffer-string) "")
     (insert (eem-serialize-tower fresh-tower))
-    (eem--set-tower-view fresh-tower)))
-
-(defun eem--meta-buffer-change-handler (start end length)
-  "A liaison to listen for buffer changes and take appropriate action."
-  (message "BUFFER CHANGE HANDLER CALLED")
-  (when (string-prefix-p eem-buffer-prefix
-                         (buffer-name (current-buffer)))
-    (eem--reload-tower)))
+    (eem--tower-view-narrow fresh-tower)
+    (evil-goto-line original-line-number)))
 
 (defun eem--add-meta-side-effects ()
   "Add side effects for primitive mode operations while in meta mode."
-  (add-hook 'after-change-functions #'eem--meta-buffer-change-handler))
+  ;; this should lookup the appropriate side-effect based on the coordinates
+  (advice-add #'my-move-line-down :after #'eem--reload-tower)
+  (advice-add #'my-move-line-up :after #'eem--reload-tower))
 
 (defun eem--remove-meta-side-effects ()
   "Remove side effects for primitive mode operations that were added for meta modes."
-  (remove-hook 'after-change-functions #'eem--meta-buffer-change-handler))
+  (advice-remove #'my-move-line-down #'eem--reload-tower)
+  (advice-remove #'my-move-line-up #'eem--reload-tower))
 
 ;; TODO: should have a single function that enters
 ;; any meta-level, incl. mode, tower, etc.
