@@ -7,6 +7,9 @@
   :message "-- MODE --"
   :enable (normal))
 
+;; recall mode in each buffer, default to nil so it isn't undefined
+(defvar-local eem-recall nil)
+
 ;; registry of known modes
 (defvar eem-modes
   (ht))
@@ -160,8 +163,7 @@ current level reflects the mode's position in the tower."
 (defun eem--local-recall-mode (&optional buffer)
   "Get the recall mode (if any) in the BUFFER."
   (with-current-buffer (or buffer (current-buffer))
-    (and (boundp 'eem-recall)
-         eem-recall)))
+    eem-recall))
 
 (defun eem--enter-local-recall-mode (&optional buffer)
   "Enter the recall mode (if any) in the BUFFER.
@@ -170,8 +172,7 @@ This should generally not be called directly but rather via
 hooks. Only call it directly when entering a recall mode
 is precisely the thing to be done."
   (with-current-buffer (or buffer (current-buffer))
-    (let ((recall (and (boundp 'eem-recall)
-                       eem-recall)))
+    (let ((recall eem-recall))
       (eem--clear-local-recall)
       (when recall
         (eem-enter-mode recall)))))
@@ -187,8 +188,7 @@ is precisely the thing to be done."
           ;; recall should probably be tower-specific and
           ;; meta-level specific, so that
           ;; we can set it upon entry to a meta mode
-          (recall (and (boundp 'eem-recall)
-                       eem-recall)))
+          (recall eem-recall))
       ;; only set recall here if it is currently in the tower AND
       ;; going to a state outside the tower
       (when (and (eem-ensemble-member-position-by-name (eem--local-tower)
