@@ -184,6 +184,34 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   (indent-rigidly-right-to-tab-stop (line-beginning-position)
                                     (line-end-position)))
 
+(defun my-insert-newline ()
+  "Insert newline and reindent."
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    (newline-and-indent)))
+
+(defun my-append-newline ()
+  "Append newline and reindent."
+  (interactive)
+  (save-excursion
+    (forward-line)
+    (newline-and-indent)))
+
+(defun my-join-lines (&optional backwards)
+  "Join lines."
+  (interactive)
+  (save-excursion
+    (if backwards
+        (progn (evil-previous-line)
+               (if (current-line-empty-p)
+                   (evil-join (line-beginning-position)
+                              (1+ (line-beginning-position)))
+                 (evil-join (line-beginning-position)
+                            (line-end-position))))
+      (evil-join (line-beginning-position)
+       (line-end-position)))))
+
 (defhydra hydra-line (:columns 4
                       :post (chimera-hydra-portend-exit chimera-line-mode t)
                       :after-exit (chimera-hydra-signal-exit chimera-line-mode
@@ -208,12 +236,24 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   ("x" my-delete-line "delete")
   ("c" my-change-line "change")
   ("s-l" indent-according-to-mode "autoindent")
-  ("o" my-flashback "flashback")
+  ("'" my-flashback "flashback")
   ("s" my-split-line "split by word")
   ("v" my-pulverize-line "pulverize")
   ("y" my-yank-line "yank (copy)")
+  ("p" evil-paste-after "paste after")
+  ("P" evil-paste-before "paste before")
+  ("+" evil-open-above "make new line")
+  ("i" evil-open-above "make new line")
+  ("a" evil-open-below "make new line below")
+  ("n" my-insert-newline "insert newline")
+  ("C-S-o" my-append-newline "append newline")
+  ("o" my-join-lines "join")
+  ("O" (lambda ()
+         (interactive)
+         (my-join-lines t))
+   "join backwards")
   (";" my-toggle-comment-line "toggle comment")
-  ("i" my-line-info "info" :exit t)
+  ("?" my-line-info "info" :exit t)
   ("H-m" eem-toggle-menu "show/hide this menu")
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
