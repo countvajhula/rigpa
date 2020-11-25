@@ -16,7 +16,7 @@
   "Parser for level number."
   (parsec-many1-as-string (parsec-digit)))
 
-(defun eem--level-right-delimiter-parser ()
+(defun eem--level-left-delimiter-parser ()
   (parsec-collect-as-string
    (parsec-string "|")
    (parsec-many-till-as-string (parsec-string "―") ; note: not usual dash
@@ -51,7 +51,7 @@
 
 (defun eem--level-parser ()
   "Parse a level as a list containing its number and name."
-  (parsec-collect* (parsec-and (eem--level-right-delimiter-parser)
+  (parsec-collect* (parsec-and (eem--level-left-delimiter-parser)
                                (eem--level-number-parser))
                    (parsec-and (eem--level-right-delimiter-parser)
                                (parsec-optional* (eem--whitespace-parser))
@@ -59,7 +59,7 @@
 
 (defun eem--level-name-only-parser ()
   "Parse the name of a level."
-  (parsec-and (eem--level-right-delimiter-parser)
+  (parsec-and (eem--level-left-delimiter-parser)
               (eem--level-number-parser)
               (eem--level-right-delimiter-parser)
               (parsec-optional* (eem--whitespace-parser))
@@ -67,12 +67,12 @@
 
 (defun eem--level-number-only-parser ()
   "Parse the number of a level."
-  (parsec-and (eem--level-right-delimiter-parser)
+  (parsec-and (eem--level-left-delimiter-parser)
               (eem--level-number-parser)))
 
 (defun eem--level-name-only-if-default-parser ()
   "Parse a level and extract the name if it's the default for the tower."
-  (parsec-and (eem--level-right-delimiter-parser)
+  (parsec-and (eem--level-left-delimiter-parser)
               (eem--level-number-parser)
               (eem--level-right-delimiter-parser)
               (parsec-optional* (eem--whitespace-parser))
