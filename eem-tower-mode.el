@@ -197,4 +197,39 @@ monadic verb in the 'switch buffer' navigation."
     ;; enter the appropriate level in the new tower
     (eem--enter-appropriate-mode)))
 
+(defhydra hydra-tower (:idle 1.0
+                       :columns 4
+                       :body-pre (my-enter-tower-mode)
+                       :post (my-exit-tower-mode))
+  "Tower mode"
+  ;; Need a textual representation of the mode tower for these to operate on
+  ("h" eem-previous-tower "previous tower")
+  ("j" eem-select-next-level "lower level")
+  ("k" eem-select-previous-level "higher level")
+  ("l" eem-next-tower "next tower")
+  ;; ("H" eem-highest-level "first level (recency)")
+  ;; ("J" eem-lowest-level "lowest level")
+  ;; ("K" eem-highest-level "highest level")
+  ;; ("L" eem-lowest-level "last level (recency)")
+  ;; different towers for different "major modes"
+  ;; ("s-o" eem-mode-mru "Jump to most recent (like Alt-Tab)" :exit t)
+  ;; ("o" eem-mode-mru :exit t)
+  ;; with delete / change etc. we could construct towers and then select towers
+  ;; there could be a maximal tower containing all the levels
+  ;; ("/" eem-search "search")
+  ;; move to change ordering of levels, an alternative to recency
+  ;;
+  ;; ffap other window -- open file with this other mode/tower: a formal "major mode"
+  ;; the mode mode, tower mode, and so on recursively makes more sense
+  ;; if we assume that keyboard shortcuts are scarce. this gives us ways to use
+  ;; a small number of keys in any arbitrary configuration
+  ("s-m" eem-flashback-to-last-tower "flashback" :exit t)  ; canonical action
+  ("<return>" eem-enter-selected-level "enter selected level" :exit t)
+  ("s-<return>" eem-enter-selected-level "enter selected level" :exit t)
+  ("i" nil "exit" :exit t)
+  ("<escape>" nil "exit" :exit t))
+
+  ;("s-<return>" eem-enter-lower-level "enter lower level" :exit t)
+  ;("s-<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+
 (provide 'eem-tower-mode)
