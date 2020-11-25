@@ -213,6 +213,13 @@ is precisely the thing to be done."
                     (concat "[" name "]")
                   name))))
 
+(defun eem--mode-mode-change (orig-fn &rest args)
+  "Change mode."
+  (interactive)
+  (beginning-of-line)
+  (evil-forward-WORD-begin)
+  (evil-change-line (point) (line-end-position)))
+
 (defun eem--update-tower (name value)
   "Update tower NAME to VALUE."
   (set (intern (concat "eem-" name "-tower")) value)
@@ -249,12 +256,14 @@ is precisely the thing to be done."
   "Add side effects for primitive mode operations while in meta mode."
   ;; this should lookup the appropriate side-effect based on the coordinates
   (advice-add #'my-move-line-down :after #'eem--reload-tower)
-  (advice-add #'my-move-line-up :after #'eem--reload-tower))
+  (advice-add #'my-move-line-up :after #'eem--reload-tower)
+  (advice-add #'my-change-line :around #'eem--mode-mode-change))
 
 (defun eem--remove-meta-side-effects ()
   "Remove side effects for primitive mode operations that were added for meta modes."
   (advice-remove #'my-move-line-down #'eem--reload-tower)
-  (advice-remove #'my-move-line-up #'eem--reload-tower))
+  (advice-remove #'my-move-line-up #'eem--reload-tower)
+  (advice-remove #'my-change-line #'eem--mode-mode-change))
 
 ;; TODO: should have a single function that enters
 ;; any meta-level, incl. mode, tower, etc.
