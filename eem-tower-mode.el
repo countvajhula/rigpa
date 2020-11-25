@@ -112,8 +112,6 @@
 
 (defun eem-parse-tower (tower-str)
   "Derive a tower struct from a string representation."
-  (message "Current buffer is %s" (current-buffer))
-  (message "Parser received string: %s $$" tower-str)
   (let* ((level-names (parsec-with-input tower-str
                         (eem--parse-tower-level-names)))
          (levels (seq-map (lambda (name)

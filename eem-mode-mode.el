@@ -124,16 +124,13 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
   "Extract the selected level from the current representation"
   (interactive)
   (let* ((level-str (thing-at-point 'line t)))
-    (message "### About to extract number from %s" level-str)
     (let ((num (string-to-number (parsec-with-input level-str
                                    (eem--parse-level-number-only)))))
-      (message "### Extracted level %d" num)
       num)))
 
 (defun eem-enter-selected-level ()
   "Enter selected level"
   (interactive)
-  (message "### About to enter selected level")
   (let ((selected-level (eem--extract-selected-level)))
     (with-current-buffer (eem--get-ground-buffer)
       (message "entering level %s in tower %s in buffer %s"
@@ -219,17 +216,15 @@ is precisely the thing to be done."
 
 (defun eem--reload-tower ()
   "Reparse and reload tower."
-  (message "### RELOADING TOWER, current state is: %s, line nubmer is %d" (buffer-string) (line-number-at-pos))
+  (message "reloading tower")
   (let* ((fresh-tower (eem-parse-tower-from-buffer))
          (name (eem-editing-entity-name fresh-tower))
          (original-line-number (line-number-at-pos)))
-    (message "original line number is %d, point is %s, buffer is %s"
-             (line-number-at-pos)
-             (point)
-             (current-buffer))
     (set (intern (concat "eem-" name "-tower")) fresh-tower)
     ;; update complex too
-    (message "NAME IS %s" name)
+    ;; TODO: this seems hacky, should be a "formalized" way of updating
+    ;; editing structures so that all containing ones are aware,
+    ;; maybe as part of "state modeling"
     (with-current-buffer (eem--get-ground-buffer)
       (setf (nth (seq-position (seq-map #'eem-editing-entity-name
                                         (editing-ensemble-members eem--complex))
