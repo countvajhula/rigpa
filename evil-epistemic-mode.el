@@ -95,7 +95,8 @@ and simply toggles whether the menu is visible or not."
 
 (define-derived-mode epistemic-meta-mode
   text-mode "Meta"
-  "Major mode for meta modes")
+  "Major mode for meta modes"
+  (define-key epistemic-meta-mode-map (kbd "g r") 'eem--reload-tower))
 
 ;; wrap native evil states in chimera modes
 (defvar chimera-normal-mode

@@ -229,6 +229,7 @@ is precisely the thing to be done."
 
 (defun eem--reload-tower ()
   "Reparse and reload tower."
+  (interactive)
   (message "reloading tower")
   (condition-case err
       (let* ((fresh-tower (eem-parse-tower-from-buffer))
@@ -241,8 +242,7 @@ is precisely the thing to be done."
         (evil-goto-line original-line-number))
     (error (message "parse error %s. Reverting tower..." err)
            (eem--tower-view-narrow (eem--ground-tower))
-           ;; (eem--tower-view-reflect-ground (eem--ground-tower))
-           )))
+           (eem--tower-view-reflect-ground (eem--ground-tower)))))
 
 (defun eem--add-meta-side-effects ()
   "Add side effects for primitive mode operations while in meta mode."
