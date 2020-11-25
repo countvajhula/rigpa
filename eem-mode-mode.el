@@ -124,8 +124,7 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
   "Extract the selected level from the current representation"
   (interactive)
   (let* ((level-str (thing-at-point 'line t)))
-    (let ((num (string-to-number (parsec-with-input level-str
-                                   (eem--parse-level-number-only)))))
+    (let ((num (string-to-number (eem--parse-level-number level-str))))
       num)))
 
 (defun eem-enter-selected-level ()
@@ -214,27 +213,36 @@ is precisely the thing to be done."
                     (concat "[" name "]")
                   name))))
 
+(defun eem--update-tower (name value)
+  "Update tower NAME to VALUE."
+  (set (intern (concat "eem-" name "-tower")) value)
+  ;; update complex too
+  ;; TODO: this seems hacky, should be a "formalized" way of updating
+  ;; editing structures so that all containing ones are aware,
+  ;; maybe as part of "state modeling"
+  (with-current-buffer (eem--get-ground-buffer)
+    (setf (nth (seq-position (seq-map #'eem-editing-entity-name
+                                      (editing-ensemble-members eem--complex))
+                             name)
+               (editing-ensemble-members eem--complex))
+          value)))
+
 (defun eem--reload-tower ()
   "Reparse and reload tower."
   (message "reloading tower")
-  (let* ((fresh-tower (eem-parse-tower-from-buffer))
-         (name (eem-editing-entity-name fresh-tower))
-         (original-line-number (line-number-at-pos)))
-    (set (intern (concat "eem-" name "-tower")) fresh-tower)
-    ;; update complex too
-    ;; TODO: this seems hacky, should be a "formalized" way of updating
-    ;; editing structures so that all containing ones are aware,
-    ;; maybe as part of "state modeling"
-    (with-current-buffer (eem--get-ground-buffer)
-      (setf (nth (seq-position (seq-map #'eem-editing-entity-name
-                                        (editing-ensemble-members eem--complex))
-                               name)
-                 (editing-ensemble-members eem--complex))
-            fresh-tower))
-    (setf (buffer-string) "")
-    (insert (eem-serialize-tower fresh-tower))
-    (eem--tower-view-narrow fresh-tower)
-    (evil-goto-line original-line-number)))
+  (condition-case err
+      (let* ((fresh-tower (eem-parse-tower-from-buffer))
+             (name (eem-editing-entity-name fresh-tower))
+             (original-line-number (line-number-at-pos)))
+        (eem--update-tower name fresh-tower)
+        (setf (buffer-string) "")
+        (insert (eem-serialize-tower fresh-tower))
+        (eem--tower-view-narrow fresh-tower)
+        (evil-goto-line original-line-number))
+    (error (message "parse error %s. Reverting tower..." err)
+           (eem--tower-view-narrow (eem--ground-tower))
+           ;; (eem--tower-view-reflect-ground (eem--ground-tower))
+           )))
 
 (defun eem--add-meta-side-effects ()
   "Add side effects for primitive mode operations while in meta mode."

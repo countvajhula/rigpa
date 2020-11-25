@@ -112,21 +112,19 @@
 
 (defun eem-parse-tower (tower-str)
   "Derive a tower struct from a string representation."
-  (let* ((level-names (parsec-with-input tower-str
-                        (eem--parse-tower-level-names)))
+  (let* ((level-names (eem--parse-level-names tower-str))
          (levels (seq-map (lambda (name)
                             (ht-get eem-modes name))
                           level-names)))
-    (make-editing-ensemble :name (parsec-with-input tower-str
-                                   (eem--parse-tower-name))
-                           :default (parsec-with-input tower-str
-                                      (eem--parse-tower-default-mode))
+    (make-editing-ensemble :name (eem--parse-tower-name tower-str)
+                           :default (eem--parse-tower-default-name tower-str)
                            :members levels)))
 
 (defun eem-parse-tower-from-buffer (&optional buffer)
   "Parse a tower struct from a BUFFER containing a text representation of it."
   (with-current-buffer (or buffer (current-buffer))
     (widen)
+    (message "PARSING: %s" (buffer-string))
     (let ((tower (eem-parse-tower (buffer-string))))
       (eem--tower-view-narrow tower)
       tower)))
