@@ -220,6 +220,7 @@ is precisely the thing to be done."
   ;; TODO: this seems hacky, should be a "formalized" way of updating
   ;; editing structures so that all containing ones are aware,
   ;; maybe as part of "state modeling"
+  (message "update tower %s" name)
   (with-current-buffer (eem--get-ground-buffer)
     (setf (nth (seq-position (seq-map #'eem-editing-entity-name
                                       (editing-ensemble-members eem--complex))

@@ -8,7 +8,7 @@
 
 (defun eem--level-right-delimiter-parser ()
   "Parser for level right delimiter."
-  (parsec-many-till-as-string (parsec-string "―") ; note: not usual dash
+  (parsec-many-till-as-string (parsec-or (parsec-try (parsec-string "―")) (parsec-string "-")) ; note: not usual dash
                               (parsec-try
                                (parsec-string "|"))))
 
@@ -19,7 +19,7 @@
 (defun eem--level-left-delimiter-parser ()
   (parsec-collect-as-string
    (parsec-string "|")
-   (parsec-many-till-as-string (parsec-string "―") ; note: not usual dash
+   (parsec-many-till-as-string (parsec-or (parsec-try (parsec-string "―")) (parsec-string "-")) ; note: not usual dash
                                (parsec-lookahead
                                 (eem--level-number-parser)))))
 
@@ -31,9 +31,9 @@
 
 (defun eem--name-parser ()
   "Parse tower name."
-  (parsec-between (parsec-string "-")
-                  (parsec-string "-")
-                  (parsec-many-as-string (parsec-none-of ?-))))
+  (parsec-between (parsec-string ":")
+                  (parsec-string ":")
+                  (parsec-many-as-string (parsec-none-of ?:))))
 
 (defun eem--level-name-parser ()
   "Parse a level name."

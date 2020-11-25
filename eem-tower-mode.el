@@ -108,7 +108,7 @@
                       "\n"))))
     (concat (string-trim tower-str)
             "\n"
-            "\n-" (upcase (editing-ensemble-name tower)) "-")))
+            "\n" ":" (upcase (editing-ensemble-name tower)) ":")))
 
 (defun eem-parse-tower (tower-str)
   "Derive a tower struct from a string representation."
