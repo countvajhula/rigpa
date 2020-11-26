@@ -288,31 +288,7 @@ current epistemic tower."
     (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t)
     (switch-to-buffer ref-buf)))
 
-
-(defhydra hydra-mode (:columns 4
-                      :body-pre (evil-mode-state))
-  "Mode mode"
-  ("j" eem-mode-down "down")
-  ("k" eem-mode-up "up")
-  ;; TODO: superlatives for selection
-  ("J" eem-move-down "move down")
-  ("K" eem-move-up "move up")
-  ;; TODO: superlatives for moving
-  ("+" eem-make-mode "make")  ; allow ivy selection from all registered modes
-  ("x" eem-delete-mode "delete")
-  ("c" eem-change-mode "change")
-  ("m" eem-other-mode "Return to most recent (like Alt-Tab)" :exit t)
-  ("u" eem-mode-undo "undo")
-  ("C-r" eem-mode-redo "redo")
-  ("/" eem-mode-search "search") ; ivy search full list of modes (alternative to s-<> entry)
-  ("=" eem-restore-mode "restore") ; to factory defaults?
-  ("i" nil "exit" :exit t)
-  ("<return>" eem-enter-lower-level "enter lower level" :exit t) ;; ?
-  ("<escape>" eem-enter-higher-level "escape to higher level" :exit t)) ;; ?
-
-(global-set-key (kbd "s-k") (lambda ()
-                              (interactive)
-                              (eem-jump-to-level "mode")))
+;; = "factory defaults", other mode, and search
 
 ;; mode mode as the lowest level upon s-Esc, with tower mode above that achieved via s-Esc again, and so on...
 ;; i.e. once in any meta mode, you should be able to use the usual L00 machinery incl. e.g. line mode
