@@ -129,12 +129,13 @@
       (eem--tower-view-narrow tower)
       tower)))
 
-(defun eem-render-tower (tower)
+(defun eem-render-tower (tower &optional major-mode)
   "Render a text representation of an editing tower in a buffer."
   (interactive)
-  (let ((inherited-ground-buffer (eem--get-ground-buffer))
-        (buffer (my-new-empty-buffer (eem--buffer-name tower)
-                                     #'epistemic-meta-mode)))
+  (let* ((inherited-ground-buffer (eem--get-ground-buffer))
+         (major-mode (or major-mode #'epistemic-meta-mode))
+         (buffer (my-new-empty-buffer (eem--buffer-name tower)
+                                      major-mode)))
     (with-current-buffer buffer
       ;; ground buffer is inherited from the original
       ;; to define the chain of reference
@@ -144,36 +145,6 @@
       (insert (eem-serialize-tower tower))
       (eem--enter-appropriate-mode))
     buffer))
-
-(defun my-enter-tower-mode ()
-  "Enter a buffer containing a textual representation of the
-initial epistemic tower."
-  (interactive)
-  (dolist (tower (editing-ensemble-members eem--complex))
-    (eem-render-tower tower))
-  (with-current-buffer (eem--get-ground-buffer)
-    ;; TODO: is it necessary to reference ground buffer here?
-    ;;
-    ;; Store "previous" previous tower to support flashback
-    ;; feature seamlessly. This is to get around hydra executing
-    ;; functions after exiting rather than before, which loses
-    ;; information about the previous tower if flashback is
-    ;; being invoked. This is a hacky fix, but it works for now.
-    ;; Improve this eventually.
-    (setq eem--flashback-tower-index eem--tower-index-on-entry)
-    (setq eem--tower-index-on-entry eem--current-tower-index)
-    (eem--switch-to-tower eem--current-tower-index))
-  (eem--set-ui-for-meta-modes))
-
-(defun my-exit-tower-mode ()
-  "Exit tower mode."
-  (interactive)
-  (let ((ref-buf (eem--get-ground-buffer)))
-    (with-current-buffer ref-buf
-      (setq eem--last-tower-index eem--tower-index-on-entry))
-    (eem--revert-ui)
-    (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t)
-    (switch-to-buffer ref-buf)))
 
 (defun eem-flashback-to-last-tower ()
   "Switch to the last tower used.
@@ -196,6 +167,62 @@ monadic verb in the 'switch buffer' navigation."
       (setq eem--flashback-tower-index original-tower-index))
     ;; enter the appropriate level in the new tower
     (eem--enter-appropriate-mode)))
+
+(defun eem--previous-tower-wrapper (orig-fn &rest args)
+  "Thin wrapper to disregard actual buffer change functions (temporary hack)."
+  (message "%%%%%%%%%%%%%%%% CALLED")
+  (eem-previous-tower))
+
+(defun eem--next-tower-wrapper (orig-fn &rest args)
+  "Thin wrapper to disregard actual buffer change functions (temporary hack)."
+  (eem-next-tower))
+
+(defun eem--add-meta-tower-side-effects ()
+  "Add side effects for primitive mode operations while in meta mode."
+  ;; this should lookup the appropriate side-effect based on the coordinates
+  (advice-add #'previous-buffer :around #'eem--previous-tower-wrapper)
+  (advice-add #'next-buffer :around #'eem--next-tower-wrapper)
+  ;; (advice-add #'my-change-line :around #'eem--mode-mode-change)
+  )
+
+;; ensure the meta and meta-tower's are straight
+(defun eem--remove-meta-tower-side-effects ()
+  "Remove side effects for primitive mode operations that were added for meta modes."
+  (advice-remove #'previous-buffer #'eem--previous-tower-wrapper)
+  (advice-remove #'next-buffer #'eem--next-tower-wrapper)
+  ;; (advice-remove #'my-change-line #'eem--mode-mode-change)
+  )
+
+(defun my-enter-tower-mode ()
+  "Enter a buffer containing a textual representation of the
+initial epistemic tower."
+  (interactive)
+  (dolist (tower (editing-ensemble-members eem--complex))
+    (eem-render-tower tower #'epistemic-meta-tower-mode))
+  ;; TODO: is it necessary to reference ground buffer here?
+  ;;
+  ;; Store "previous" previous tower to support flashback
+  ;; feature seamlessly. This is to get around hydra executing
+  ;; functions after exiting rather than before, which loses
+  ;; information about the previous tower if flashback is
+  ;; being invoked. This is a hacky fix, but it works for now.
+  ;; Improve this eventually.
+  (setq eem--flashback-tower-index eem--tower-index-on-entry)
+  (setq eem--tower-index-on-entry eem--current-tower-index)
+  (eem--switch-to-tower eem--current-tower-index)
+  (eem--add-meta-tower-side-effects)
+  (eem--set-ui-for-meta-modes))
+
+(defun my-exit-tower-mode ()
+  "Exit tower mode."
+  (interactive)
+  (let ((ref-buf (eem--get-ground-buffer)))
+    (with-current-buffer ref-buf
+      (setq eem--last-tower-index eem--tower-index-on-entry))
+    (eem--revert-ui)
+    (eem--remove-meta-tower-side-effects)
+    (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t)
+    (switch-to-buffer ref-buf)))
 
 (defhydra hydra-tower (:idle 1.0
                        :columns 4

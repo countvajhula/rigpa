@@ -98,6 +98,11 @@ and simply toggles whether the menu is visible or not."
   "Major mode for meta modes"
   (define-key epistemic-meta-mode-map (kbd "g r") 'eem--reload-tower))
 
+(define-derived-mode epistemic-meta-tower-mode
+  text-mode "Tower"
+  "Major mode for meta modes"
+  (define-key epistemic-meta-tower-mode-map (kbd "g r") 'eem--reload-tower))
+
 ;; wrap native evil states in chimera modes
 (defvar chimera-normal-mode
   (make-chimera-mode :name "normal"
@@ -225,7 +230,17 @@ and simply toggles whether the menu is visible or not."
         (make-editing-ensemble
          :name "meta"
          :default "meta-mode"
-         :members (list eem-meta-mode-tower))))
+         :members (list eem-meta-mode-tower)))
+
+  (setq eem-meta-tower-mode-tower
+        (make-editing-ensemble :name "meta-tower"
+                               :default "buffer"
+                               :members (list chimera-buffer-mode)))
+  (setq eem-meta-tower-complex
+        (make-editing-ensemble
+         :name "meta-tower"
+         :default "meta-tower"
+         :members (list eem-meta-tower-mode-tower))))
 
 (defun eem--provide-editing-structures ()
   "Register editing structures so they're used in relevant major modes."
@@ -248,7 +263,13 @@ and simply toggles whether the menu is visible or not."
             ;; is 1 use line mode / buffers, if it's 2,
             ;; use buffer mode / perspectives?
             (lambda ()
-              (setq eem--complex eem-meta-complex))))
+              (setq eem--complex eem-meta-complex)))
+  (add-hook 'epistemic-meta-tower-mode-hook
+            ;; TODO: dispatch here based on meta level. If the level
+            ;; is 1 use line mode / buffers, if it's 2,
+            ;; use buffer mode / perspectives?
+            (lambda ()
+              (setq eem--complex eem-meta-tower-complex))))
 
 (defun eem-initialize ()
   "Initialize epistemic mode."
