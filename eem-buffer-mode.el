@@ -81,6 +81,8 @@ current ('original') buffer."
   ("s-b" evil-switch-to-windows-last-buffer "switch to last" :exit t)
   ("b" evil-switch-to-windows-last-buffer "switch to last" :exit t)
   ("h" previous-buffer "previous")
+  ("j" my-noop nil)
+  ("k" my-noop nil)
   ("l" next-buffer "next")
   ("n" (lambda ()
          (interactive)
