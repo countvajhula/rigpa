@@ -129,6 +129,23 @@
       (eem--tower-view-narrow tower)
       tower)))
 
+(defun eem-render-tower-for-mode-mode (tower &optional major-mode)
+  "Render a text representation of an editing tower in a buffer."
+  (interactive)
+  (let* ((ground (current-buffer))
+         (major-mode (or major-mode #'epistemic-meta-mode))
+         (buffer (my-new-empty-buffer (eem--buffer-name tower)
+                                      major-mode)))
+    (with-current-buffer buffer
+      ;; ground buffer is inherited from the original
+      ;; to define the chain of reference
+      (setq eem--ground-buffer
+            ground)
+      (eem--set-meta-buffer-appearance)
+      (insert (eem-serialize-tower tower))
+      (eem--enter-appropriate-mode))
+    buffer))
+
 (defun eem-render-tower (tower &optional major-mode)
   "Render a text representation of an editing tower in a buffer."
   (interactive)
@@ -170,7 +187,6 @@ monadic verb in the 'switch buffer' navigation."
 
 (defun eem--previous-tower-wrapper (orig-fn &rest args)
   "Thin wrapper to disregard actual buffer change functions (temporary hack)."
-  (message "%%%%%%%%%%%%%%%% CALLED")
   (eem-previous-tower))
 
 (defun eem--next-tower-wrapper (orig-fn &rest args)
@@ -197,8 +213,9 @@ monadic verb in the 'switch buffer' navigation."
   "Enter a buffer containing a textual representation of the
 initial epistemic tower."
   (interactive)
-  (dolist (tower (editing-ensemble-members eem--complex))
-    (eem-render-tower tower #'epistemic-meta-tower-mode))
+  (with-current-buffer (eem--get-ground-buffer)
+    (dolist (tower (editing-ensemble-members eem--complex))
+      (eem-render-tower tower #'epistemic-meta-tower-mode)))
   ;; TODO: is it necessary to reference ground buffer here?
   ;;
   ;; Store "previous" previous tower to support flashback
@@ -209,7 +226,8 @@ initial epistemic tower."
   ;; Improve this eventually.
   (setq eem--flashback-tower-index eem--tower-index-on-entry)
   (setq eem--tower-index-on-entry eem--current-tower-index)
-  (eem--switch-to-tower eem--current-tower-index)
+  (with-current-buffer (eem--get-ground-buffer)
+    (eem--switch-to-tower eem--current-tower-index))
   (eem--add-meta-tower-side-effects)
   (eem--set-ui-for-meta-modes))
 

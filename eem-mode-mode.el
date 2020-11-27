@@ -274,7 +274,7 @@ is precisely the thing to be done."
   "Enter a buffer containing a textual representation of the
 current epistemic tower."
   (interactive)
-  (eem-render-tower (eem--local-tower))
+  (eem-render-tower-for-mode-mode (eem--local-tower))
   (eem--switch-to-tower eem--current-tower-index) ; TODO: base this on "state" instead
   (eem--set-ui-for-meta-modes)
   (eem--add-meta-side-effects))
@@ -285,7 +285,10 @@ current epistemic tower."
   (let ((ref-buf (eem--get-ground-buffer)))
     (eem--revert-ui)
     (eem--remove-meta-side-effects)
-    (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t)
+    (when (eq (with-current-buffer ref-buf
+                (eem--get-ground-buffer))
+              ref-buf)
+      (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t))
     (switch-to-buffer ref-buf)))
 
 ;; = "factory defaults", other mode, and search
