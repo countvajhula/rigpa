@@ -212,6 +212,14 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
       (evil-join (line-beginning-position)
        (line-end-position)))))
 
+(defun my-top-line ()
+  (interactive)
+  (evil-goto-line))
+
+(defun my-bottom-line ()
+  (interactive)
+  (evil-goto-line 1))
+
 (defhydra hydra-line (:columns 4
                       :post (chimera-hydra-portend-exit chimera-line-mode t)
                       :after-exit (chimera-hydra-signal-exit chimera-line-mode
@@ -223,6 +231,8 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   ("l" evil-next-line "next")
   ("C-j" my-jump-down "jump down")
   ("C-k" my-jump-up "jump up")
+  ("M-j" my-top-line "top line")
+  ("M-k" my-bottom-line "bottom line")
   ("H" my-move-line-left "move left")
   ("J" my-move-line-down "move down")
   ("K" my-move-line-up "move up")
