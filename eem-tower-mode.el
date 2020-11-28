@@ -74,7 +74,7 @@
          (start (save-excursion (goto-char (point-min))
                                 (point)))
          (end (save-excursion (goto-char (point-min))
-                              (forward-line tower-height)
+                              (forward-line (1- tower-height))
                               (line-end-position))))
     ;; only show the region that can be interacted with, don't show
     ;; the name of the tower
