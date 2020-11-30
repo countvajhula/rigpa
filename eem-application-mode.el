@@ -96,9 +96,11 @@
                              :after-exit (chimera-hydra-signal-exit chimera-application-mode
                                                                     #'chimera-handle-hydra-exit))
   "Control application environment"
-  ("t" hydra-transparency/body "transparency")
+  ("y" hydra-transparency/body "transparency")
+  ("t" centaur-tabs-mode "toggle tabs")
   ("n" display-line-numbers-mode "toggle line numbers")
   ("b" my-toggle-alarm-bell "toggle alarm bell")
+  ("s" scroll-bar-mode "toggle scroll bar")
   ("l" hl-line-mode "toggle highlight line")
   ("c" counsel-load-theme "change color scheme")
   ("H-m" eem-toggle-menu "show/hide this menu" :exit nil)
