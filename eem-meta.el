@@ -19,7 +19,8 @@ to terminate the reference chain."
   (text-scale-set 5)
   ;;(setq cursor-type nil))
   (internal-show-cursor nil nil)
-  (display-line-numbers-mode 'toggle)
+  (when display-line-numbers-mode
+    (display-line-numbers-mode nil))
   (hl-line-mode))
 
 (defun eem--set-ui-for-meta-modes ()
