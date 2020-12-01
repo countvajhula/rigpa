@@ -88,7 +88,7 @@
   ("M-k" minimize-transparency "least transparent (opaque)")
   ("M-j" maximize-transparency "most transparent")
   ("q" return-to-original-transparency  "return to original transparency" :exit t)
-  ("<escape>" my-noop "quit" :exit t))
+  ("<escape>" ignore "quit" :exit t))
 
 (defhydra hydra-application (:columns 1
                              :exit t
