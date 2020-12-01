@@ -35,9 +35,13 @@ If no VALUE is provided, this clears the flag."
       ;; state for the buffer here
       ;; although, should we do nothing if current mode is
       ;; already in the tower?
-      (message "hydra for mode %s exited into limbo; entering an appropriate state..."
-               mode-name)
-      (eem--enter-appropriate-mode))
+      ;; [doing this for now to fix symex margins issue, but
+      ;; not sure exactly what is happening there]
+      (message "hydra for mode %s exited into limbo." mode-name)
+      (unless (eem-ensemble-member-position-by-name (eem--local-tower)
+                                                    (symbol-name evil-state))
+        (message "exiting limbo by entering an appropriate state...")
+        (eem--enter-appropriate-mode)))
     (when (chimera-mode-manage-hooks mode)
       (message "Running exit hooks for %s mode" mode-name)
       (run-hooks (chimera-mode-exit-hook mode)))))
