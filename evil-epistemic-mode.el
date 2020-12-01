@@ -134,11 +134,25 @@ and simply toggles whether the menu is visible or not."
                      :entry-hook 'evil-replace-state-entry-hook
                      :exit-hook 'evil-replace-state-exit-hook))
 
+(defun eem--enter-lower-or-pass-through ()
+  "Enter a lower level, or pass through to underlying keymap."
+  (interactive)
+  (if buffer-read-only
+      ;; ideally should find a way to "pass through"
+      ;; to lower-priority keymaps instead of specifying
+      ;; what should happen on a per-mode basis here
+      (cond ((eq major-mode 'dired-mode)
+             (dired-find-file))
+            ((eq major-mode 'help-mode)
+             (push-button))
+            (t (eem-enter-lower-level)))
+    (eem-enter-lower-level)))
+
 (defun eem--integrate-evil ()
   "Map standard evil state entry and exit points so they're managed by epistemic."
   ;; evil interop keybindings
   (define-key evil-normal-state-map [escape] 'eem-enter-higher-level)
-  (define-key evil-normal-state-map [return] 'eem-enter-lower-level)
+  (define-key evil-normal-state-map [return] 'eem--enter-lower-or-pass-through)
   (define-key evil-visual-state-map [escape] 'eem-enter-higher-level)
   (define-key evil-visual-state-map [return] 'eem-enter-lower-level)
   (define-key evil-replace-state-map [escape] 'eem-enter-higher-level)
