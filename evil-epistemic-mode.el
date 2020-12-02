@@ -153,8 +153,16 @@ and simply toggles whether the menu is visible or not."
   ;; evil interop keybindings
   (define-key evil-normal-state-map [escape] 'eem-enter-higher-level)
   (define-key evil-normal-state-map [return] 'eem--enter-lower-or-pass-through)
-  (define-key evil-visual-state-map [escape] 'eem-enter-higher-level)
-  (define-key evil-visual-state-map [return] 'eem-enter-lower-level)
+  (define-key evil-visual-state-map [escape] (lambda ()
+                                               (interactive)
+                                               ;; exit visual state gracefully
+                                               (evil-exit-visual-state)
+                                               (eem-enter-higher-level)))
+  (define-key evil-visual-state-map [return] (lambda ()
+                                               (interactive)
+                                               ;; exit visual state gracefully
+                                               (evil-exit-visual-state)
+                                               (eem-enter-lower-level)))
   (define-key evil-replace-state-map [escape] 'eem-enter-higher-level)
   (define-key evil-replace-state-map [return] 'eem-enter-lower-level)
   (define-key evil-insert-state-map [escape] 'eem-enter-higher-level)

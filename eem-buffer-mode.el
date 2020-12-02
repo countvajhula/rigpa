@@ -71,6 +71,10 @@ current ('original') buffer."
 ;; this should be an independent utility library so that it can be used
 ;; in all modes that need an intuitive way to keep track of recency
 ;; maybe `recency-ring`, has a nice... ring to it
+
+;; See the existing packages "dynamic-ring" and "buffer-ring" that
+;; probably do this very thing. But in this case it may be better to
+;; simply use (buffer-list) directly which appears to keep track of recency
 (defhydra hydra-buffer (:columns 3
                         :body-pre (setup-buffer-marks-table) ; maybe put in ad-hoc entry
                         :post (progn (flash-to-original-and-back)
