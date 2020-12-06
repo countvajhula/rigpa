@@ -145,8 +145,16 @@ and simply toggles whether the menu is visible or not."
              (dired-find-file))
             ((eq major-mode 'help-mode)
              (push-button))
+            ((eq major-mode 'occur-mode)
+             (occur-mode-goto-occurrence))
+            ((eq major-mode 'dictionary-mode)
+             (link-selected))
+            ((eq major-mode 'grep-mode)
+             (compile-goto-error))
             (t (eem-enter-lower-level)))
-    (eem-enter-lower-level)))
+    (cond ((eq major-mode 'Custom-mode)
+           (Custom-newline (point)))
+          (t (eem-enter-lower-level)))))
 
 (defun eem--integrate-evil ()
   "Map standard evil state entry and exit points so they're managed by epistemic."
