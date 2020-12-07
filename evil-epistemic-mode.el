@@ -151,6 +151,8 @@ and simply toggles whether the menu is visible or not."
              (link-selected))
             ((eq major-mode 'grep-mode)
              (compile-goto-error))
+            ((eq major-mode 'ripgrep-search-mode)
+             (compile-goto-error))
             (t (eem-enter-lower-level)))
     (cond ((eq major-mode 'Custom-mode)
            (Custom-newline (point)))
