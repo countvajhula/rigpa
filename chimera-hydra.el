@@ -18,7 +18,7 @@ If no VALUE is provided, this clears the flag."
     (chimera--hydra-set-flag hydra :exiting value)))
 
 (defun chimera-hydra-signal-exit (mode callback)
-  "Helper function to witness hydra exit and notify epistemic mode."
+  "Helper function to witness hydra exit and notify rigpa."
   (let* ((mode-name (chimera-mode-name mode))
          (hydra (chimera--hydra-for-state mode-name)))
     (when (hydra-get-property hydra :exiting)

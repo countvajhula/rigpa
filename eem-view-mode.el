@@ -131,10 +131,10 @@
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-view-mode-entry-hook nil
-  "Entry hook for epistemic view mode.")
+  "Entry hook for rigpa view mode.")
 
 (defvar chimera-view-mode-exit-hook nil
-  "Exit hook for epistemic view mode.")
+  "Exit hook for rigpa view mode.")
 
 (defvar chimera-view-mode
   (make-chimera-mode :name "view"

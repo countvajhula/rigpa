@@ -269,10 +269,10 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-line-mode-entry-hook nil
-  "Entry hook for epistemic line mode.")
+  "Entry hook for rigpa line mode.")
 
 (defvar chimera-line-mode-exit-hook nil
-  "Exit hook for epistemic line mode.")
+  "Exit hook for rigpa line mode.")
 
 (defvar chimera-line-mode
   (make-chimera-mode :name "line"

@@ -65,10 +65,10 @@
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-activity-mode-entry-hook nil
-  "Entry hook for epistemic activity mode.")
+  "Entry hook for rigpa activity mode.")
 
 (defvar chimera-activity-mode-exit-hook nil
-  "Exit hook for epistemic activity mode.")
+  "Exit hook for rigpa activity mode.")
 
 (defvar chimera-activity-mode
   (make-chimera-mode :name "activity"

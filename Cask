@@ -1,7 +1,7 @@
 (source gnu)
 (source melpa)
 
-(package-file "evil-epistemic-mode.el")
+(package-file "rigpa.el")
 
 (development
  (depends-on "f")

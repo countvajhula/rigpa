@@ -108,10 +108,10 @@
   ("<escape>" eem-enter-higher-level "escape to higher level"))
 
 (defvar chimera-application-mode-entry-hook nil
-  "Entry hook for epistemic application mode.")
+  "Entry hook for rigpa application mode.")
 
 (defvar chimera-application-mode-exit-hook nil
-  "Exit hook for epistemic application mode.")
+  "Exit hook for rigpa application mode.")
 
 (defvar chimera-application-mode
   (make-chimera-mode :name "application"

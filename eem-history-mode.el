@@ -26,10 +26,10 @@
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-history-mode-entry-hook nil
-  "Entry hook for epistemic history mode.")
+  "Entry hook for rigpa history mode.")
 
 (defvar chimera-history-mode-exit-hook nil
-  "Exit hook for epistemic history mode.")
+  "Exit hook for rigpa history mode.")
 
 (defvar chimera-history-mode
   (make-chimera-mode :name "history"

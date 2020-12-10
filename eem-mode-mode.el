@@ -15,7 +15,7 @@
   (ht))
 
 (defun eem-register-mode (mode)
-  "Register MODE-NAME for use with epistemic mode."
+  "Register MODE-NAME for use with rigpa."
   (let ((name (chimera-mode-name mode))
         (entry-hook (chimera-mode-entry-hook mode))
         (exit-hook (chimera-mode-exit-hook mode)))
@@ -62,7 +62,7 @@
       ;; returning to it "out of band" would find it still that way,
       ;; and Enter/Escape would a priori do nothing since the mode is still
       ;; outside the local tower. Ordinarily, we would return to this
-      ;; buffer in an epistemic mode such as buffer mode, which upon
+      ;; buffer in a rigpa mode such as buffer mode, which upon
       ;; exiting would look for a recall. Since that isn't the case
       ;; here, nothing would happen at this point, and this is the spot
       ;; where we could have taken some action had we been more civic
@@ -272,7 +272,7 @@ is precisely the thing to be done."
 ;; for now we can just do a simple dispatch here
 (defun my-enter-mode-mode ()
   "Enter a buffer containing a textual representation of the
-current epistemic tower."
+current editing tower."
   (interactive)
   (eem-render-tower-for-mode-mode (eem--local-tower))
   (eem--switch-to-tower eem--current-tower-index) ; TODO: base this on "state" instead

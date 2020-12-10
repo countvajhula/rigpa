@@ -100,10 +100,10 @@ buffer mode."
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-tab-mode-entry-hook nil
-  "Entry hook for epistemic tab mode.")
+  "Entry hook for rigpa tab mode.")
 
 (defvar chimera-tab-mode-exit-hook nil
-  "Exit hook for epistemic tab mode.")
+  "Exit hook for rigpa tab mode.")
 
 (defvar chimera-tab-mode
   (make-chimera-mode :name "tab"

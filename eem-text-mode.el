@@ -21,10 +21,10 @@
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-text-mode-entry-hook nil
-  "Entry hook for epistemic text mode.")
+  "Entry hook for rigpa text mode.")
 
 (defvar chimera-text-mode-exit-hook nil
-  "Exit hook for epistemic text mode.")
+  "Exit hook for rigpa text mode.")
 
 (defvar chimera-text-mode
   (make-chimera-mode :name "text"

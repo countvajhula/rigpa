@@ -153,10 +153,10 @@
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-char-mode-entry-hook nil
-  "Entry hook for epistemic char mode.")
+  "Entry hook for rigpa char mode.")
 
 (defvar chimera-char-mode-exit-hook nil
-  "Exit hook for epistemic char mode.")
+  "Exit hook for rigpa char mode.")
 
 (defvar chimera-char-mode
   (make-chimera-mode :name "char"

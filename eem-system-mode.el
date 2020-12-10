@@ -25,10 +25,10 @@
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-system-mode-entry-hook nil
-  "Entry hook for epistemic system mode.")
+  "Entry hook for rigpa system mode.")
 
 (defvar chimera-system-mode-exit-hook nil
-  "Exit hook for epistemic system mode.")
+  "Exit hook for rigpa system mode.")
 
 (defvar chimera-system-mode
   (make-chimera-mode :name "system"

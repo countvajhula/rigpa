@@ -1,10 +1,10 @@
 (require 'chimera)
 
 (defvar chimera-symex-mode-entry-hook nil
-  "Entry hook for epistemic symex mode.")
+  "Entry hook for rigpa symex mode.")
 
 (defvar chimera-symex-mode-exit-hook nil
-  "Exit hook for epistemic symex mode.")
+  "Exit hook for rigpa symex mode.")
 
 (defvar chimera-symex-mode
   (make-chimera-mode :name "symex"

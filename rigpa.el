@@ -1,7 +1,7 @@
-;;; evil-epistemic-mode.el --- Self-reflective editing modes -*- lexical-binding: t -*-
+;;; rigpa.el --- Self-reflective editing modes -*- lexical-binding: t -*-
 
 ;; Author: Siddhartha Kasivajhula <sid@countvajhula.com>
-;; URL: https://github.com/countvajhula/epistemic-mode
+;; URL: https://github.com/countvajhula/rigpa
 ;; Version: 0.1
 ;; Keywords: evil
 
@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 ;;
-;; Epistemic mode allows you to construct "towers" of editing modes
+;; Rigpa allows you to construct "towers" of editing modes
 ;; (in principle, these could be any evil modes) and manipulate which
 ;; tower is active at any point in time.  It generalizes both vim's
 ;; notion of editing mode, as well as Emacs's notion of a major mode
@@ -28,8 +28,8 @@
 ;; modes which can be swapped and themselves edited using the very
 ;; modes they contain.
 ;;
-;; In addition, epistemic mode also defines conventions that modes that
-;; are "epistemic" should follow in order to be seamlessly integrated
+;; In addition, rigpa also defines conventions that modes
+;; should follow in order to be seamlessly integrated
 ;; into editing towers.  This includes conventions around keybindings
 ;; for moving up and down the hierarchy of editing levels, standard
 ;; semantics of modifier keys, defining a canonical action for each
@@ -56,14 +56,14 @@
 (require 'eem-history-mode)
 (require 'eem-tower-mode)
 
-;; define face for use in epistemic mode
+;; define face for use in meta modes
 (make-face 'eem-face)
 (set-face-font 'eem-face "-*-Consolas-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1")
 (set-face-foreground 'eem-face "tomato")
 
 ;; the prefix that will be used in naming all buffers used
-;; in epistemic mode representations
-(setq eem-buffer-prefix "EPISTEMIC-META")
+;; in meta mode representations
+(setq eem-buffer-prefix "RIGPA-META")
 
 (defun eem-hide-menu (mode-name)
   "Hide current mode menu."
@@ -93,15 +93,15 @@ and simply toggles whether the menu is visible or not."
           (eem-hide-menu mode-name)
         (eem-show-menu mode-name)))))
 
-(define-derived-mode epistemic-meta-mode
+(define-derived-mode rigpa-meta-mode
   text-mode "Meta"
   "Major mode for meta modes"
-  (define-key epistemic-meta-mode-map (kbd "g r") 'eem--reload-tower))
+  (define-key rigpa-meta-mode-map (kbd "g r") 'eem--reload-tower))
 
-(define-derived-mode epistemic-meta-tower-mode
+(define-derived-mode rigpa-meta-tower-mode
   text-mode "Tower"
   "Major mode for meta modes"
-  (define-key epistemic-meta-tower-mode-map (kbd "g r") 'eem--reload-tower))
+  (define-key rigpa-meta-tower-mode-map (kbd "g r") 'eem--reload-tower))
 
 ;; wrap native evil states in chimera modes
 (defvar chimera-normal-mode
@@ -165,7 +165,7 @@ and simply toggles whether the menu is visible or not."
           (t (eem-enter-lower-level)))))
 
 (defun eem--integrate-evil ()
-  "Map standard evil state entry and exit points so they're managed by epistemic."
+  "Map standard evil state entry and exit points so they're managed by rigpa."
   ;; evil interop keybindings
   (define-key evil-normal-state-map [escape] 'eem-enter-higher-level)
   (define-key evil-normal-state-map [return] 'eem--enter-lower-or-pass-through)
@@ -190,7 +190,7 @@ and simply toggles whether the menu is visible or not."
 
 (defun eem--register-modes ()
   "Register the standard modes with the framework."
-  ;; register evil chimera states with the epistemic framework
+  ;; register evil chimera states with the rigpa framework
   (eem-register-mode chimera-normal-mode)
   (eem-register-mode chimera-insert-mode)
   (eem-register-mode chimera-emacs-mode)
@@ -296,13 +296,13 @@ and simply toggles whether the menu is visible or not."
         (add-hook mode-hook (lambda ()
                               (setq eem--current-tower-index 2)
                               (setq eem--current-level 2))))))
-  (add-hook 'epistemic-meta-mode-hook
+  (add-hook 'rigpa-meta-mode-hook
             ;; TODO: dispatch here based on meta level. If the level
             ;; is 1 use line mode / buffers, if it's 2,
             ;; use buffer mode / perspectives?
             (lambda ()
               (setq eem--complex eem-meta-complex)))
-  (add-hook 'epistemic-meta-tower-mode-hook
+  (add-hook 'rigpa-meta-tower-mode-hook
             ;; TODO: dispatch here based on meta level. If the level
             ;; is 1 use line mode / buffers, if it's 2,
             ;; use buffer mode / perspectives?
@@ -310,7 +310,7 @@ and simply toggles whether the menu is visible or not."
               (setq eem--complex eem-meta-tower-complex))))
 
 (defun eem-initialize ()
-  "Initialize epistemic mode."
+  "Initialize rigpa."
   (interactive)
   (eem--register-modes)
   ;; should make this optional via a defcustom flag
@@ -319,14 +319,15 @@ and simply toggles whether the menu is visible or not."
     (eem--integrate-evil))
   (eem--create-editing-structures)
   (eem--provide-editing-structures)
-  (if (and (boundp 'epistemic-show-menus) epistemic-show-menus)
+  ;; (make-bfr-ring "tower")
+  (if (and (boundp 'rigpa-show-menus) rigpa-show-menus)
       (dolist (mode (ht-values eem-modes))
         (eem-show-menu (chimera-mode-name mode)))
     (dolist (mode (ht-values eem-modes))
       (eem-hide-menu (chimera-mode-name mode)))))
 
 (defun eem-disable ()
-  "Disable epistemic."
+  "Disable rigpa."
   (interactive)
   ;; TODO:
   ;; remap evil keybindings
@@ -343,5 +344,5 @@ and simply toggles whether the menu is visible or not."
 (defvar-local eem--complex eem-general-complex)
 
 
-(provide 'evil-epistemic-mode)
-;;; evil-epistemic-mode.el ends here
+(provide 'rigpa)
+;;; rigpa.el ends here

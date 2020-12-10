@@ -17,7 +17,7 @@
 (make-variable-buffer-local 'eem--current-level)
 
 (defun eem--tower (tower-id)
-  "The epistemic tower corresponding to the provided index."
+  "The editing tower corresponding to the provided index."
   (interactive)
   (nth tower-id (editing-ensemble-members eem--complex)))
 
@@ -117,7 +117,7 @@
   "Render a text representation of an editing tower in a buffer."
   (interactive)
   (let* ((ground (current-buffer))
-         (major-mode (or major-mode #'epistemic-meta-mode))
+         (major-mode (or major-mode #'rigpa-meta-mode))
          (buffer (my-new-empty-buffer (eem--buffer-name tower)
                                       major-mode)))
     (with-current-buffer buffer
@@ -134,7 +134,7 @@
   "Render a text representation of an editing tower in a buffer."
   (interactive)
   (let* ((inherited-ground-buffer (eem--get-ground-buffer))
-         (major-mode (or major-mode #'epistemic-meta-mode))
+         (major-mode (or major-mode #'rigpa-meta-mode))
          (buffer (my-new-empty-buffer (eem--buffer-name tower)
                                       major-mode)))
     (with-current-buffer buffer
@@ -151,14 +151,14 @@
   "Switch to the last tower used.
 
 Eventually this should be done via strange loop application
-of buffer mode when in epistemic mode, or alternatively,
+of buffer mode when in a rigpa meta mode, or alternatively,
 and perhaps equivalently, by treating 'switch tower' as the
 monadic verb in the 'switch buffer' navigation."
   (interactive)
   (with-current-buffer (eem--get-ground-buffer)
     ;; setting hydra to exit here would be ideal, but it seems
     ;; the hydra exits prior to this function being run, and there's
-    ;; no epistemic buffer to switch to. so for now, options are
+    ;; no meta buffer to switch to. so for now, options are
     ;; either to manually hit enter to use the selected tower
     ;; or store the "previous" previous tower upon mode mode entry
     ;; to get around the need for that
@@ -219,11 +219,11 @@ monadic verb in the 'switch buffer' navigation."
 
 (defun my-enter-tower-mode ()
   "Enter a buffer containing a textual representation of the
-initial epistemic tower."
+initial editing tower."
   (interactive)
   (with-current-buffer (eem--get-ground-buffer)
     (dolist (tower (editing-ensemble-members eem--complex))
-      (eem-render-tower tower #'epistemic-meta-tower-mode)))
+      (eem-render-tower tower #'rigpa-meta-tower-mode)))
   ;; TODO: is it necessary to reference ground buffer here?
   ;;
   ;; Store "previous" previous tower to support flashback

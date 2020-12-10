@@ -202,10 +202,10 @@
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-word-mode-entry-hook nil
-  "Entry hook for epistemic word mode.")
+  "Entry hook for rigpa word mode.")
 
 (defvar chimera-word-mode-exit-hook nil
-  "Exit hook for epistemic word mode.")
+  "Exit hook for rigpa word mode.")
 
 (defvar chimera-word-mode
   (make-chimera-mode :name "word"

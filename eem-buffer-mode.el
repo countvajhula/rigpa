@@ -106,10 +106,10 @@ current ('original') buffer."
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-buffer-mode-entry-hook nil
-  "Entry hook for epistemic buffer mode.")
+  "Entry hook for rigpa buffer mode.")
 
 (defvar chimera-buffer-mode-exit-hook nil
-  "Exit hook for epistemic buffer mode.")
+  "Exit hook for rigpa buffer mode.")
 
 (defvar chimera-buffer-mode
   (make-chimera-mode :name "buffer"

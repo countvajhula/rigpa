@@ -73,10 +73,10 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-window-mode-entry-hook nil
-  "Entry hook for epistemic window mode.")
+  "Entry hook for rigpa window mode.")
 
 (defvar chimera-window-mode-exit-hook nil
-  "Exit hook for epistemic window mode.")
+  "Exit hook for rigpa window mode.")
 
 (defvar chimera-window-mode
   (make-chimera-mode :name "window"

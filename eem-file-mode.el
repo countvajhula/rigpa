@@ -47,10 +47,10 @@ Version 2016-04-04"
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-file-mode-entry-hook nil
-  "Entry hook for epistemic file mode.")
+  "Entry hook for rigpa file mode.")
 
 (defvar chimera-file-mode-exit-hook nil
-  "Exit hook for epistemic file mode.")
+  "Exit hook for rigpa file mode.")
 
 (defvar chimera-file-mode
   (make-chimera-mode :name "file"
