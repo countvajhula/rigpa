@@ -144,8 +144,7 @@
             inherited-ground-buffer)
       (rigpa--set-meta-buffer-appearance)
       (insert (rigpa-serialize-tower tower))
-      (rigpa--enter-appropriate-mode)
-      )
+      (rigpa--enter-appropriate-mode))
     buffer))
 
 (defun rigpa-flashback-to-last-tower ()
