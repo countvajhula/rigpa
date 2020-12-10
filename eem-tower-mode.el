@@ -36,22 +36,6 @@
   (with-current-buffer (or buffer (current-buffer))
     (eem--tower eem--current-tower-index)))
 
-(defun eem-previous-tower ()
-  "Previous tower"
-  (interactive)
-  (with-current-buffer (eem--get-ground-buffer)
-    (let ((tower-id (mod (1- eem--current-tower-index)
-                         (eem-ensemble-size eem--complex))))
-     (eem--switch-to-tower tower-id))))
-
-(defun eem-next-tower ()
-  "Next tower"
-  (interactive)
-  (with-current-buffer (eem--get-ground-buffer)
-    (let ((tower-id (mod (1+ eem--current-tower-index)
-                         (eem-ensemble-size eem--complex))))
-     (eem--switch-to-tower tower-id))))
-
 (defun eem--tower-view-reflect-ground (tower)
   "Assuming a representation of TOWER in the present buffer, reflect ground state in it."
   (let* ((ground-buffer (eem--get-ground-buffer))
@@ -185,6 +169,34 @@ monadic verb in the 'switch buffer' navigation."
     ;; enter the appropriate level in the new tower
     (eem--enter-appropriate-mode)))
 
+(defun eem-previous-tower ()
+  "Previous tower"
+  (interactive)
+  (with-current-buffer (eem--get-ground-buffer)
+    (let ((tower-id (mod (1- eem--current-tower-index)
+                         (eem-ensemble-size eem--complex))))
+     (eem--switch-to-tower tower-id))))
+
+(defun eem-next-tower ()
+  "Next tower"
+  (interactive)
+  (with-current-buffer (eem--get-ground-buffer)
+    (let ((tower-id (mod (1+ eem--current-tower-index)
+                         (eem-ensemble-size eem--complex))))
+     (eem--switch-to-tower tower-id))))
+
+;; probably what we want is:
+;; 1. set up a "primary" buffer ring for all buffers at init time
+;;    and ensure all open buffers in buffer-list are part of it
+;; 2. use buffer-ring-next/previous in buffer mode
+;; 3. for tower mode,
+;;    (1) switch to a new "tower" ring, and
+;;    (2) add a side effect to buffer-ring-next/previous
+;;        to modify the tower index in the ground buffer
+;; Later, worry about moving all of these to "coordinates"
+;; and also about improving the buffer ring interface with
+;; explicit constructors and so on, and performance with
+;; hashes instead of simple conses if it becomes a problem
 (defun eem--previous-tower-wrapper (orig-fn &rest args)
   "Thin wrapper to disregard actual buffer change functions (temporary hack)."
   (eem-previous-tower))
@@ -197,17 +209,13 @@ monadic verb in the 'switch buffer' navigation."
   "Add side effects for primitive mode operations while in meta mode."
   ;; this should lookup the appropriate side-effect based on the coordinates
   (advice-add #'previous-buffer :around #'eem--previous-tower-wrapper)
-  (advice-add #'next-buffer :around #'eem--next-tower-wrapper)
-  ;; (advice-add #'my-change-line :around #'eem--mode-mode-change)
-  )
+  (advice-add #'next-buffer :around #'eem--next-tower-wrapper))
 
 ;; ensure the meta and meta-tower's are straight
 (defun eem--remove-meta-tower-side-effects ()
   "Remove side effects for primitive mode operations that were added for meta modes."
   (advice-remove #'previous-buffer #'eem--previous-tower-wrapper)
-  (advice-remove #'next-buffer #'eem--next-tower-wrapper)
-  ;; (advice-remove #'my-change-line #'eem--mode-mode-change)
-  )
+  (advice-remove #'next-buffer #'eem--next-tower-wrapper))
 
 (defun my-enter-tower-mode ()
   "Enter a buffer containing a textual representation of the
