@@ -21,9 +21,9 @@
   ("/" git-timemachine-show-revision-fuzzy "search")
   ("?" git-timemachine-show-commit "help (show commit)")
   ("q" git-timemachine-quit "return to the present" :exit t)
-  ("H-m" eem-toggle-menu "show/hide this menu")
-  ("<return>" eem-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+  ("H-m" rigpa-toggle-menu "show/hide this menu")
+  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
+  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-history-mode-entry-hook nil
   "Entry hook for rigpa history mode.")
@@ -38,4 +38,4 @@
                      :exit-hook 'evil-history-state-exit-hook))
 
 
-(provide 'eem-history-mode)
+(provide 'rigpa-history-mode)

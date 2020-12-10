@@ -197,9 +197,9 @@
   ("s-r" my-delete-word "delete" :exit t)
   ("s-o" my-delete-other-words "delete other words" :exit t)
   ("?" dictionary-lookup-definition "lookup in dictionary" :exit t)
-  ("H-m" eem-toggle-menu "show/hide this menu")
-  ("<return>" eem-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+  ("H-m" rigpa-toggle-menu "show/hide this menu")
+  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
+  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-word-mode-entry-hook nil
   "Entry hook for rigpa word mode.")
@@ -214,4 +214,4 @@
                      :exit-hook 'evil-word-state-exit-hook))
 
 
-(provide 'eem-word-mode)
+(provide 'rigpa-word-mode)

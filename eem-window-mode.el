@@ -68,9 +68,9 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
   ("R" evil-window-rotate-upwards "rotate upwards")
   ("f" ffap-other-window "go to file in other window" :exit t)
   ("i" nil "exit" :exit t)
-  ("H-m" eem-toggle-menu "show/hide this menu")
-  ("<return>" eem-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+  ("H-m" rigpa-toggle-menu "show/hide this menu")
+  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
+  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-window-mode-entry-hook nil
   "Entry hook for rigpa window mode.")
@@ -85,5 +85,5 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
                      :exit-hook 'evil-window-state-exit-hook))
 
 
-(provide 'eem-window-mode)
-;;; eem-window-mode.el ends here
+(provide 'rigpa-window-mode)
+;;; rigpa-window-mode.el ends here

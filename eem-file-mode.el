@@ -42,9 +42,9 @@ Version 2016-04-04"
   ("C-h" xah-pop-local-mark-ring "previous mark")
   ("C-l" unpop-to-mark-command "next mark")
   ("i" nil "exit" :exit t)
-  ("H-m" eem-toggle-menu "show/hide this menu")
-  ("<return>" eem-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+  ("H-m" rigpa-toggle-menu "show/hide this menu")
+  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
+  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-file-mode-entry-hook nil
   "Entry hook for rigpa file mode.")
@@ -59,4 +59,4 @@ Version 2016-04-04"
                      :exit-hook 'evil-file-state-exit-hook))
 
 
-(provide 'eem-file-mode)
+(provide 'rigpa-file-mode)

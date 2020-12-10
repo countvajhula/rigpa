@@ -39,47 +39,47 @@
 ;;; Code:
 
 (require 'chimera)
-(require 'eem-char-mode)
-(require 'eem-word-mode)
-(require 'eem-line-mode)
+(require 'rigpa-char-mode)
+(require 'rigpa-word-mode)
+(require 'rigpa-line-mode)
 (require 'symex)
-(require 'eem-symex-mode)
-(require 'eem-view-mode)
-(require 'eem-window-mode)
-(require 'eem-file-mode)
-(require 'eem-buffer-mode)
-(require 'eem-system-mode)
-(require 'eem-application-mode)
-(require 'eem-activity-mode)
-(require 'eem-text-mode)
-(require 'eem-tab-mode)
-(require 'eem-history-mode)
-(require 'eem-tower-mode)
+(require 'rigpa-symex-mode)
+(require 'rigpa-view-mode)
+(require 'rigpa-window-mode)
+(require 'rigpa-file-mode)
+(require 'rigpa-buffer-mode)
+(require 'rigpa-system-mode)
+(require 'rigpa-application-mode)
+(require 'rigpa-activity-mode)
+(require 'rigpa-text-mode)
+(require 'rigpa-tab-mode)
+(require 'rigpa-history-mode)
+(require 'rigpa-tower-mode)
 
 ;; define face for use in meta modes
-(make-face 'eem-face)
-(set-face-font 'eem-face "-*-Consolas-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1")
-(set-face-foreground 'eem-face "tomato")
+(make-face 'rigpa-face)
+(set-face-font 'rigpa-face "-*-Consolas-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1")
+(set-face-foreground 'rigpa-face "tomato")
 
 ;; the prefix that will be used in naming all buffers used
 ;; in meta mode representations
-(setq eem-buffer-prefix "RIGPA-META")
+(setq rigpa-buffer-prefix "RIGPA-META")
 
-(defun eem-hide-menu (mode-name)
+(defun rigpa-hide-menu (mode-name)
   "Hide current mode menu."
   (unless (member mode-name chimera-evil-states)
     ;; only supported for hydra
     (let ((mode-hydra (intern (concat "hydra-" mode-name))))
       (hydra-set-property mode-hydra :verbosity 0))))
 
-(defun eem-show-menu (mode-name)
+(defun rigpa-show-menu (mode-name)
   "Show current mode menu."
   (unless (member mode-name chimera-evil-states)
     ;; only supported for hydra
     (let ((mode-hydra (intern (concat "hydra-" mode-name))))
       (hydra-set-property mode-hydra :verbosity 2))))
 
-(defun eem-toggle-menu ()
+(defun rigpa-toggle-menu ()
   "Show/hide the current mode menu.
 
 Note that hiding the menu still retains the current editing mode,
@@ -90,18 +90,18 @@ and simply toggles whether the menu is visible or not."
     (let ((visibility (hydra-get-property mode-hydra :verbosity)))
       (if (or (eq nil visibility)
               (> visibility 0))
-          (eem-hide-menu mode-name)
-        (eem-show-menu mode-name)))))
+          (rigpa-hide-menu mode-name)
+        (rigpa-show-menu mode-name)))))
 
 (define-derived-mode rigpa-meta-mode
   text-mode "Meta"
   "Major mode for meta modes"
-  (define-key rigpa-meta-mode-map (kbd "g r") 'eem--reload-tower))
+  (define-key rigpa-meta-mode-map (kbd "g r") 'rigpa--reload-tower))
 
 (define-derived-mode rigpa-meta-tower-mode
   text-mode "Tower"
   "Major mode for meta modes"
-  (define-key rigpa-meta-tower-mode-map (kbd "g r") 'eem--reload-tower))
+  (define-key rigpa-meta-tower-mode-map (kbd "g r") 'rigpa--reload-tower))
 
 ;; wrap native evil states in chimera modes
 (defvar chimera-normal-mode
@@ -134,7 +134,7 @@ and simply toggles whether the menu is visible or not."
                      :entry-hook 'evil-replace-state-entry-hook
                      :exit-hook 'evil-replace-state-exit-hook))
 
-(defun eem--enter-lower-or-pass-through ()
+(defun rigpa--enter-lower-or-pass-through ()
   "Enter a lower level, or pass through to underlying keymap."
   (interactive)
   (if buffer-read-only
@@ -159,65 +159,65 @@ and simply toggles whether the menu is visible or not."
              (magit-diff-visit-file (magit-current-file) t))
             ((eq major-mode 'magit-log-mode)
              (magit-show-commit (magit-thingatpt--git-revision)))
-            (t (eem-enter-lower-level)))
+            (t (rigpa-enter-lower-level)))
     (cond ((eq major-mode 'Custom-mode)
            (Custom-newline (point)))
-          (t (eem-enter-lower-level)))))
+          (t (rigpa-enter-lower-level)))))
 
-(defun eem--integrate-evil ()
+(defun rigpa--integrate-evil ()
   "Map standard evil state entry and exit points so they're managed by rigpa."
   ;; evil interop keybindings
-  (define-key evil-normal-state-map [escape] 'eem-enter-higher-level)
-  (define-key evil-normal-state-map [return] 'eem--enter-lower-or-pass-through)
+  (define-key evil-normal-state-map [escape] 'rigpa-enter-higher-level)
+  (define-key evil-normal-state-map [return] 'rigpa--enter-lower-or-pass-through)
   (define-key evil-visual-state-map [escape] (lambda ()
                                                (interactive)
                                                ;; exit visual state gracefully
                                                (evil-exit-visual-state)
-                                               (eem-enter-higher-level)))
+                                               (rigpa-enter-higher-level)))
   (define-key evil-visual-state-map [return] (lambda ()
                                                (interactive)
                                                ;; exit visual state gracefully
                                                (evil-exit-visual-state)
-                                               (eem-enter-lower-level)))
-  (define-key evil-replace-state-map [escape] 'eem-enter-higher-level)
-  (define-key evil-replace-state-map [return] 'eem-enter-lower-level)
-  (define-key evil-insert-state-map [escape] 'eem-enter-higher-level)
+                                               (rigpa-enter-lower-level)))
+  (define-key evil-replace-state-map [escape] 'rigpa-enter-higher-level)
+  (define-key evil-replace-state-map [return] 'rigpa-enter-lower-level)
+  (define-key evil-insert-state-map [escape] 'rigpa-enter-higher-level)
   ;; TODO: this keybinding should be dependent on whether there are any
   ;; other modes in the tower. If not, then this shouldn't be bound
   ;; IOW this keybinding (and some class of bindings more generally)
   ;; is tower-specific
-  (define-key evil-emacs-state-map [escape] 'eem-enter-higher-level))
+  (define-key evil-emacs-state-map [escape] 'rigpa-enter-higher-level))
 
-(defun eem--register-modes ()
+(defun rigpa--register-modes ()
   "Register the standard modes with the framework."
   ;; register evil chimera states with the rigpa framework
-  (eem-register-mode chimera-normal-mode)
-  (eem-register-mode chimera-insert-mode)
-  (eem-register-mode chimera-emacs-mode)
-  (eem-register-mode chimera-visual-mode)
-  (eem-register-mode chimera-replace-mode)
+  (rigpa-register-mode chimera-normal-mode)
+  (rigpa-register-mode chimera-insert-mode)
+  (rigpa-register-mode chimera-emacs-mode)
+  (rigpa-register-mode chimera-visual-mode)
+  (rigpa-register-mode chimera-replace-mode)
 
   ;; register all the other modes
-  (eem-register-mode chimera-application-mode)
-  (eem-register-mode chimera-line-mode)
-  (eem-register-mode chimera-view-mode)
-  (eem-register-mode chimera-activity-mode)
-  (eem-register-mode chimera-history-mode)
-  (eem-register-mode chimera-tab-mode)
-  (eem-register-mode chimera-word-mode)
-  (eem-register-mode chimera-window-mode)
-  (eem-register-mode chimera-char-mode)
-  (eem-register-mode chimera-system-mode)
-  (eem-register-mode chimera-buffer-mode)
-  (eem-register-mode chimera-file-mode)
-  (eem-register-mode chimera-text-mode)
-  (eem-register-mode chimera-symex-mode))
+  (rigpa-register-mode chimera-application-mode)
+  (rigpa-register-mode chimera-line-mode)
+  (rigpa-register-mode chimera-view-mode)
+  (rigpa-register-mode chimera-activity-mode)
+  (rigpa-register-mode chimera-history-mode)
+  (rigpa-register-mode chimera-tab-mode)
+  (rigpa-register-mode chimera-word-mode)
+  (rigpa-register-mode chimera-window-mode)
+  (rigpa-register-mode chimera-char-mode)
+  (rigpa-register-mode chimera-system-mode)
+  (rigpa-register-mode chimera-buffer-mode)
+  (rigpa-register-mode chimera-file-mode)
+  (rigpa-register-mode chimera-text-mode)
+  (rigpa-register-mode chimera-symex-mode))
 
-(defun eem--create-editing-structures ()
+(defun rigpa--create-editing-structures ()
   "Create standard editing structures."
 
   ;; towers in base editing levels
-  (setq eem-complete-tower
+  (setq rigpa-complete-tower
         (make-editing-ensemble :name "complete"
                                :default "normal"
                                :members (list chimera-insert-mode
@@ -233,16 +233,16 @@ and simply toggles whether the menu is visible or not."
                                               chimera-system-mode
                                               chimera-application-mode)))
 
-  (setq eem-vim-tower
+  (setq rigpa-vim-tower
         (make-editing-ensemble :name "vim"
                                :default "normal"
                                :members (list chimera-insert-mode
                                               chimera-normal-mode)))
-  (setq eem-emacs-tower
+  (setq rigpa-emacs-tower
         (make-editing-ensemble :name "emacs"
                                :default "emacs"
                                :members (list chimera-emacs-mode)))
-  (setq eem-lisp-tower
+  (setq rigpa-lisp-tower
         (make-editing-ensemble :name "lisp"
                                :default "symex"
                                :members (list chimera-insert-mode
@@ -250,37 +250,37 @@ and simply toggles whether the menu is visible or not."
                                               chimera-normal-mode)))
 
   ;; complexes for base editing levels
-  (setq eem-general-complex
+  (setq rigpa-general-complex
         (make-editing-ensemble
          :name "general"
          :default "vim"
-         :members (list eem-vim-tower
-                        eem-complete-tower
-                        eem-lisp-tower
-                        eem-emacs-tower)))
+         :members (list rigpa-vim-tower
+                        rigpa-complete-tower
+                        rigpa-lisp-tower
+                        rigpa-emacs-tower)))
 
   ;; towers and complexes for meta levels
-  (setq eem-meta-mode-tower
+  (setq rigpa-meta-mode-tower
         (make-editing-ensemble :name "meta-mode"
                                :default "line"
                                :members (list chimera-line-mode)))
-  (setq eem-meta-complex
+  (setq rigpa-meta-complex
         (make-editing-ensemble
          :name "meta"
          :default "meta-mode"
-         :members (list eem-meta-mode-tower)))
+         :members (list rigpa-meta-mode-tower)))
 
-  (setq eem-meta-tower-mode-tower
+  (setq rigpa-meta-tower-mode-tower
         (make-editing-ensemble :name "meta-tower"
                                :default "buffer"
                                :members (list chimera-buffer-mode)))
-  (setq eem-meta-tower-complex
+  (setq rigpa-meta-tower-complex
         (make-editing-ensemble
          :name "meta-tower"
          :default "meta-tower"
-         :members (list eem-meta-tower-mode-tower))))
+         :members (list rigpa-meta-tower-mode-tower))))
 
-(defun eem--provide-editing-structures ()
+(defun rigpa--provide-editing-structures ()
   "Register editing structures so they're used in relevant major modes."
   ;; change these to use a state struct instead of globals
   ;; that state struct must specify
@@ -294,39 +294,38 @@ and simply toggles whether the menu is visible or not."
       (let ((mode-hook (intern (concat (symbol-name mode-name)
                                        "-hook"))))
         (add-hook mode-hook (lambda ()
-                              (setq eem--current-tower-index 2)
-                              (setq eem--current-level 2))))))
+                              (setq rigpa--current-tower-index 2)
+                              (setq rigpa--current-level 2))))))
   (add-hook 'rigpa-meta-mode-hook
             ;; TODO: dispatch here based on meta level. If the level
             ;; is 1 use line mode / buffers, if it's 2,
             ;; use buffer mode / perspectives?
             (lambda ()
-              (setq eem--complex eem-meta-complex)))
+              (setq rigpa--complex rigpa-meta-complex)))
   (add-hook 'rigpa-meta-tower-mode-hook
             ;; TODO: dispatch here based on meta level. If the level
             ;; is 1 use line mode / buffers, if it's 2,
             ;; use buffer mode / perspectives?
             (lambda ()
-              (setq eem--complex eem-meta-tower-complex))))
+              (setq rigpa--complex rigpa-meta-tower-complex))))
 
-(defun eem-initialize ()
+(defun rigpa-initialize ()
   "Initialize rigpa."
   (interactive)
-  (eem--register-modes)
+  (rigpa--register-modes)
   ;; should make this optional via a defcustom flag
   ;; or potentially even have it in a separate evil-adapter package
   (when (boundp 'evil-mode)
-    (eem--integrate-evil))
-  (eem--create-editing-structures)
-  (eem--provide-editing-structures)
-  ;; (make-bfr-ring "tower")
+    (rigpa--integrate-evil))
+  (rigpa--create-editing-structures)
+  (rigpa--provide-editing-structures)
   (if (and (boundp 'rigpa-show-menus) rigpa-show-menus)
-      (dolist (mode (ht-values eem-modes))
-        (eem-show-menu (chimera-mode-name mode)))
-    (dolist (mode (ht-values eem-modes))
-      (eem-hide-menu (chimera-mode-name mode)))))
+      (dolist (mode (ht-values rigpa-modes))
+        (rigpa-show-menu (chimera-mode-name mode)))
+    (dolist (mode (ht-values rigpa-modes))
+      (rigpa-hide-menu (chimera-mode-name mode)))))
 
-(defun eem-disable ()
+(defun rigpa-disable ()
   "Disable rigpa."
   (interactive)
   ;; TODO:
@@ -336,12 +335,12 @@ and simply toggles whether the menu is visible or not."
   nil)
 
 
-(eem-initialize)
+(rigpa-initialize)
 
 ;; the editing complex to use in a buffer
 ;; by default this is general complex unless a more tailored one
 ;; has been set (e.g. via major mode hook)
-(defvar-local eem--complex eem-general-complex)
+(defvar-local rigpa--complex rigpa-general-complex)
 
 
 (provide 'rigpa)

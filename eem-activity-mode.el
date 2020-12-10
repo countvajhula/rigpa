@@ -60,9 +60,9 @@
   ("a" my-goto-older-change "previous change in buffer" :exit t)
   ("s-a" my-goto-older-change "previous change in buffer" :exit t)
   ("i" ignore "exit" :exit t)
-  ("H-m" eem-toggle-menu "show/hide this menu")
-  ("<return>" eem-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+  ("H-m" rigpa-toggle-menu "show/hide this menu")
+  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
+  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-activity-mode-entry-hook nil
   "Entry hook for rigpa activity mode.")
@@ -77,4 +77,4 @@
                      :exit-hook 'evil-activity-state-exit-hook))
 
 
-(provide 'eem-activity-mode)
+(provide 'rigpa-activity-mode)

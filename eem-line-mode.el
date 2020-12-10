@@ -264,9 +264,9 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
    "join backwards")
   (";" my-toggle-comment-line "toggle comment")
   ("?" my-line-info "info" :exit t)
-  ("H-m" eem-toggle-menu "show/hide this menu")
-  ("<return>" eem-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+  ("H-m" rigpa-toggle-menu "show/hide this menu")
+  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
+  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-line-mode-entry-hook nil
   "Entry hook for rigpa line mode.")
@@ -281,4 +281,4 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
                      :exit-hook 'evil-line-state-exit-hook))
 
 
-(provide 'eem-line-mode)
+(provide 'rigpa-line-mode)

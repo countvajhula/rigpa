@@ -101,9 +101,9 @@ current ('original') buffer."
   ("x" kill-buffer "delete")
   ("?" my-buffer-info "info" :exit t)
   ("q" return-to-original-buffer "return to original" :exit t)
-  ("H-m" eem-toggle-menu "show/hide this menu")
-  ("<return>" eem-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+  ("H-m" rigpa-toggle-menu "show/hide this menu")
+  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
+  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-buffer-mode-entry-hook nil
   "Entry hook for rigpa buffer mode.")
@@ -118,4 +118,4 @@ current ('original') buffer."
                      :exit-hook 'evil-buffer-state-exit-hook))
 
 
-(provide 'eem-buffer-mode)
+(provide 'rigpa-buffer-mode)

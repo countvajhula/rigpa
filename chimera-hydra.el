@@ -38,10 +38,10 @@ If no VALUE is provided, this clears the flag."
       ;; [doing this for now to fix symex margins issue, but
       ;; not sure exactly what is happening there]
       (message "hydra for mode %s exited into limbo." mode-name)
-      (unless (eem-ensemble-member-position-by-name (eem--local-tower)
+      (unless (rigpa-ensemble-member-position-by-name (rigpa--local-tower)
                                                     (symbol-name evil-state))
         (message "exiting limbo by entering an appropriate state...")
-        (eem--enter-appropriate-mode)))
+        (rigpa--enter-appropriate-mode)))
     (when (chimera-mode-manage-hooks mode)
       (message "Running exit hooks for %s mode" mode-name)
       (run-hooks (chimera-mode-exit-hook mode)))))

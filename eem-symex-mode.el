@@ -13,5 +13,5 @@
                      :exit-hook 'evil-symex-state-exit-hook))
 
 
-(provide 'eem-symex-mode)
-;;; eem-symex-mode.el ends here
+(provide 'rigpa-symex-mode)
+;;; rigpa-symex-mode.el ends here

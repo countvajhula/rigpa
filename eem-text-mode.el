@@ -16,9 +16,9 @@
   ("z" evil-fill-and-move "justify" :exit t)
   ("s-z" evil-fill-and-move "justify" :exit t)
   ("i" nil "exit" :exit t)
-  ("H-m" eem-toggle-menu "show/hide this menu")
-  ("<return>" eem-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+  ("H-m" rigpa-toggle-menu "show/hide this menu")
+  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
+  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-text-mode-entry-hook nil
   "Entry hook for rigpa text mode.")
@@ -33,4 +33,4 @@
                      :exit-hook 'evil-text-state-exit-hook))
 
 
-(provide 'eem-text-mode)
+(provide 'rigpa-text-mode)

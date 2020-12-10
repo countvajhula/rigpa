@@ -20,9 +20,9 @@
   "System information"
   ("b" my-battery-life "show power info including battery life")
   ("s-i" my-battery-life "show power info including battery life")
-  ("H-m" eem-toggle-menu "show/hide this menu" :exit nil)
-  ("<return>" eem-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+  ("H-m" rigpa-toggle-menu "show/hide this menu" :exit nil)
+  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
+  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-system-mode-entry-hook nil
   "Entry hook for rigpa system mode.")
@@ -37,4 +37,4 @@
                      :exit-hook 'evil-system-state-exit-hook))
 
 
-(provide 'eem-system-mode)
+(provide 'rigpa-system-mode)

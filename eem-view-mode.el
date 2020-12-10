@@ -125,10 +125,10 @@
   ("d" my-scroll-half-page-down "leap down")
   ("n" my-narrow-to-defun-or-region "narrow context")
   ("w" widen "widen to full view")
-  ("H-m" eem-toggle-menu "show/hide this menu")
+  ("H-m" rigpa-toggle-menu "show/hide this menu")
   ("i" nil "exit" :exit t)
-  ("<return>" eem-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
+  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-view-mode-entry-hook nil
   "Entry hook for rigpa view mode.")
@@ -143,4 +143,4 @@
                      :exit-hook 'evil-view-state-exit-hook))
 
 
-(provide 'eem-view-mode)
+(provide 'rigpa-view-mode)

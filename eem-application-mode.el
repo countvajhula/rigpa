@@ -103,9 +103,9 @@
   ("s" scroll-bar-mode "toggle scroll bar")
   ("l" hl-line-mode "toggle highlight line")
   ("c" counsel-load-theme "change color scheme")
-  ("H-m" eem-toggle-menu "show/hide this menu" :exit nil)
-  ("<return>" eem-enter-lower-level "enter lower level")
-  ("<escape>" eem-enter-higher-level "escape to higher level"))
+  ("H-m" rigpa-toggle-menu "show/hide this menu" :exit nil)
+  ("<return>" rigpa-enter-lower-level "enter lower level")
+  ("<escape>" rigpa-enter-higher-level "escape to higher level"))
 
 (defvar chimera-application-mode-entry-hook nil
   "Entry hook for rigpa application mode.")
@@ -120,4 +120,4 @@
                      :exit-hook 'evil-application-state-exit-hook))
 
 
-(provide 'eem-application-mode)
+(provide 'rigpa-application-mode)
