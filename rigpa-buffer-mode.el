@@ -7,22 +7,49 @@
   :message "-- BUFFER --"
   :enable (normal))
 
-(defun my-buffer-set-mark (mark-name)
+(cl-defun rigpa-buffer-create (&optional
+                               buffer-name
+                               major-mode-to-use
+                               &key
+                               switch-p)
+  "Create a new empty buffer.
+
+If BUFFER-NAME is not provided, the new buffer will be named
+“untitled” or “untitled<2>”, “untitled<3>”, etc. The buffer will be
+created in the currently active (at the time of command execution)
+major mode.
+If SWITCH-P is true, switch to the newly created buffer.
+
+Modified from:
+URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
+Version 2017-11-01"
+  (interactive)
+  (let* ((buffer-name (or buffer-name "untitled"))
+         (major-mode-to-use (or major-mode-to-use major-mode))
+         ($buf (generate-new-buffer buffer-name)))
+    (with-current-buffer $buf
+      (funcall major-mode-to-use)
+      (setq buffer-offer-save t))
+    (when switch-p
+      (switch-to-buffer $buf))
+    $buf))
+
+(defun rigpa-buffer-set-mark (mark-name)
   "Set a mark"
   (interactive "cMark name?")
-  (puthash mark-name (current-buffer) my-buffer-marks-hash)
+  (puthash mark-name (current-buffer) rigpa-buffer-marks-hash)
   (message "Mark '%c' set." mark-name))
 
-(defun my-buffer-return-to-mark (mark-name)
+(defun rigpa-buffer-return-to-mark (mark-name)
   "Return to mark"
   (interactive "cMark name?")
-  (switch-to-buffer (gethash mark-name my-buffer-marks-hash)))
+  (switch-to-buffer (gethash mark-name rigpa-buffer-marks-hash)))
 
 (defun return-to-original-buffer ()
   "Return to the buffer we were in at the time of entering
 buffer mode."
   (interactive)
-  (switch-to-buffer (my-original-buffer)))
+  (switch-to-buffer (rigpa-buffer-original-buffer)))
 
 (defun flash-to-original-and-back ()
   "Go momentarily to original buffer and return.
@@ -32,7 +59,7 @@ encountered while navigating to the present one, to be treated as the
 last buffer for 'flashback' ('Alt-tab') purposes. The flash should
 happen quickly enough not to be noticeable."
   (interactive)
-  (unless (equal (current-buffer) (my-original-buffer))
+  (unless (equal (current-buffer) (rigpa-buffer-original-buffer))
     (let ((inhibit-redisplay t)) ;; not sure if this is doing anything but FWIW
       (return-to-original-buffer)
       (evil-switch-to-windows-last-buffer))))
@@ -41,7 +68,7 @@ happen quickly enough not to be noticeable."
   "Initialize the buffer marks hashtable and add an entry for the
 current ('original') buffer."
   (interactive)
-  (defvar my-buffer-marks-hash
+  (defvar rigpa-buffer-marks-hash
     (make-hash-table :test 'equal))
   (save-original-buffer))
 
@@ -49,14 +76,14 @@ current ('original') buffer."
   "Save current buffer as original buffer."
   (interactive)
   (puthash "0" (current-buffer)
-           my-buffer-marks-hash))
+           rigpa-buffer-marks-hash))
 
-(defun my-original-buffer ()
+(defun rigpa-buffer-original-buffer ()
   "Get original buffer identifier"
   (interactive)
-  (gethash "0" my-buffer-marks-hash))
+  (gethash "0" rigpa-buffer-marks-hash))
 
-(defun my-search-buffers ()
+(defun rigpa-buffer-search ()
   "Search for buffer."
   (interactive)
   (return-to-original-buffer)
@@ -90,16 +117,16 @@ current ('original') buffer."
   ("l" next-buffer "next")
   ("n" (lambda ()
          (interactive)
-         (my-new-empty-buffer nil nil :switch-p t))
+         (rigpa-buffer-create nil nil :switch-p t))
    "new" :exit t)
-  ("m" my-buffer-set-mark "set mark")
-  ("'" my-buffer-return-to-mark "return to mark" :exit t)
-  ("`" my-buffer-return-to-mark "return to mark" :exit t)
-  ("s" my-search-buffers "search" :exit t)
-  ("/" my-search-buffers "search" :exit t)
+  ("m" rigpa-buffer-set-mark "set mark")
+  ("'" rigpa-buffer-return-to-mark "return to mark" :exit t)
+  ("`" rigpa-buffer-return-to-mark "return to mark" :exit t)
+  ("s" rigpa-buffer-search "search" :exit t)
+  ("/" rigpa-buffer-search "search" :exit t)
   ("i" ibuffer "list (ibuffer)" :exit t)
   ("x" kill-buffer "delete")
-  ("?" my-buffer-info "info" :exit t)
+  ("?" rigpa-buffer-info "info" :exit t)
   ("q" return-to-original-buffer "return to original" :exit t)
   ("H-m" rigpa-toggle-menu "show/hide this menu")
   ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
