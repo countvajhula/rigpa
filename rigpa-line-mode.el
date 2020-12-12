@@ -16,7 +16,7 @@
   :message "-- LINE --"
   :enable (normal))
 
-(defun my-move-line-down (&optional count)
+(defun rigpa-line-move-down (&optional count)
   "Move line down"
   (interactive)
   (unless (save-excursion
@@ -30,7 +30,7 @@
     (transpose-lines count)
     (evil-previous-line)))
 
-(defun my-move-line-up (&optional count)
+(defun rigpa-line-move-up (&optional count)
   "Move line up"
   (interactive)
   (unless (save-excursion (beginning-of-line)
@@ -39,7 +39,7 @@
     (transpose-lines count)
     (evil-previous-line 2)))
 
-(defun my-move-line-left (&optional count)
+(defun rigpa-line-move-left (&optional count)
   "Move line left"
   (interactive)
   (unless count (setq count 1))
@@ -54,7 +54,7 @@
                                'exclusive
                                nil)))
 
-(defun my-move-line-right (&optional count)
+(defun rigpa-line-move-right (&optional count)
   "Move line right"
   (interactive)
   (unless count (setq count 1))
@@ -62,7 +62,7 @@
     (evil-first-non-blank)
     (insert-char #x20 count)))
 
-(defun my-move-line-far-left ()
+(defun rigpa-line-move-far-left ()
   "Move line far left"
   (interactive)
   (save-excursion
@@ -73,7 +73,7 @@
                  nil
                  nil)))
 
-(defun my-move-line-far-right ()
+(defun rigpa-line-move-far-right ()
   "Move line far right"
   (interactive)
   (save-excursion
@@ -84,16 +84,16 @@
       (setq line-position (- (point)
                              (line-beginning-position)))
       (evil-next-line)
-      (my-move-line-far-left)
-      (my-move-line-right line-position))))
+      (rigpa-line-move-far-left)
+      (rigpa-line-move-right line-position))))
 
-(defun my-move-line-very-bottom ()
+(defun rigpa-line-move-very-bottom ()
   "Move line to bottom"
   (interactive)
   (evil-execute-in-normal-state)
   (execute-kbd-macro (kbd ":.m$")))
 
-(defun my-move-line-very-top ()
+(defun rigpa-line-move-very-top ()
   "Move line to top"
   (interactive)
   (evil-execute-in-normal-state)
@@ -111,12 +111,12 @@
                             (quote line)
                             nil)))
 
-(defun my-flashback ()
+(defun rigpa-line-flashback ()
   "Flashback to prev line"
   (interactive)
   (evil-goto-mark-line ?'))
 
-(defun my-split-line ()
+(defun rigpa-line-split ()
   "Split line on word separators"
   (interactive)
   (evil-beginning-of-line)
@@ -129,7 +129,7 @@
     (newline)
     (evil-force-normal-state)))
 
-(defun my-pulverize-line ()
+(defun rigpa-line-pulverize ()
   "Split on every character"
   (interactive)
   (evil-beginning-of-line)
@@ -138,7 +138,7 @@
     (newline)
     (evil-force-normal-state)))
 
-(defun my-line-info ()
+(defun rigpa-line-info ()
   "Info about the line"
   (interactive)
 
@@ -154,17 +154,17 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   (setq current-line-length (line-length current-line-number))
   (message "Line %d, length = %d" current-line-number current-line-length))
 
-(defun my-toggle-comment-line ()
+(defun rigpa-line-toggle-comment ()
   "Comment / uncomment line"
   (interactive)
   (comment-line 1))
 
-(defun my-yank-line ()
+(defun rigpa-line-yank ()
   "Yank (copy) line"
   (interactive)
   (evil-yank-line (line-beginning-position) (line-end-position) 'line nil))
 
-(defun my-change-line ()
+(defun rigpa-line-change ()
   "Change line"
   (interactive)
   (evil-change-whole-line (line-beginning-position)
@@ -172,33 +172,33 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
                           (quote line)
                           nil))
 
-(defun my-indent-line-left ()
+(defun rigpa-line-indent-left ()
   "Reduce line indent"
   (interactive)
   (indent-rigidly-left-to-tab-stop (line-beginning-position)
                                    (line-end-position)))
 
-(defun my-indent-line-right ()
+(defun rigpa-line-indent-right ()
   "Increase line indent"
   (interactive)
   (indent-rigidly-right-to-tab-stop (line-beginning-position)
                                     (line-end-position)))
 
-(defun my-insert-newline ()
+(defun rigpa-line-insert-newline ()
   "Insert newline and reindent."
   (interactive)
   (save-excursion
     (beginning-of-line)
     (newline-and-indent)))
 
-(defun my-append-newline ()
+(defun rigpa-line-append-newline ()
   "Append newline and reindent."
   (interactive)
   (save-excursion
     (forward-line)
     (newline-and-indent)))
 
-(defun my-join-lines (&optional backwards)
+(defun rigpa-line-join (&optional backwards)
   "Join lines."
   (interactive)
   (save-excursion
@@ -212,13 +212,21 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
       (evil-join (line-beginning-position)
        (line-end-position)))))
 
-(defun my-top-line ()
+(defun rigpa-line-top ()
   (interactive)
   (evil-goto-line))
 
-(defun my-bottom-line ()
+(defun rigpa-line-bottom ()
   (interactive)
   (evil-goto-line 1))
+
+(defun rigpa-line-jump-down ()
+  (interactive)
+  (evil-next-line 9))
+
+(defun rigpa-line-jump-up ()
+  (interactive)
+  (evil-previous-line 9))
 
 (defhydra hydra-line (:columns 4
                       :post (chimera-hydra-portend-exit chimera-line-mode t)
@@ -229,41 +237,41 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   ("j" evil-next-line "next")
   ("k" evil-previous-line "previous")
   ("l" evil-next-line "next")
-  ("C-j" my-jump-down "jump down")
-  ("C-k" my-jump-up "jump up")
-  ("M-j" my-top-line "top line")
-  ("M-k" my-bottom-line "bottom line")
-  ("H" my-move-line-left "move left")
-  ("J" my-move-line-down "move down")
-  ("K" my-move-line-up "move up")
-  ("L" my-move-line-right "move right")
-  ("C-." my-indent-line-right "indent right")
-  ("C-," my-indent-line-left "indent left")
-  ("M-H" my-move-line-far-left "move to far left")
-  ("M-J" my-move-line-very-bottom "move to bottom")
-  ("M-K" my-move-line-very-top "move to top")
-  ("M-L" my-move-line-far-right "move to far right")
+  ("C-j" rigpa-line-jump-down "jump down")
+  ("C-k" rigpa-line-jump-up "jump up")
+  ("M-j" rigpa-line-top "top line")
+  ("M-k" rigpa-line-bottom "bottom line")
+  ("H" rigpa-line-move-left "move left")
+  ("J" rigpa-line-move-down "move down")
+  ("K" rigpa-line-move-up "move up")
+  ("L" rigpa-line-move-right "move right")
+  ("C-." rigpa-line-indent-right "indent right")
+  ("C-," rigpa-line-indent-left "indent left")
+  ("M-H" rigpa-line-move-far-left "move to far left")
+  ("M-J" rigpa-line-move-very-bottom "move to bottom")
+  ("M-K" rigpa-line-move-very-top "move to top")
+  ("M-L" rigpa-line-move-far-right "move to far right")
   ("x" rigpa-line-delete "delete")
-  ("c" my-change-line "change")
+  ("c" rigpa-line-change "change")
   ("s-l" indent-according-to-mode "autoindent")
-  ("'" my-flashback "flashback")
-  ("s" my-split-line "split by word")
-  ("v" my-pulverize-line "pulverize")
-  ("y" my-yank-line "yank (copy)")
+  ("'" rigpa-line-flashback "flashback")
+  ("s" rigpa-line-split "split by word")
+  ("v" rigpa-line-pulverize "pulverize")
+  ("y" rigpa-line-yank "yank (copy)")
   ("p" evil-paste-after "paste after")
   ("P" evil-paste-before "paste before")
   ("+" evil-open-above "add new line")
   ("i" evil-open-above "add new line")
   ("a" evil-open-below "add new line below")
-  ("n" my-insert-newline "insert newline")
-  ("C-S-o" my-append-newline "append newline")
-  ("o" my-join-lines "join")
+  ("n" rigpa-line-insert-newline "insert newline")
+  ("C-S-o" rigpa-line-append-newline "append newline")
+  ("o" rigpa-line-join "join")
   ("O" (lambda ()
          (interactive)
-         (my-join-lines t))
+         (rigpa-line-join t))
    "join backwards")
-  (";" my-toggle-comment-line "toggle comment")
-  ("?" my-line-info "info" :exit t)
+  (";" rigpa-line-toggle-comment "toggle comment")
+  ("?" rigpa-line-info "info" :exit t)
   ("H-m" rigpa-toggle-menu "show/hide this menu")
   ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
   ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
