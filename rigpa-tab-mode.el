@@ -11,7 +11,7 @@
   "Initialize the tab marks hashtable and add an entry for the
 current ('original') tab."
   (interactive)
-  (defvar my-tab-marks-hash
+  (defvar rigpa-tab-marks-hash
     (make-hash-table :test 'equal))
   (save-tab 'original))
 
@@ -19,14 +19,14 @@ current ('original') tab."
   "Save current tab as original tab."
   (interactive)
   (puthash key (current-buffer)
-           my-tab-marks-hash))
+           rigpa-tab-marks-hash))
 
 (defun load-tab (key)
   "Return to the buffer we were in at the time of entering
 buffer mode."
   (interactive)
   (switch-to-buffer
-   (gethash key my-tab-marks-hash)))
+   (gethash key rigpa-tab-marks-hash)))
 
 (defun flash-to-original-tab-and-back ()
   "Go momentarily to original tab and return.
@@ -36,16 +36,16 @@ encountered while navigating to the present one, to be treated as the
 last tab for 'flashback' ('Alt-tab') purposes. The flash should
 happen quickly enough not to be noticeable."
   (interactive)
-  (unless (equal (current-buffer) (my-original-tab))
+  (unless (equal (current-buffer) (rigpa-tab-original))
     (let ((inhibit-redisplay t)) ;; not sure if this is doing anything but FWIW
       (load-tab 'original)
       (save-tab 'previous)
       (evil-switch-to-windows-last-buffer))))
 
-(defun my-original-tab ()
+(defun rigpa-tab-original ()
   "Get original tab identifier"
   (interactive)
-  (gethash 'original my-tab-marks-hash))
+  (gethash 'original rigpa-tab-marks-hash))
 
 (defun return-to-original-tab ()
   "Return to the buffer we were in at the time of entering
@@ -67,12 +67,12 @@ buffer mode."
   ("s-}" centaur-tabs-forward "next") ; to "take over" from the global binding
   ("k" (lambda ()
          (interactive)
-         (message "%s" (gethash 'original my-tab-marks-hash))
+         (message "%s" (gethash 'original rigpa-tab-marks-hash))
          (centaur-tabs-backward-group))
    "previous group")
   ("j" (lambda ()
          (interactive)
-         (message "%s" (gethash 'original my-tab-marks-hash))
+         (message "%s" (gethash 'original rigpa-tab-marks-hash))
          (centaur-tabs-forward-group)) "next group")
   ("H" centaur-tabs-move-current-tab-to-left "move left")
   ("L" centaur-tabs-move-current-tab-to-right "move right")
@@ -80,20 +80,20 @@ buffer mode."
            (interactive)
            (save-tab 'temp-previous)
            (load-tab 'previous)
-           (puthash 'previous (gethash 'temp-previous my-tab-marks-hash)
-                    my-tab-marks-hash)) "switch to last" :exit t)
+           (puthash 'previous (gethash 'temp-previous rigpa-tab-marks-hash)
+                    rigpa-tab-marks-hash)) "switch to last" :exit t)
   ("t" (lambda ()
          (interactive)
          (save-tab 'temp-previous)
          (load-tab 'previous)
-         (puthash 'previous (gethash 'temp-previous my-tab-marks-hash)
-                  my-tab-marks-hash)) "switch to last" :exit t)
+         (puthash 'previous (gethash 'temp-previous rigpa-tab-marks-hash)
+                  rigpa-tab-marks-hash)) "switch to last" :exit t)
   ("n" (lambda ()
          (interactive)
-         (my-new-empty-buffer nil nil :switch-p t))
+         (rigpa-buffer-create nil nil :switch-p t))
    "new" :exit t)
   ("x" kill-buffer "delete")
-  ("?" my-buffer-info "info" :exit t)
+  ("?" rigpa-buffer-info "info" :exit t)
   ("q" return-to-original-tab "return to original" :exit t)
   ("H-m" rigpa-toggle-menu "show/hide this menu")
   ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)

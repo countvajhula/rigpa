@@ -34,6 +34,28 @@ Version 2017-11-01"
       (switch-to-buffer $buf))
     $buf))
 
+(defun rigpa-buffer-info ()
+  "get info on current buffer -- similar to Vim's C-g"
+  (interactive)
+  (-let [(total before after) (my-count-lines-page)]
+    (if (= total 0)
+	(setq bufinfo (list "-- No lines in buffer --"))
+      (progn (setq percentage (floor (* (/ (float before)
+					   total)
+					100)))
+	     (setq page-position (concat
+				  "-- "
+				  (number-to-string percentage)
+				  "%"
+				  " --"))
+	     (setq total-lines (concat
+				(number-to-string total)
+				" lines"))
+	     (setq bufinfo (list total-lines page-position))))
+    (add-to-list 'bufinfo
+		 (buffer-file-name))
+    (message "%s" (string-join bufinfo " "))))
+
 (defun rigpa-buffer-set-mark (mark-name)
   "Set a mark"
   (interactive "cMark name?")
