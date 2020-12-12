@@ -6,7 +6,7 @@
   :message "-- APPLICATION --"
   :enable (normal))
 
-(defun my-toggle-alarm-bell ()
+(defun rigpa-application-toggle-alarm-bell ()
   "Toggle whether the alarm bell sounds."
   (interactive)
   (setq ring-bell-function (if ring-bell-function
@@ -99,7 +99,7 @@
   ("y" hydra-transparency/body "transparency")
   ("t" centaur-tabs-mode "toggle tabs")
   ("n" display-line-numbers-mode "toggle line numbers")
-  ("b" my-toggle-alarm-bell "toggle alarm bell")
+  ("b" rigpa-application-toggle-alarm-bell "toggle alarm bell")
   ("s" scroll-bar-mode "toggle scroll bar")
   ("l" hl-line-mode "toggle highlight line")
   ("c" counsel-load-theme "change color scheme")

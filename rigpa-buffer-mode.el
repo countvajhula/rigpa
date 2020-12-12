@@ -34,10 +34,29 @@ Version 2017-11-01"
       (switch-to-buffer $buf))
     $buf))
 
+(defun rigpa-buffer--count-lines-page ()
+  "Modified from emacs's built-in count-lines-page to return a list of
+   values corresponding to the position in the page."
+  (interactive)
+  (save-excursion
+    (let ((opoint (point)) beg end
+	  total before after)
+      (forward-page)
+      (beginning-of-line)
+      (or (looking-at page-delimiter)
+	  (end-of-line))
+      (setq end (point))
+      (backward-page)
+      (setq beg (point))
+      (setq total (count-lines beg end)
+	    before (count-lines beg opoint)
+	    after (count-lines opoint end))
+      (list total before after))))
+
 (defun rigpa-buffer-info ()
   "get info on current buffer -- similar to Vim's C-g"
   (interactive)
-  (-let [(total before after) (my-count-lines-page)]
+  (-let [(total before after) (rigpa-buffer--count-lines-page)]
     (if (= total 0)
 	(setq bufinfo (list "-- No lines in buffer --"))
       (progn (setq percentage (floor (* (/ (float before)
