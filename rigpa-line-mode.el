@@ -99,7 +99,7 @@
   (evil-execute-in-normal-state)
   (execute-kbd-macro (kbd ":.m0")))
 
-(defun my-delete-line ()
+(defun rigpa-line-delete ()
   "Delete line"
   (interactive)
   (let* ((line-start-position (line-beginning-position))
@@ -243,7 +243,7 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   ("M-J" my-move-line-very-bottom "move to bottom")
   ("M-K" my-move-line-very-top "move to top")
   ("M-L" my-move-line-far-right "move to far right")
-  ("x" my-delete-line "delete")
+  ("x" rigpa-line-delete "delete")
   ("c" my-change-line "change")
   ("s-l" indent-according-to-mode "autoindent")
   ("'" my-flashback "flashback")

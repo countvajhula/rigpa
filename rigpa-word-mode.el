@@ -7,7 +7,7 @@
   :message "-- WORD --"
   :enable (normal))
 
-(defun my-move-word-backward ()
+(defun rigpa-word-move-backward ()
   "Move word backwards"
   (interactive)
   (evil-inner-word nil nil nil nil)
@@ -15,13 +15,13 @@
   (transpose-words 1)
   (evil-backward-WORD-begin 2))
 
-(defun my-move-word-forward ()
+(defun rigpa-word-move-forward ()
   "Move word forward"
   (interactive)
   (evil-forward-WORD-begin nil)
   (transpose-words 1))
 
-(defun my-move-word-down ()
+(defun rigpa-word-move-down ()
   "Move word down"
   (interactive)
   (evil-inner-word nil nil nil nil)
@@ -31,7 +31,7 @@
   (evil-next-line)
   (evil-paste-before nil nil))
 
-(defun my-move-word-up ()
+(defun rigpa-word-move-up ()
   "Move word up"
   (interactive)
   (evil-inner-word nil nil nil nil)
@@ -41,38 +41,38 @@
   (evil-previous-line)
   (evil-paste-before nil nil))
 
-(defun my-delete-word ()
+(defun rigpa-word-delete ()
   "Delete word"
   (interactive)
   (apply 'evil-delete (evil-inner-word)))
 
-(defun my-change-word ()
+(defun rigpa-word-change ()
   "Change word"
   (interactive)
   (apply 'evil-change (evil-inner-word)))
 
-(defun my-toggle-case ()
+(defun rigpa-word-toggle-case ()
   "Toggle case"
   (interactive)
   (save-excursion
     (apply 'evil-invert-case (evil-inner-word))))
 
-(defun my-upper-case ()
+(defun rigpa-word-upper-case ()
   "Make upper case"
   (interactive)
   (save-excursion
     (apply 'evil-upcase (evil-inner-word))))
 
-(defun my-lower-case ()
+(defun rigpa-word-lower-case ()
   "Make lower case"
   (interactive)
   (save-excursion
     (apply 'evil-downcase (evil-inner-word))))
 
-(defun my-split-word ()
+(defun rigpa-word-split ()
   "Split word into characters on separate lines"
   (interactive)
-  (my-delete-word)
+  (rigpa-word-delete)
   (evil-open-below 1)
   (evil-force-normal-state)
   (evil-paste-after nil nil)
@@ -82,17 +82,17 @@
     (newline)
     (evil-force-normal-state)))
 
-(defun my-delete-other-words ()
+(defun rigpa-word-delete-others ()
   "Delete other words in line"
   (interactive)
-  (my-delete-word)
+  (rigpa-word-delete)
   (evil-open-below 1)
   (evil-force-normal-state)
   (evil-paste-after nil nil)
   (evil-previous-line)
-  (my-delete-line))
+  (rigpa-line-delete))
 
-(defun my-rotate-chars-right-in-word ()
+(defun rigpa-word-rotate-chars-right ()
   "Rotate characters to the right"
   (interactive)
   (save-excursion
@@ -106,7 +106,7 @@
       (goto-char word-start)
       (evil-paste-before nil nil))))
 
-(defun my-rotate-chars-left-in-word ()
+(defun rigpa-word-rotate-chars-left ()
   "Rotate characters to the left"
   (interactive)
   (save-excursion
@@ -120,35 +120,36 @@
       (goto-char (- word-end 1))
       (evil-paste-before nil nil))))
 
-(defun my-scroll-jump-words-backward ()
+(defun rigpa-word-scroll-jump-backward ()
   "Scroll jump back across words."
   (interactive)
   (evil-backward-WORD-begin 3))
 
-(defun my-scroll-jump-words-forward ()
+(defun rigpa-word-scroll-jump-forward ()
   "Scroll jump forward across words."
   (interactive)
   (evil-forward-WORD-begin 3))
 
-(defun my-first-word ()
+(defun rigpa-word-first-word ()
   "Jump backward to the first word in the paragraph."
   (interactive)
   (evil-backward-paragraph)
   (evil-forward-WORD-begin))
 
-(defun my-last-word ()
+(defun rigpa-word-last-word ()
   "Jump forward to the last word in the paragraph."
   (interactive)
   (evil-forward-paragraph)
   (evil-backward-WORD-begin))
 
-(defun my-add-to-word-after ()
+(defun rigpa-word-add-to-end ()
   "Add to the end of this word."
   (interactive)
   (evil-forward-WORD-end)
+  (forward-char)
   (evil-insert-state))
 
-(defun my-add-word-after ()
+(defun rigpa-word-add-after ()
   "Add a word after this one."
   (interactive)
   (evil-forward-WORD-begin)
@@ -156,10 +157,17 @@
   (backward-char)
   (evil-insert-state))
 
-(defun my-add-to-word-before ()
+(defun rigpa-word-add-before ()
+  "Add a word before this one."
+  (interactive)
+  (evil-backward-WORD-end)
+  (forward-char)
+  (insert " ")
+  (evil-insert-state))
+
+(defun rigpa-word-add-to-beginning ()
   "Add to the beginning of this word."
   (interactive)
-  (evil-backward-WORD-begin)
   (evil-insert-state))
 
 
@@ -172,30 +180,30 @@
   ("j" evil-next-line "down")
   ("k" evil-previous-line "up")
   ("l" evil-forward-WORD-begin "forward")
-  ("C-h" my-scroll-jump-words-backward "backward")
-  ("C-j" my-scroll-jump-words-forward "down")
-  ("C-k" my-scroll-jump-words-backward "up")
-  ("C-l" my-scroll-jump-words-forward "forward")
-  ("C-S-h" my-rotate-chars-left-in-word "rotate chars left")
-  ("C-S-l" my-rotate-chars-right-in-word "rotate chars right")
-  ("M-h" my-first-word "first word")
-  ("M-l" my-last-word "last word")
-  ("H" my-move-word-backward "move left")
-  ("L" my-move-word-forward "move right")
-  ("J" my-move-word-down "move down")
-  ("K" my-move-word-up "move up")
-  ("x" my-delete-word "delete")
-  ("c" my-change-word "change" :exit t)
-  ("a" my-add-to-word-after "append" :exit t)
-  ("i" my-add-to-word-before "insert" :exit t)
-  ("A" my-add-word-after "add after" :exit t)
-  ("I" my-add-word-before "add before" :exit t)
-  ("~" my-toggle-case "toggle case")
-  ("U" my-upper-case "upper case")
-  ("u" my-lower-case "lower case")
-  ("s" my-split-word "split into characters")
-  ("s-r" my-delete-word "delete" :exit t)
-  ("s-o" my-delete-other-words "delete other words" :exit t)
+  ("C-h" rigpa-word-scroll-jump-backward "backward")
+  ("C-j" rigpa-word-scroll-jump-forward "down")
+  ("C-k" rigpa-word-scroll-jump-backward "up")
+  ("C-l" rigpa-word-scroll-jump-forward "forward")
+  ("C-S-h" rigpa-word-rotate-chars-left "rotate chars left")
+  ("C-S-l" rigpa-word-rotate-chars-right "rotate chars right")
+  ("M-h" rigpa-word-first-word "first word")
+  ("M-l" rigpa-word-last-word "last word")
+  ("H" rigpa-word-move-backward "move left")
+  ("L" rigpa-word-move-forward "move right")
+  ("J" rigpa-word-move-down "move down")
+  ("K" rigpa-word-move-up "move up")
+  ("x" rigpa-word-delete "delete")
+  ("c" rigpa-word-change "change" :exit t)
+  ("a" rigpa-word-add-to-end "append" :exit t)
+  ("i" rigpa-word-add-to-beginning "insert" :exit t)
+  ("A" rigpa-word-add-after "add after" :exit t)
+  ("I" rigpa-word-add-before "add before" :exit t)
+  ("~" rigpa-word-toggle-case "toggle case")
+  ("U" rigpa-word-upper-case "upper case")
+  ("u" rigpa-word-lower-case "lower case")
+  ("s" rigpa-word-split "split into characters")
+  ("s-r" rigpa-word-delete "delete" :exit t)
+  ("s-o" rigpa-word-delete-others "delete other words" :exit t)
   ("?" dictionary-lookup-definition "lookup in dictionary" :exit t)
   ("H-m" rigpa-toggle-menu "show/hide this menu")
   ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
