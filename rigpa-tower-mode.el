@@ -118,7 +118,7 @@
   (interactive)
   (let* ((ground (current-buffer))
          (major-mode (or major-mode #'rigpa-meta-mode))
-         (buffer (my-new-empty-buffer (rigpa--buffer-name tower)
+         (buffer (rigpa-buffer-create (rigpa--buffer-name tower)
                                       major-mode)))
     (with-current-buffer buffer
       ;; ground buffer is inherited from the original
@@ -135,7 +135,7 @@
   (interactive)
   (let* ((inherited-ground-buffer (rigpa--get-ground-buffer))
          (major-mode (or major-mode #'rigpa-meta-mode))
-         (buffer (my-new-empty-buffer (rigpa--buffer-name tower)
+         (buffer (rigpa-buffer-create (rigpa--buffer-name tower)
                                       major-mode)))
     (with-current-buffer buffer
       ;; ground buffer is inherited from the original
@@ -217,7 +217,7 @@ monadic verb in the 'switch buffer' navigation."
   (advice-remove #'previous-buffer #'rigpa--previous-tower-wrapper)
   (advice-remove #'next-buffer #'rigpa--next-tower-wrapper))
 
-(defun my-enter-tower-mode ()
+(defun rigpa-enter-tower-mode ()
   "Enter a buffer containing a textual representation of the
 initial editing tower."
   (interactive)
@@ -239,7 +239,7 @@ initial editing tower."
   (rigpa--add-meta-tower-side-effects)
   (rigpa--set-ui-for-meta-modes))
 
-(defun my-exit-tower-mode ()
+(defun rigpa-exit-tower-mode ()
   "Exit tower mode."
   (interactive)
   (let ((ref-buf (rigpa--get-ground-buffer)))
@@ -252,8 +252,8 @@ initial editing tower."
 
 (defhydra hydra-tower (:idle 1.0
                        :columns 4
-                       :body-pre (my-enter-tower-mode)
-                       :post (my-exit-tower-mode))
+                       :body-pre (rigpa-enter-tower-mode)
+                       :post (rigpa-exit-tower-mode))
   "Tower mode"
   ;; Need a textual representation of the mode tower for these to operate on
   ("h" rigpa-previous-tower "previous tower")

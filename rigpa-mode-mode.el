@@ -255,22 +255,22 @@ is precisely the thing to be done."
 (defun rigpa--add-meta-side-effects ()
   "Add side effects for primitive mode operations while in meta mode."
   ;; this should lookup the appropriate side-effect based on the coordinates
-  (advice-add #'my-move-line-down :after #'rigpa--reload-tower)
-  (advice-add #'my-move-line-up :after #'rigpa--reload-tower)
-  (advice-add #'my-change-line :around #'rigpa--mode-mode-change))
+  (advice-add #'rigpa-line-move-down :after #'rigpa--reload-tower)
+  (advice-add #'rigpa-line-move-up :after #'rigpa--reload-tower)
+  (advice-add #'rigpa-line-change :around #'rigpa--mode-mode-change))
 
 (defun rigpa--remove-meta-side-effects ()
   "Remove side effects for primitive mode operations that were added for meta modes."
-  (advice-remove #'my-move-line-down #'rigpa--reload-tower)
-  (advice-remove #'my-move-line-up #'rigpa--reload-tower)
-  (advice-remove #'my-change-line #'rigpa--mode-mode-change))
+  (advice-remove #'rigpa-line-move-down #'rigpa--reload-tower)
+  (advice-remove #'rigpa-line-move-up #'rigpa--reload-tower)
+  (advice-remove #'rigpa-line-change #'rigpa--mode-mode-change))
 
 ;; TODO: should have a single function that enters
 ;; any meta-level, incl. mode, tower, etc.
 ;; this is the function that does the "vertical" escape
 ;; some may enter new buffers while other may enter new perspectives
 ;; for now we can just do a simple dispatch here
-(defun my-enter-mode-mode ()
+(defun rigpa-enter-mode-mode ()
   "Enter a buffer containing a textual representation of the
 current editing tower."
   (interactive)
@@ -279,7 +279,7 @@ current editing tower."
   (rigpa--set-ui-for-meta-modes)
   (rigpa--add-meta-side-effects))
 
-(defun my-exit-mode-mode ()
+(defun rigpa-exit-mode-mode ()
   "Exit mode mode."
   (interactive)
   (let ((ref-buf (rigpa--get-ground-buffer)))
