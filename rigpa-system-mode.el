@@ -7,7 +7,7 @@
   :message "-- SYSTEM --"
   :enable (normal))
 
-(defun my-battery-life ()
+(defun rigpa-system-battery-life ()
   "Show power info including battery life
    (Mac-specific, at the moment)."
   (interactive)
@@ -18,8 +18,8 @@
                         :after-exit (chimera-hydra-signal-exit chimera-system-mode
                                                                #'chimera-handle-hydra-exit))
   "System information"
-  ("b" my-battery-life "show power info including battery life")
-  ("s-i" my-battery-life "show power info including battery life")
+  ("b" rigpa-system-battery-life "show power info including battery life")
+  ("s-i" rigpa-system-battery-life "show power info including battery life")
   ("H-m" rigpa-toggle-menu "show/hide this menu" :exit nil)
   ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
   ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
