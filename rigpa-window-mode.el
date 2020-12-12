@@ -17,7 +17,7 @@
 ;; in window mode
 (winner-mode t)
 
-(defun my-window-mru ()
+(defun rigpa-window-mru ()
   "Jump to most recent window, or other window if there is only one other.
 
 TODO: This doesn't work with more than 2 windows that are all the same buffer."
@@ -27,7 +27,7 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
         (other-window 1)
       (evil-window-mru))))
 
-(defun my-quit-other-window ()
+(defun rigpa-window-quit-other ()
   "Quit other window without changing focus."
   (interactive)
   (other-window 1)
@@ -48,8 +48,8 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
   ("L" evil-window-move-far-right "move to far right")
   ("x" evil-window-delete "delete")
   ("c" evil-window-delete)
-  ("Q" my-quit-other-window "quit other window" :exit t)
-  ("o" my-window-mru "Jump to most recent (like Alt-Tab)" :exit t)
+  ("Q" rigpa-window-quit-other "quit other window" :exit t)
+  ("o" rigpa-window-mru "Jump to most recent (like Alt-Tab)" :exit t)
   ("n" other-window "next")
   ("w" delete-other-windows "maximize" :exit t)
   ("s" evil-window-split "split horizontally")
