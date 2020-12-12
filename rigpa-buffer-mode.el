@@ -1,3 +1,4 @@
+(require 'ivy)
 (require 'chimera)
 (require 'chimera-hydra)
 
