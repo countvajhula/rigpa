@@ -1,3 +1,4 @@
+(require 'ht)
 (require 'rigpa-text-parsers)
 (require 'rigpa-meta)
 
