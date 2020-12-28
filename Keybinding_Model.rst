@@ -85,8 +85,8 @@ Meta
 
 Misc
 ----
-	Search
+	/ Search
 
-	Marks (e.g. mark a buffer to return to, or a line number, or a window, or a view zoom level, etc.)
+	m ' Mark / return to mark (e.g. mark a buffer to return to, or a line number, or a window, or a view zoom level, etc.)
 
-	About/help ? (e.g. lookup word in dictionary, lookup identifier in docs, buffer info, etc.)
+	? About/help (e.g. lookup word in dictionary, lookup identifier in docs, buffer info, etc.)
