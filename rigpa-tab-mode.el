@@ -67,12 +67,10 @@ buffer mode."
   ("s-}" centaur-tabs-forward "next") ; to "take over" from the global binding
   ("k" (lambda ()
          (interactive)
-         (message "%s" (gethash 'original rigpa-tab-marks-hash))
          (centaur-tabs-backward-group))
    "previous group")
   ("j" (lambda ()
          (interactive)
-         (message "%s" (gethash 'original rigpa-tab-marks-hash))
          (centaur-tabs-forward-group)) "next group")
   ("H" centaur-tabs-move-current-tab-to-left "move left")
   ("L" centaur-tabs-move-current-tab-to-right "move right")

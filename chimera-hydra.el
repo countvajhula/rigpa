@@ -6,10 +6,7 @@
   "Set a FLAG on the HYDRA with the value VALUE.
 
 If no VALUE is provided, this clears the flag."
-  (hydra-set-property hydra flag value)
-  (if value
-      (message "updated %s flag on %s to %s" flag hydra value)
-    (message "cleared %s flag on %s" flag hydra)))
+  (hydra-set-property hydra flag value))
 
 (defun chimera-hydra-portend-exit (mode &optional value)
   "Set a mode exit flag to indicate cleanup operations need to be performed."
@@ -28,7 +25,6 @@ If no VALUE is provided, this clears the flag."
 (defun chimera-handle-hydra-exit (mode)
   "Adapter helper for hydra to call hooks upon exit."
   (let ((mode-name (chimera-mode-name mode)))
-    (message "Hydra %s exited." mode-name)
     (when (equal (symbol-name evil-state) mode-name)
       ;; hydra has exited but we haven't gone to a new state.
       ;; This means limbo, and we need to enter an appropriate
@@ -37,13 +33,10 @@ If no VALUE is provided, this clears the flag."
       ;; already in the tower?
       ;; [doing this for now to fix symex margins issue, but
       ;; not sure exactly what is happening there]
-      (message "hydra for mode %s exited into limbo." mode-name)
       (unless (rigpa-ensemble-member-position-by-name (rigpa--local-tower)
-                                                    (symbol-name evil-state))
-        (message "exiting limbo by entering an appropriate state...")
+                                                      (symbol-name evil-state))
         (rigpa--enter-appropriate-mode)))
     (when (chimera-mode-manage-hooks mode)
-      (message "Running exit hooks for %s mode" mode-name)
       (run-hooks (chimera-mode-exit-hook mode)))))
 
 (provide 'chimera-hydra)

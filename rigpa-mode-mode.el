@@ -52,10 +52,9 @@
 (defun rigpa-enter-lower-level ()
   "Enter lower level."
   (interactive)
-  (message "entering lower level")
   (let ((mode-name (symbol-name evil-state)))
     (if (rigpa-ensemble-member-position-by-name (rigpa--local-tower)
-                                              mode-name)
+                                                mode-name)
         (when (> rigpa--current-level 0)
           (rigpa--enter-level (1- rigpa--current-level)))
       ;; "not my tower, not my problem"
@@ -69,7 +68,6 @@
       ;; where we could have taken some action had we been more civic
       ;; minded. So preemptively go to a safe "default" as a failsafe,
       ;; which would be overridden by a recall if there is one.
-      (message "Not in tower, couldn't take the stairs")
       (rigpa--enter-appropriate-mode))))
 
 (defun rigpa--enter-appropriate-mode (&optional buffer)
@@ -85,20 +83,13 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
       (if recall-mode
           ;; recall if available
           (progn (rigpa--clear-local-recall)
-                 (rigpa-enter-mode recall-mode)
-                 (message "Invoked RECALL to %s. Level is %s."
-                          recall-mode
-                          rigpa--current-level))
+                 (rigpa-enter-mode recall-mode))
         ;; otherwise default for tower
-        (rigpa-enter-mode default-mode)
-        (message "Entered tower DEFAULT: %s. Level is %s."
-                 default-mode
-                 rigpa--current-level)))))
+        (rigpa-enter-mode default-mode)))))
 
 (defun rigpa-enter-higher-level ()
   "Enter higher level."
   (interactive)
-  (message "entering higher level")
   (let ((mode-name (symbol-name evil-state)))
     (if (rigpa-ensemble-member-position-by-name (rigpa--local-tower)
                                               mode-name)
@@ -133,10 +124,6 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
   (interactive)
   (let ((selected-level (rigpa--extract-selected-level)))
     (with-current-buffer (rigpa--get-ground-buffer)
-      (message "entering level %s in tower %s in buffer %s"
-               selected-level
-               rigpa--current-tower-index
-               (current-buffer))
       (rigpa--enter-level selected-level))))
 
 (defun rigpa-reconcile-level ()
@@ -150,16 +137,12 @@ current level reflects the mode's position in the tower."
           (rigpa-ensemble-member-position-by-name (rigpa--local-tower)
                                                 mode-name)))
     (when level-number
-      (setq rigpa--current-level level-number)
-      (message "mode %s is in tower; updated level number to %s"
-               mode-name
-               rigpa--current-level))))
+      (setq rigpa--current-level level-number))))
 
 (defun rigpa--clear-local-recall (&optional buffer)
   "Clear recall flag if any."
   (with-current-buffer (or buffer (current-buffer))
-    (setq-local rigpa-recall nil)
-    (message "cleared recall!")))
+    (setq-local rigpa-recall nil)))
 
 (defun rigpa--local-recall-mode (&optional buffer)
   "Get the recall mode (if any) in the BUFFER."
@@ -197,8 +180,7 @@ is precisely the thing to be done."
                  (not (rigpa-ensemble-member-position-by-name
                        (rigpa--local-tower)
                        (symbol-name evil-next-state))))
-        (rigpa-set-mode-recall mode-name)
-        (message "set recall to %s; next state is %s" mode-name evil-next-state)))))
+        (rigpa-set-mode-recall mode-name)))))
 
 (defun rigpa-set-mode-recall (mode-name)
   "Remember the current state to 'recall' it later."
@@ -228,7 +210,6 @@ is precisely the thing to be done."
   ;; TODO: this seems hacky, should be a "formalized" way of updating
   ;; editing structures so that all containing ones are aware,
   ;; maybe as part of "state modeling"
-  (message "update tower %s" name)
   (with-current-buffer (rigpa--get-ground-buffer)
     (setf (nth (seq-position (seq-map #'rigpa-editing-entity-name
                                       (editing-ensemble-members rigpa--complex))
@@ -239,7 +220,6 @@ is precisely the thing to be done."
 (defun rigpa--reload-tower ()
   "Reparse and reload tower."
   (interactive)
-  (message "reloading tower")
   (condition-case err
       (let* ((fresh-tower (rigpa-parse-tower-from-buffer))
              (name (rigpa-editing-entity-name fresh-tower))

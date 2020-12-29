@@ -17,7 +17,6 @@ If not, they are expected to be run by the underlying mode provider \
   "Enter MODE."
   (interactive)
   (let ((name (chimera-mode-name mode)))
-    (message "entering mode %s" name)
     ;; call a function (perform-entry-actions ...) that
     ;; handles any provider-specific jankiness, like checking
     ;; for hydras that didn't exit cleanly, and perform their
@@ -26,15 +25,12 @@ If not, they are expected to be run by the underlying mode provider \
     ;; spot in the hydra exit lifecycle phase).
     (unless (member name chimera-evil-states)
       (let ((evil-state-entry (intern (concat "evil-" name "-state"))))
-        (funcall evil-state-entry)
-        (message "changed to %s state" name)))
+        (funcall evil-state-entry)))
     (funcall (chimera-mode-enter mode))
     (when (chimera-mode-manage-hooks mode)
       ;; for now, we rely on evil hooks for all modes (incl.
       ;; hydra-based ones), and this should never be called.
-      (message "Running entry hooks for %s mode" name)
-      (run-hooks (chimera-mode-entry-hook mode)))
-    (message "entered mode %s" name)))
+      (run-hooks (chimera-mode-entry-hook mode)))))
 
 (defun chimera-exit-mode (mode)
   "Exit (interrupt) MODE."

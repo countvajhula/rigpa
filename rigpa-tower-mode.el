@@ -108,7 +108,6 @@
   "Parse a tower struct from a BUFFER containing a text representation of it."
   (with-current-buffer (or buffer (current-buffer))
     (widen)
-    (message "PARSING: %s" (buffer-string))
     (let ((tower (rigpa-parse-tower (buffer-string))))
       (rigpa--tower-view-narrow tower)
       tower)))
