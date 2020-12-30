@@ -42,6 +42,7 @@ This package isn't on `MELPA <https://melpa.org/>`_ yet, but you can install a p
     (setq rigpa-show-menus nil)
 
     ;; navigating meta modes
+    (global-unset-key (kbd "s-m"))
     (global-set-key (kbd "s-m s-m") 'rigpa-flashback-to-last-tower)
     (global-set-key (kbd "C-<escape>") 'rigpa-enter-tower-mode)
     (global-set-key (kbd "M-<escape>") 'rigpa-enter-mode-mode)
