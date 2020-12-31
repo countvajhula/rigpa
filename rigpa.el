@@ -6,18 +6,21 @@
 ;; Package-Requires: ((emacs "24.4") (evil "1.2.14") (hydra "0.15.0") (symex "0.8.1") (ivy "0.13.0") (centaur-tabs "3.1") (dictionary "1.11") (ace-window "0.9.0") (git-timemachine "4.11") (parsec "0.1.3") (ht "2.0"))
 ;; Keywords: evil
 
-;; This program is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation, either version 3 of the License, or
-;; (at your option) any later version.
-
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-
-;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;; This program is "part of the world," in the sense described at
+;; http://drym.org.  From your perspective, this is no different than
+;; MIT or BSD or other such "liberal" licenses that you may be
+;; familiar with, that is to say, you are free to do whatever you like
+;; with this program.  It is much more than BSD or MIT, however, in
+;; that it isn't a license at all but an idea about the world and how
+;; economic systems could be set up so that everyone wins.  Learn more
+;; at drym.org.
+;;
+;; This work transcends traditional legal and economic systems, but
+;; for the purposes of any such systems within which you may need to
+;; operate:
+;;
+;; This is free and unencumbered software released into the public domain.
+;; The authors relinquish any copyright claims on this work.
 
 ;;; Commentary:
 ;;
