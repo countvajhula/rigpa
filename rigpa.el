@@ -166,6 +166,8 @@ and simply toggles whether the menu is visible or not."
              (magit-diff-visit-file (magit-current-file) t))
             ((eq major-mode 'magit-log-mode)
              (magit-show-commit (magit-thingatpt--git-revision)))
+            ((eq major-mode 'Info-mode)
+             (Info-follow-nearest-node))
             (t (rigpa-enter-lower-level)))
     (cond ((eq major-mode 'Custom-mode)
            (Custom-newline (point)))
