@@ -42,7 +42,8 @@
 (defun rigpa-view-reset-zoom ()
   "Reset zoom level to default"
   (interactive)
-  (text-scale-adjust 0))
+  (text-scale-adjust 0)
+  (recenter))
 
 (defun rigpa-view-scroll-left (&optional superlative)
   "Scroll view left"
