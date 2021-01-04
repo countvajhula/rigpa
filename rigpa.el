@@ -152,6 +152,8 @@ and simply toggles whether the menu is visible or not."
              (push-button))
             ((eq major-mode 'debugger-mode)
              (push-button))
+            ((eq major-mode 'ert-results-mode)
+             (push-button))
             ((eq major-mode 'occur-mode)
              (occur-mode-goto-occurrence))
             ((eq major-mode 'grep-mode)
