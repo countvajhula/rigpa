@@ -11,6 +11,14 @@
   :message "-- VIEW --"
   :enable (normal))
 
+(defun rigpa-view-scroll-down ()
+  (interactive)
+  (evil-scroll-line-down 3))
+
+(defun rigpa-view-scroll-up ()
+  (interactive)
+  (evil-scroll-line-up 3))
+
 (defun rigpa-view-scroll-half-page-up ()
   (interactive)
   (evil-scroll-line-up (/ (window-total-height) 2)))
