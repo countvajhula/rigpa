@@ -14,9 +14,18 @@
   (interactive)
   (unless (get-buffer rigpa-activity-accumulate-buffer-name)
     (rigpa-buffer-create rigpa-activity-accumulate-buffer-name))
+  (with-current-buffer rigpa-activity-accumulate-buffer-name
+    (goto-char (point-max)))
   (append-to-buffer rigpa-activity-accumulate-buffer-name
-                    (region-beginning)
-                    (region-end))
+                    (if (region-active-p)
+                        (region-beginning)
+                      (line-beginning-position))
+                    (if (region-active-p)
+                        (region-end)
+                      (line-end-position)))
+  (with-current-buffer rigpa-activity-accumulate-buffer-name
+    (goto-char (point-max))
+    (insert "\n"))
   (deactivate-mark))
 
 (defun rigpa-activity-paste-and-clear ()
