@@ -33,6 +33,50 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
   (other-window 1)
   (quit-window))
 
+(defun rigpa-window-move-buffer-left ()
+  "Move buffer in current window to the window on the left."
+  (interactive)
+  (let ((buffer (current-buffer))
+        (next-window (windmove-find-other-window 'left)))
+    (when (and next-window
+               (not (window-minibuffer-p next-window)))
+      (switch-to-buffer (other-buffer))
+      (evil-window-left 1)
+      (switch-to-buffer buffer))))
+
+(defun rigpa-window-move-buffer-right ()
+  "Move buffer in current window to the window on the right."
+  (interactive)
+  (let ((buffer (current-buffer))
+        (next-window (windmove-find-other-window 'right)))
+    (when (and next-window
+               (not (window-minibuffer-p next-window)))
+      (switch-to-buffer (other-buffer))
+      (evil-window-right 1)
+      (switch-to-buffer buffer))))
+
+(defun rigpa-window-move-buffer-up ()
+  "Move buffer in current window to the window above."
+  (interactive)
+  (let ((buffer (current-buffer))
+        (next-window (windmove-find-other-window 'up)))
+    (when (and next-window
+               (not (window-minibuffer-p next-window)))
+      (switch-to-buffer (other-buffer))
+      (evil-window-up 1)
+      (switch-to-buffer buffer))))
+
+(defun rigpa-window-move-buffer-down ()
+  "Move buffer in current window to the window below."
+  (interactive)
+  (let ((buffer (current-buffer))
+        (next-window (windmove-find-other-window 'down)))
+    (when (and next-window
+               (not (window-minibuffer-p next-window)))
+      (switch-to-buffer (other-buffer))
+      (evil-window-down 1)
+      (switch-to-buffer buffer))))
+
 (defhydra hydra-window (:columns 4
                         :post (chimera-hydra-portend-exit chimera-window-mode t)
                         :after-exit (chimera-hydra-signal-exit chimera-window-mode
@@ -42,10 +86,14 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
   ("j" evil-window-down "down")
   ("k" evil-window-up "up")
   ("l" evil-window-right "right")
-  ("H" evil-window-move-far-left "move to far left")
-  ("J" evil-window-move-very-bottom "move to bottom")
-  ("K" evil-window-move-very-top "move to top")
-  ("L" evil-window-move-far-right "move to far right")
+  ("H" rigpa-window-move-buffer-left "move buffer left")
+  ("J" rigpa-window-move-buffer-down "move buffer down")
+  ("K" rigpa-window-move-buffer-up "move buffer up")
+  ("L" rigpa-window-move-buffer-right "move buffer right")
+  ("M-H" evil-window-move-far-left "move to far left")
+  ("M-J" evil-window-move-very-bottom "move to bottom")
+  ("M-K" evil-window-move-very-top "move to top")
+  ("M-L" evil-window-move-far-right "move to far right")
   ("x" evil-window-delete "delete")
   ("c" evil-window-delete)
   ("Q" rigpa-window-quit-other "quit other window" :exit t)
