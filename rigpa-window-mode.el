@@ -75,12 +75,18 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
 (defun rigpa-window--move-buffer (direction)
   "Move buffer in current window in DIRECTION."
   (let ((buffer (current-buffer))
+        (original-position (point))
         (next-window (windmove-find-other-window direction)))
     (when (and next-window
                (not (window-minibuffer-p next-window)))
       (switch-to-buffer (other-buffer))
       (windmove-do-window-select direction)
-      (switch-to-buffer buffer))))
+      (if (eq buffer (current-buffer))
+          ;; if both buffers are the same, then just preserve
+          ;; the position in the buffer from the source context
+          (progn (goto-char original-position)
+                 (recenter))
+        (switch-to-buffer buffer)))))
 
 (defun rigpa-window-move-buffer-left ()
   "Move buffer in current window to the window on the left."
