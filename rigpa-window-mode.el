@@ -33,97 +33,74 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
   (other-window 1)
   (quit-window))
 
-(defun rigpa-window-left ()
-  "Select window on the left."
-  (interactive)
+(defun rigpa-window--opposite-direction (direction)
+  "The opposite direction."
+  (cond ((eq 'left direction) 'right)
+        ((eq 'right direction) 'left)
+        ((eq 'up direction) 'down)
+        ((eq 'down direction) 'up)))
+
+(defun rigpa-window--go (direction)
+  "Select window in DIRECTION."
   (if (save-window-excursion
         (let ((original-window (selected-window)))
           (rigpa-window-mru)
-          (let ((window (windmove-find-other-window 'right)))
+          (let ((window (windmove-find-other-window
+                         (rigpa-window--opposite-direction direction))))
             (and window
                  (eq original-window window)))))
       (rigpa-window-mru)
-    (evil-window-left 1)))
+    (windmove-do-window-select direction)))
+
+(defun rigpa-window-left ()
+  "Select window on the left."
+  (interactive)
+  (rigpa-window--go 'left))
 
 (defun rigpa-window-right ()
   "Select window on the right."
   (interactive)
-  (if (save-window-excursion
-        (let ((original-window (selected-window)))
-          (rigpa-window-mru)
-          (let ((window (windmove-find-other-window 'left)))
-            (and window
-                 (eq original-window window)))))
-      (rigpa-window-mru)
-    (evil-window-right 1)))
+  (rigpa-window--go 'right))
 
 (defun rigpa-window-up ()
   "Select window above."
   (interactive)
-  (if (save-window-excursion
-        (let ((original-window (selected-window)))
-          (rigpa-window-mru)
-          (let ((window (windmove-find-other-window 'down)))
-            (and window
-                 (eq original-window window)))))
-      (rigpa-window-mru)
-    (evil-window-up 1)))
+  (rigpa-window--go 'up))
 
 (defun rigpa-window-down ()
   "Select window below."
   (interactive)
-  (if (save-window-excursion
-        (let ((original-window (selected-window)))
-          (rigpa-window-mru)
-          (let ((window (windmove-find-other-window 'up)))
-            (and window
-                 (eq original-window window)))))
-      (rigpa-window-mru)
-    (evil-window-down 1)))
+  (rigpa-window--go 'down))
+
+(defun rigpa-window--move-buffer (direction)
+  "Move buffer in current window in DIRECTION."
+  (let ((buffer (current-buffer))
+        (next-window (windmove-find-other-window direction)))
+    (when (and next-window
+               (not (window-minibuffer-p next-window)))
+      (switch-to-buffer (other-buffer))
+      (windmove-do-window-select direction)
+      (switch-to-buffer buffer))))
 
 (defun rigpa-window-move-buffer-left ()
   "Move buffer in current window to the window on the left."
   (interactive)
-  (let ((buffer (current-buffer))
-        (next-window (windmove-find-other-window 'left)))
-    (when (and next-window
-               (not (window-minibuffer-p next-window)))
-      (switch-to-buffer (other-buffer))
-      (evil-window-left 1)
-      (switch-to-buffer buffer))))
+  (rigpa-window--move-buffer 'left))
 
 (defun rigpa-window-move-buffer-right ()
   "Move buffer in current window to the window on the right."
   (interactive)
-  (let ((buffer (current-buffer))
-        (next-window (windmove-find-other-window 'right)))
-    (when (and next-window
-               (not (window-minibuffer-p next-window)))
-      (switch-to-buffer (other-buffer))
-      (evil-window-right 1)
-      (switch-to-buffer buffer))))
+  (rigpa-window--move-buffer 'right))
 
 (defun rigpa-window-move-buffer-up ()
   "Move buffer in current window to the window above."
   (interactive)
-  (let ((buffer (current-buffer))
-        (next-window (windmove-find-other-window 'up)))
-    (when (and next-window
-               (not (window-minibuffer-p next-window)))
-      (switch-to-buffer (other-buffer))
-      (evil-window-up 1)
-      (switch-to-buffer buffer))))
+  (rigpa-window--move-buffer 'up))
 
 (defun rigpa-window-move-buffer-down ()
   "Move buffer in current window to the window below."
   (interactive)
-  (let ((buffer (current-buffer))
-        (next-window (windmove-find-other-window 'down)))
-    (when (and next-window
-               (not (window-minibuffer-p next-window)))
-      (switch-to-buffer (other-buffer))
-      (evil-window-down 1)
-      (switch-to-buffer buffer))))
+  (rigpa-window--move-buffer 'down))
 
 (defhydra hydra-window (:columns 4
                         :post (chimera-hydra-portend-exit chimera-window-mode t)
