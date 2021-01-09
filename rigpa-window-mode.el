@@ -33,6 +33,54 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
   (other-window 1)
   (quit-window))
 
+(defun rigpa-window-left ()
+  "Select window on the left."
+  (interactive)
+  (if (save-window-excursion
+        (let ((original-window (selected-window)))
+          (rigpa-window-mru)
+          (let ((window (windmove-find-other-window 'right)))
+            (and window
+                 (eq original-window window)))))
+      (rigpa-window-mru)
+    (evil-window-left 1)))
+
+(defun rigpa-window-right ()
+  "Select window on the right."
+  (interactive)
+  (if (save-window-excursion
+        (let ((original-window (selected-window)))
+          (rigpa-window-mru)
+          (let ((window (windmove-find-other-window 'left)))
+            (and window
+                 (eq original-window window)))))
+      (rigpa-window-mru)
+    (evil-window-right 1)))
+
+(defun rigpa-window-up ()
+  "Select window above."
+  (interactive)
+  (if (save-window-excursion
+        (let ((original-window (selected-window)))
+          (rigpa-window-mru)
+          (let ((window (windmove-find-other-window 'down)))
+            (and window
+                 (eq original-window window)))))
+      (rigpa-window-mru)
+    (evil-window-up 1)))
+
+(defun rigpa-window-down ()
+  "Select window below."
+  (interactive)
+  (if (save-window-excursion
+        (let ((original-window (selected-window)))
+          (rigpa-window-mru)
+          (let ((window (windmove-find-other-window 'up)))
+            (and window
+                 (eq original-window window)))))
+      (rigpa-window-mru)
+    (evil-window-down 1)))
+
 (defun rigpa-window-move-buffer-left ()
   "Move buffer in current window to the window on the left."
   (interactive)
@@ -82,10 +130,10 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
                         :after-exit (chimera-hydra-signal-exit chimera-window-mode
                                                                #'chimera-handle-hydra-exit))
   "Window mode"
-  ("h" evil-window-left "left")
-  ("j" evil-window-down "down")
-  ("k" evil-window-up "up")
-  ("l" evil-window-right "right")
+  ("h" rigpa-window-left "left")
+  ("j" rigpa-window-down "down")
+  ("k" rigpa-window-up "up")
+  ("l" rigpa-window-right "right")
   ("H" rigpa-window-move-buffer-left "move buffer left")
   ("J" rigpa-window-move-buffer-down "move buffer down")
   ("K" rigpa-window-move-buffer-up "move buffer up")
