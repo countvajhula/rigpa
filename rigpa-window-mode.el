@@ -40,17 +40,28 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
         ((eq 'up direction) 'down)
         ((eq 'down direction) 'up)))
 
+(defun rigpa-window--find (direction)
+  "Find window in DIRECTION."
+  (let ((original-window (selected-window))
+        (next-window (windmove-find-other-window direction)))
+    (cond ((save-window-excursion
+             (rigpa-window-mru)
+             (let ((window (windmove-find-other-window
+                            (rigpa-window--opposite-direction direction))))
+               (and window
+                    (eq original-window window))))
+           (save-window-excursion (rigpa-window-mru)
+                                  (selected-window)))
+          ((and next-window
+                (not (window-minibuffer-p next-window)))
+           next-window)
+          (t nil))))
+
 (defun rigpa-window--go (direction)
   "Select window in DIRECTION."
-  (if (save-window-excursion
-        (let ((original-window (selected-window)))
-          (rigpa-window-mru)
-          (let ((window (windmove-find-other-window
-                         (rigpa-window--opposite-direction direction))))
-            (and window
-                 (eq original-window window)))))
-      (rigpa-window-mru)
-    (windmove-do-window-select direction)))
+  (let ((window (rigpa-window--find direction)))
+    (when window
+      (select-window window))))
 
 (defun rigpa-window-left ()
   "Select window on the left."
@@ -76,11 +87,10 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
   "Move buffer in current window in DIRECTION."
   (let ((buffer (current-buffer))
         (original-position (point))
-        (next-window (windmove-find-other-window direction)))
-    (when (and next-window
-               (not (window-minibuffer-p next-window)))
+        (next-window (rigpa-window--find direction)))
+    (when next-window
       (switch-to-buffer (other-buffer))
-      (windmove-do-window-select direction)
+      (select-window next-window)
       (if (eq buffer (current-buffer))
           ;; if both buffers are the same, then just preserve
           ;; the position in the buffer from the source context
