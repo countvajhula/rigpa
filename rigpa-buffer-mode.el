@@ -82,12 +82,16 @@ Version 2017-11-01"
   (puthash mark-name (current-buffer) rigpa-buffer-marks-hash)
   (message "Mark '%c' set." mark-name))
 
+(defun rigpa-buffer-get-mark (mark-name)
+  "Retrieve a mark"
+  (gethash mark-name rigpa-buffer-marks-hash))
+
 (defun rigpa-buffer-return-to-mark (mark-name)
   "Return to mark"
   (interactive "cMark name?")
-  (switch-to-buffer (gethash mark-name rigpa-buffer-marks-hash)))
+  (switch-to-buffer (rigpa-buffer-get-mark mark-name)))
 
-(defun return-to-original-buffer ()
+(defun rigpa-buffer-return-to-original ()
   "Return to the buffer we were in at the time of entering
 buffer mode."
   (interactive)
@@ -103,7 +107,7 @@ happen quickly enough not to be noticeable."
   (interactive)
   (unless (equal (current-buffer) (rigpa-buffer-original-buffer))
     (let ((inhibit-redisplay t)) ;; not sure if this is doing anything but FWIW
-      (return-to-original-buffer)
+      (rigpa-buffer-return-to-original)
       (evil-switch-to-windows-last-buffer))))
 
 (defun setup-buffer-marks-table ()
@@ -117,18 +121,27 @@ current ('original') buffer."
 (defun save-original-buffer ()
   "Save current buffer as original buffer."
   (interactive)
-  (puthash "0" (current-buffer)
-           rigpa-buffer-marks-hash))
+  (rigpa-buffer-set-mark ?0))
 
 (defun rigpa-buffer-original-buffer ()
   "Get original buffer identifier"
   (interactive)
-  (gethash "0" rigpa-buffer-marks-hash))
+  (rigpa-buffer-get-mark ?0))
+
+(defun rigpa-buffer-yank ()
+  "Save current buffer identifier."
+  (interactive)
+  (rigpa-buffer-set-mark ?1))
+
+(defun rigpa-buffer-paste ()
+  "Return to yanked buffer."
+  (interactive)
+  (rigpa-buffer-return-to-mark ?1))
 
 (defun rigpa-buffer-search ()
   "Search for buffer."
   (interactive)
-  (return-to-original-buffer)
+  (rigpa-buffer-return-to-original)
   (ivy-switch-buffer))
 
 ;; TODO: implement a dynamic ring buffer storing every visited buffer
@@ -157,6 +170,8 @@ current ('original') buffer."
   ("j" ignore nil)
   ("k" ignore nil)
   ("l" next-buffer "next")
+  ("y" rigpa-buffer-yank "yank")
+  ("p" rigpa-buffer-paste "paste")
   ("n" (lambda ()
          (interactive)
          (rigpa-buffer-create nil nil :switch-p t))
@@ -169,7 +184,7 @@ current ('original') buffer."
   ("i" ibuffer "list (ibuffer)" :exit t)
   ("x" kill-buffer "delete")
   ("?" rigpa-buffer-info "info" :exit t)
-  ("q" return-to-original-buffer "return to original" :exit t)
+  ("q" rigpa-buffer-return-to-original "return to original" :exit t)
   ("H-m" rigpa-toggle-menu "show/hide this menu")
   ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
   ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
