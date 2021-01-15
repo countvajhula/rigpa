@@ -170,6 +170,8 @@ and simply toggles whether the menu is visible or not."
              (magit-show-commit (magit-thingatpt--git-revision)))
             ((eq major-mode 'Info-mode)
              (Info-follow-nearest-node))
+            ((eq major-mode 'xref--xref-buffer-mode)
+             (xref-goto-xref))
             (t (rigpa-enter-lower-level)))
     (cond ((eq major-mode 'Custom-mode)
            (Custom-newline (point)))
