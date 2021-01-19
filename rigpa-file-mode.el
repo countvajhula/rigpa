@@ -28,6 +28,16 @@ Version 2016-04-04"
   (interactive)
   (set-mark-command t))
 
+(defun rigpa-file-yank ()
+  "Save current buffer contents."
+  (interactive)
+  (copy-to-register ?f (point-min) (point-max)))
+
+(defun rigpa-file-paste ()
+  "Paste saved buffer contents."
+  (interactive)
+  (insert-register ?f))
+
 (defhydra hydra-file (:columns 2
                       :post (chimera-hydra-portend-exit chimera-file-mode t)
                       :after-exit (chimera-hydra-signal-exit chimera-file-mode
@@ -37,10 +47,12 @@ Version 2016-04-04"
   ("j" evil-next-line "down")
   ("k" evil-previous-line "up")
   ("l" evil-forward-char "forward")
-  ("H" evil-goto-first-line "beginning")
-  ("L" evil-goto-line "end")
+  ("M-h" evil-goto-first-line "beginning")
+  ("M-l" evil-goto-line "end")
   ("C-h" xah-pop-local-mark-ring "previous mark")
   ("C-l" unpop-to-mark-command "next mark")
+  ("y" rigpa-file-yank "yank")
+  ("p" rigpa-file-paste "paste")
   ("i" nil "exit" :exit t)
   ("H-m" rigpa-toggle-menu "show/hide this menu")
   ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
