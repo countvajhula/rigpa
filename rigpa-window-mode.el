@@ -96,7 +96,9 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
           ;; the position in the buffer from the source context
           (progn (goto-char original-position)
                  (recenter))
-        (switch-to-buffer buffer)))))
+        (switch-to-buffer buffer)
+        (goto-char original-position)
+        (recenter)))))
 
 (defun rigpa-window-move-buffer-left ()
   "Move buffer in current window to the window on the left."
