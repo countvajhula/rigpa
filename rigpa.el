@@ -172,6 +172,8 @@ and simply toggles whether the menu is visible or not."
              (Info-follow-nearest-node))
             ((eq major-mode 'xref--xref-buffer-mode)
              (xref-goto-xref))
+            ((eq major-mode 'ibuffer-mode)
+             (ibuffer-visit-buffer))
             (t (rigpa-enter-lower-level)))
     (cond ((eq major-mode 'Custom-mode)
            (Custom-newline (point)))
