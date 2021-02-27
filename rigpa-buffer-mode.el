@@ -33,6 +33,7 @@
 (require 'ivy)
 (require 'chimera)
 (require 'chimera-hydra)
+(require 's)
 
 (evil-define-state buffer
   "Buffer state."
@@ -146,15 +147,24 @@ happen quickly enough not to be noticeable."
       (rigpa-buffer-return-to-original)
       (evil-switch-to-windows-last-buffer))))
 
-(defun rigpa-buffer-setup-marks-table ()
+(defun rigpa-buffer-create-ring ()
+  "Create the 'primary' buffer ring."
+  (interactive)
+  ;; delete buffer ring and rebuild from scratch, for now
+  (buffer-ring-torus-delete-ring "primary")
+  (dolist (buf (buffer-list))
+    (unless (s-starts-with-p " " (buffer-name buf))
+      (buffer-ring-add "primary" buf))))
+
+(defun rigpa-buffer--setup-buffer-marks-table ()
   "Initialize the buffer marks hashtable and add an entry for the
 current ('original') buffer."
   (interactive)
   (defvar rigpa-buffer-marks-hash
     (make-hash-table :test 'equal))
-  (rigpa-buffer-save-original))
+  (rigpa-buffer--save-original-buffer))
 
-(defun rigpa-buffer-save-original ()
+(defun rigpa-buffer--save-original-buffer ()
   "Save current buffer as original buffer."
   (interactive)
   (rigpa-buffer-set-mark ?0))
@@ -194,8 +204,9 @@ current ('original') buffer."
 ;; probably do this very thing. But in this case it may be better to
 ;; simply use (buffer-list) directly which appears to keep track of recency
 (defhydra hydra-buffer (:columns 3
-                        :body-pre (progn (rigpa-buffer-setup-marks-table) ; maybe put in ad-hoc entry
-                                         (chimera-hydra-signal-entry chimera-buffer-mode))
+                        :body-pre (progn (rigpa-buffer--setup-buffer-marks-table)
+                                         (chimera-hydra-signal-entry chimera-buffer-mode)
+                                         (rigpa-buffer-create-ring)) ; maybe put in ad-hoc entry
                         :post (progn (rigpa-buffer-flash-to-original)
                                      (chimera-hydra-portend-exit chimera-buffer-mode t))
                         :after-exit (chimera-hydra-signal-exit chimera-buffer-mode
@@ -203,10 +214,10 @@ current ('original') buffer."
   "Buffer mode"
   ("s-b" evil-switch-to-windows-last-buffer "switch to last" :exit t)
   ("b" evil-switch-to-windows-last-buffer "switch to last" :exit t)
-  ("h" previous-buffer "previous")
+  ("h" buffer-ring-prev-buffer "previous")
   ("j" ignore nil)
   ("k" ignore nil)
-  ("l" next-buffer "next")
+  ("l" buffer-ring-next-buffer "next")
   ("y" rigpa-buffer-yank "yank")
   ("p" rigpa-buffer-paste "paste")
   ("n" (lambda ()
