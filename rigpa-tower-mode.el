@@ -237,14 +237,14 @@ monadic verb in the 'switch buffer' navigation."
 (defun rigpa--add-meta-tower-side-effects ()
   "Add side effects for primitive mode operations while in meta mode."
   ;; this should lookup the appropriate side-effect based on the coordinates
-  (advice-add #'previous-buffer :around #'rigpa--previous-tower-wrapper)
-  (advice-add #'next-buffer :around #'rigpa--next-tower-wrapper))
+  (advice-add #'buffer-ring-prev-buffer :around #'rigpa--previous-tower-wrapper)
+  (advice-add #'buffer-ring-next-buffer :around #'rigpa--next-tower-wrapper))
 
 ;; ensure the meta and meta-tower's are straight
 (defun rigpa--remove-meta-tower-side-effects ()
   "Remove side effects for primitive mode operations that were added for meta modes."
-  (advice-remove #'previous-buffer #'rigpa--previous-tower-wrapper)
-  (advice-remove #'next-buffer #'rigpa--next-tower-wrapper))
+  (advice-remove #'buffer-ring-prev-buffer #'rigpa--previous-tower-wrapper)
+  (advice-remove #'buffer-ring-next-buffer #'rigpa--next-tower-wrapper))
 
 (defun rigpa-enter-tower-mode ()
   "Enter a buffer containing a textual representation of the
