@@ -35,6 +35,8 @@
 (require 'chimera-hydra)
 (require 's)
 
+(defconst rigpa-buffer-ring-name-prefix "rigpa-buffer-ring")
+
 (evil-define-state buffer
   "Buffer state."
   :tag " <B> "
@@ -147,14 +149,31 @@ happen quickly enough not to be noticeable."
       (rigpa-buffer-return-to-original)
       (evil-switch-to-windows-last-buffer))))
 
+(defun rigpa-buffer--active-buffers ()
+  "Get active buffers."
+  (if (eq rigpa--complex rigpa-meta-tower-complex)
+      (seq-filter (lambda (buf)
+                    (s-starts-with-p rigpa-buffer-prefix (buffer-name buf)))
+                  (buffer-list))
+    (seq-filter (lambda (buf)
+                  (not (s-starts-with-p " " (buffer-name buf))))
+                (buffer-list))))
+
 (defun rigpa-buffer-create-ring ()
-  "Create the 'primary' buffer ring."
+  "Create the buffer ring upon entry into buffer mode."
   (interactive)
-  ;; delete buffer ring and rebuild from scratch, for now
-  (buffer-ring-torus-delete-ring "primary")
-  (dolist (buf (buffer-list))
-    (unless (s-starts-with-p " " (buffer-name buf))
-      (buffer-ring-add "primary" buf))))
+  ;; delete buffer ring and rebuild from scratch each time, for now,
+  ;; instead of maintaining a persistent buffer ring via hooks
+  (message "CREATING RING...")
+  (let* ((ring-name (if (eq rigpa--complex rigpa-meta-tower-complex)
+                        "2"
+                      "0")) ; TODO: derive from coordinates later
+         (buffer-ring-name (concat rigpa-buffer-ring-name-prefix
+                                   "-"
+                                   ring-name)))
+    (buffer-ring-torus-delete-ring buffer-ring-name)
+    (dolist (buf (rigpa-buffer--active-buffers))
+      (buffer-ring-add buffer-ring-name buf))))
 
 (defun rigpa-buffer--setup-buffer-marks-table ()
   "Initialize the buffer marks hashtable and add an entry for the
