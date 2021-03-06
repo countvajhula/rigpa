@@ -84,21 +84,20 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
   (rigpa-window--go 'down))
 
 (defun rigpa-window--move-buffer (direction)
-  "Move buffer in current window in DIRECTION."
+  "Move buffer in current window in DIRECTION.
+
+If both buffers are the same, then just preserve the position in the
+buffer from the source context."
   (let ((buffer (current-buffer))
         (original-position (point))
         (next-window (rigpa-window--find direction)))
     (when next-window
       (switch-to-buffer (other-buffer))
       (select-window next-window)
-      (if (eq buffer (current-buffer))
-          ;; if both buffers are the same, then just preserve
-          ;; the position in the buffer from the source context
-          (progn (goto-char original-position)
-                 (recenter))
-        (switch-to-buffer buffer)
-        (goto-char original-position)
-        (recenter)))))
+      (unless (eq buffer (current-buffer))
+          (switch-to-buffer buffer))
+      (goto-char original-position)
+      (recenter))))
 
 (defun rigpa-window-move-buffer-left ()
   "Move buffer in current window to the window on the left."
@@ -120,6 +119,51 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
   (interactive)
   (rigpa-window--move-buffer 'down))
 
+(defun rigpa-window--exchange-buffer (direction)
+  "Exchange buffer with the window on the DIRECTION side.
+
+If both windows contain the same buffer, simply exchange cursor
+positions."
+  (interactive)
+  (let ((buffer (current-buffer))
+        (original-position (point))
+        (original-window (selected-window))
+        (next-window (rigpa-window--find direction)))
+    (when next-window
+      (select-window next-window)
+      (let ((other-position (point))
+            (other-buffer (current-buffer)))
+        (unless (eq buffer other-buffer)
+          (switch-to-buffer buffer))
+        (goto-char original-position)
+        (recenter)
+        (select-window original-window)
+        (unless (eq buffer other-buffer)
+          (switch-to-buffer other-buffer))
+        (goto-char other-position)
+        (recenter)
+        (select-window next-window)))))
+
+(defun rigpa-window-exchange-buffer-left ()
+  "Exchange buffer with the one on the left."
+  (interactive)
+  (rigpa-window--exchange-buffer 'left))
+
+(defun rigpa-window-exchange-buffer-right ()
+  "Exchange buffer with the one on the right."
+  (interactive)
+  (rigpa-window--exchange-buffer 'right))
+
+(defun rigpa-window-exchange-buffer-up ()
+  "Exchange buffer with the one on the up."
+  (interactive)
+  (rigpa-window--exchange-buffer 'up))
+
+(defun rigpa-window-exchange-buffer-down ()
+  "Exchange buffer with the one on the down."
+  (interactive)
+  (rigpa-window--exchange-buffer 'down))
+
 (defhydra hydra-window (:columns 4
                         :post (chimera-hydra-portend-exit chimera-window-mode t)
                         :after-exit (chimera-hydra-signal-exit chimera-window-mode
@@ -133,6 +177,10 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
   ("J" rigpa-window-move-buffer-down "move buffer down")
   ("K" rigpa-window-move-buffer-up "move buffer up")
   ("L" rigpa-window-move-buffer-right "move buffer right")
+  ("C-S-h" rigpa-window-exchange-buffer-left "exchange buffer left")
+  ("C-S-j" rigpa-window-exchange-buffer-down "exchange buffer down")
+  ("C-S-k" rigpa-window-exchange-buffer-up "exchange buffer up")
+  ("C-S-l" rigpa-window-exchange-buffer-right "exchange buffer left")
   ("M-H" evil-window-move-far-left "move to far left")
   ("M-J" evil-window-move-very-bottom "move to bottom")
   ("M-K" evil-window-move-very-top "move to top")
