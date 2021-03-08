@@ -209,19 +209,6 @@ current ('original') buffer."
   (rigpa-buffer-return-to-original)
   (ivy-switch-buffer))
 
-;; TODO: implement a dynamic ring buffer storing every visited buffer
-;; then, buffer mode retains a pointer to the current position (buffer)
-;; and reverses direction of traversal each time buffer mode is exited
-;; h and l should then use this wrapped form of previous and next buffer
-;; we also wouldn't need to rely on evil-switch-to-windows-last-buffer
-;; so there would be no need to "flash back"
-;; this should be an independent utility library so that it can be used
-;; in all modes that need an intuitive way to keep track of recency
-;; maybe `recency-ring`, has a nice... ring to it
-
-;; See the existing packages "dynamic-ring" and "buffer-ring" that
-;; probably do this very thing. But in this case it may be better to
-;; simply use (buffer-list) directly which appears to keep track of recency
 (defhydra hydra-buffer (:columns 3
                         :body-pre (progn (rigpa-buffer--setup-buffer-marks-table)
                                          (chimera-hydra-signal-entry chimera-buffer-mode)
