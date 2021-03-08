@@ -92,7 +92,7 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
   (interactive)
   (let ((mode-name (symbol-name evil-state)))
     (if (rigpa-ensemble-member-position-by-name (rigpa--local-tower)
-                                              mode-name)
+                                                mode-name)
         (when (< rigpa--current-level
                  (1- (rigpa-ensemble-size (rigpa--local-tower))))
           (rigpa--enter-level (1+ rigpa--current-level)))
