@@ -100,6 +100,7 @@
   ("t" centaur-tabs-mode "toggle tabs")
   ("n" display-line-numbers-mode "toggle line numbers")
   ("b" rigpa-application-toggle-alarm-bell "toggle alarm bell")
+  ("B" beacon-mode "toggle beacon")
   ("s" scroll-bar-mode "toggle scroll bar")
   ("l" hl-line-mode "toggle highlight line")
   ("c" counsel-load-theme "change color scheme")
