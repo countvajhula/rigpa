@@ -18,6 +18,12 @@
 (defun rigpa--minor-mode-enable-hook (name)
   "Return a function to enable the minor mode for the mode named NAME.
 
+We modulate keybindings in evil states (e.g. in particular visual and
+operator states) via a minor mode. As it looks like this only works if
+the minor mode is activated *before* entering the evil state, we need
+to define pre-entry hooks at the chimera level and can't just use the
+evil entry hooks.
+
 We need this extra layer of indirection because lambdas as hooks
 can't be removed since they are anonymous. This just gives us a way
 to parametrize the hook but still be able to remove it."

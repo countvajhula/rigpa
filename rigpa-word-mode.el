@@ -15,12 +15,6 @@
   :message "-- WORD --"
   :enable (normal))
 
-(defun rigpa-word--define-evil-key (key fn)
-  "Define an evil keybinding in rigpa word mode."
-  (rigpa--define-evil-key key
-                          fn
-                          rigpa-word-mode-map))
-
 (evil-define-motion rigpa-word-backward (count)
   "Motion for moving backward by a word."
   :type exclusive
@@ -65,17 +59,15 @@
     (evil-next-line count)
     (rigpa-word--select-word)))
 
-(rigpa-word--define-evil-key "h"
-                             #'rigpa-word-backward)
+(defvar rigpa--word-mode-keyspec
+  '(("h" . rigpa-word-backward)
+    ("j" . rigpa-word-down)
+    ("k" . rigpa-word-up)
+    ("l" . rigpa-word-forward))
+  "Key specification for rigpa word mode.")
 
-(rigpa-word--define-evil-key "j"
-                             #'rigpa-word-down)
-
-(rigpa-word--define-evil-key "k"
-                             #'rigpa-word-up)
-
-(rigpa-word--define-evil-key "l"
-                             #'rigpa-word-forward)
+(rigpa--define-evil-keys-from-spec rigpa--word-mode-keyspec
+                                   rigpa-word-mode-map)
 
 ;; (evil-define-key '(word visual operator) rigpa-word-mode-map
 ;;   (kbd "H")
