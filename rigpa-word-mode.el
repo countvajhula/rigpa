@@ -59,40 +59,6 @@
     (evil-next-line count)
     (rigpa-word--select-word)))
 
-(defun rigpa-word-move-backward ()
-  "Move word backwards"
-  (interactive)
-  (evil-inner-word nil nil nil nil)
-  (evil-backward-WORD-begin nil)
-  (transpose-words 1)
-  (evil-backward-WORD-begin 2))
-
-(defun rigpa-word-move-forward ()
-  "Move word forward"
-  (interactive)
-  (evil-forward-WORD-begin nil)
-  (transpose-words 1))
-
-(defun rigpa-word-move-down ()
-  "Move word down"
-  (interactive)
-  (evil-inner-word nil nil nil nil)
-  (setq word-end-position (point))
-  (evil-backward-WORD-begin nil)
-  (evil-delete (point) word-end-position 'exclusive nil nil)
-  (evil-next-line)
-  (evil-paste-before nil nil))
-
-(defun rigpa-word-move-up ()
-  "Move word up"
-  (interactive)
-  (evil-inner-word nil nil nil nil)
-  (setq word-end-position (point))
-  (evil-backward-WORD-begin nil)
-  (evil-delete (point) word-end-position 'exclusive nil nil)
-  (evil-previous-line)
-  (evil-paste-before nil nil))
-
 (evil-define-operator rigpa-word-delete (beg end type register yank-handler)
   "Delete word."
   :motion rigpa-word-forward
@@ -122,6 +88,45 @@
   "Make title case."
   :motion rigpa-word-forward
   (capitalize-region beg end))
+
+(evil-define-command rigpa-word-move-backward (count)
+  "Move word backwards."
+  (interactive "p")
+  (dotimes (i count)
+    (evil-inner-word)
+    (evil-backward-WORD-begin)
+    (transpose-words 1)
+    (evil-backward-WORD-begin 2)))
+
+(evil-define-command rigpa-word-move-forward (count)
+  "Move word forward"
+  (interactive "p")
+  (dotimes (i count)
+    (evil-forward-WORD-begin)
+    (transpose-words 1)
+    (evil-backward-WORD-begin)))
+
+(evil-define-command rigpa-word-move-down (count)
+  "Move word down"
+  (interactive "p")
+  (dotimes (i count)
+    (evil-inner-word nil nil nil nil)
+    (setq word-end-position (point))
+    (evil-backward-WORD-begin nil)
+    (evil-delete (point) word-end-position 'exclusive nil nil)
+    (evil-next-line)
+    (evil-paste-before nil nil)))
+
+(evil-define-command rigpa-word-move-up (count)
+  "Move word up"
+  (interactive "p")
+  (dotimes (i count)
+    (evil-inner-word nil nil nil nil)
+    (setq word-end-position (point))
+    (evil-backward-WORD-begin nil)
+    (evil-delete (point) word-end-position 'exclusive nil nil)
+    (evil-previous-line)
+    (evil-paste-before nil nil)))
 
 (defun rigpa-word-split ()
   "Split word into characters on separate lines."
