@@ -1,11 +1,98 @@
 (require 'chimera)
 (require 'chimera-hydra)
+(require 'rigpa-evil-support)
+
+(defvar rigpa-word-mode-map (make-sparse-keymap))
+
+(define-minor-mode rigpa-word-mode
+  "Minor mode to modulate keybindings in rigpa word mode."
+  :lighter "word"
+  :keymap rigpa-word-mode-map)
 
 (evil-define-state word
   "Word state."
   :tag " <W> "
   :message "-- WORD --"
   :enable (normal))
+
+(defun rigpa-word--define-evil-key (key fn)
+  "Define an evil keybinding in rigpa word mode."
+  (rigpa--define-evil-key key
+                          fn
+                          rigpa-word-mode-map))
+
+(evil-define-motion rigpa-word-backward (count)
+  "Motion for moving backward by a word."
+  :type exclusive
+  (let ((count (or count 1)))
+    (evil-backward-WORD-begin count)))
+
+(evil-define-motion rigpa-word-forward (count)
+  "Motion for moving forward by a word."
+  :type exclusive
+  (let ((count (or count 1)))
+    (evil-forward-WORD-begin count)))
+
+(defun rigpa-word--select-word ()
+  "Select nearest word, going backwards if necessary."
+  (let ((on-word-p (save-excursion
+                       (let ((original-position (point)))
+                         (evil-backward-WORD-begin)
+                         (evil-forward-WORD-begin)
+                         (= (point) original-position)))))
+      (unless on-word-p
+        (let ((original-line (line-number-at-pos)))
+          (cond ((save-excursion (evil-backward-WORD-begin)
+                                 (= (line-number-at-pos)
+                                    original-line))
+                 (evil-backward-WORD-begin))
+                ((save-excursion (evil-forward-WORD-begin)
+                                 (= (line-number-at-pos)
+                                    original-line))
+                 (evil-forward-WORD-begin)))))))
+
+(evil-define-motion rigpa-word-up (count)
+  "Motion for moving up by a word."
+  :type exclusive
+  (let ((count (or count 1)))
+    (evil-previous-line count)
+    (rigpa-word--select-word)))
+
+(evil-define-motion rigpa-word-down (count)
+  "Motion for moving down by a word."
+  :type exclusive
+  (let ((count (or count 1)))
+    (evil-next-line count)
+    (rigpa-word--select-word)))
+
+(rigpa-word--define-evil-key "h"
+                             #'rigpa-word-backward)
+
+(rigpa-word--define-evil-key "j"
+                             #'rigpa-word-down)
+
+(rigpa-word--define-evil-key "k"
+                             #'rigpa-word-up)
+
+(rigpa-word--define-evil-key "l"
+                             #'rigpa-word-forward)
+
+;; (evil-define-key '(word visual operator) rigpa-word-mode-map
+;;   (kbd "H")
+;;   #'rigpa-word-move-backward)
+
+;; (evil-define-key '(word visual operator) rigpa-word-mode-map
+;;   (kbd "L")
+;;   #'rigpa-word-move-forward)
+
+;; (evil-define-key '(word visual operator) rigpa-word-mode-map
+;;   (kbd "J")
+;;   #'rigpa-word-move-down)
+
+;; (evil-define-key '(word visual operator) rigpa-word-mode-map
+;;   (kbd "K")
+;;   #'rigpa-word-move-up)
+
 
 (defun rigpa-word-move-backward ()
   "Move word backwards"
@@ -171,43 +258,43 @@
   (evil-insert-state))
 
 
-(defhydra hydra-word (:columns 2
-                      :post (chimera-hydra-portend-exit chimera-word-mode t)
-                      :after-exit (chimera-hydra-signal-exit chimera-word-mode
-                                                             #'chimera-handle-hydra-exit))
-  "Word mode"
-  ("h" evil-backward-WORD-begin "backward")
-  ("j" evil-next-line "down")
-  ("k" evil-previous-line "up")
-  ("l" evil-forward-WORD-begin "forward")
-  ("C-h" rigpa-word-scroll-jump-backward "backward")
-  ("C-j" rigpa-word-scroll-jump-forward "down")
-  ("C-k" rigpa-word-scroll-jump-backward "up")
-  ("C-l" rigpa-word-scroll-jump-forward "forward")
-  ("C-S-h" rigpa-word-rotate-chars-left "rotate chars left")
-  ("C-S-l" rigpa-word-rotate-chars-right "rotate chars right")
-  ("M-h" rigpa-word-first-word "first word")
-  ("M-l" rigpa-word-last-word "last word")
-  ("H" rigpa-word-move-backward "move left")
-  ("L" rigpa-word-move-forward "move right")
-  ("J" rigpa-word-move-down "move down")
-  ("K" rigpa-word-move-up "move up")
-  ("x" rigpa-word-delete "delete")
-  ("c" rigpa-word-change "change" :exit t)
-  ("a" rigpa-word-add-to-end "append" :exit t)
-  ("i" rigpa-word-add-to-beginning "insert" :exit t)
-  ("A" rigpa-word-add-after "add after" :exit t)
-  ("I" rigpa-word-add-before "add before" :exit t)
-  ("~" rigpa-word-toggle-case "toggle case")
-  ("U" rigpa-word-upper-case "upper case")
-  ("u" rigpa-word-lower-case "lower case")
-  ("s" rigpa-word-split "split into characters")
-  ("s-r" rigpa-word-delete "delete" :exit t)
-  ("s-o" rigpa-word-delete-others "delete other words" :exit t)
-  ("?" dictionary-lookup-definition "lookup in dictionary" :exit t)
-  ("H-m" rigpa-toggle-menu "show/hide this menu")
-  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
+;; (defhydra hydra-word (:columns 2
+;;                       :post (chimera-hydra-portend-exit chimera-word-mode t)
+;;                       :after-exit (chimera-hydra-signal-exit chimera-word-mode
+;;                                                              #'chimera-handle-hydra-exit))
+;;   "Word mode"
+;;   ("h" evil-backward-WORD-begin "backward")
+;;   ("j" evil-next-line "down")
+;;   ("k" evil-previous-line "up")
+;;   ("l" evil-forward-WORD-begin "forward")
+;;   ("C-h" rigpa-word-scroll-jump-backward "backward")
+;;   ("C-j" rigpa-word-scroll-jump-forward "down")
+;;   ("C-k" rigpa-word-scroll-jump-backward "up")
+;;   ("C-l" rigpa-word-scroll-jump-forward "forward")
+;;   ("C-S-h" rigpa-word-rotate-chars-left "rotate chars left")
+;;   ("C-S-l" rigpa-word-rotate-chars-right "rotate chars right")
+;;   ("M-h" rigpa-word-first-word "first word")
+;;   ("M-l" rigpa-word-last-word "last word")
+;;   ("H" rigpa-word-move-backward "move left")
+;;   ("L" rigpa-word-move-forward "move right")
+;;   ("J" rigpa-word-move-down "move down")
+;;   ("K" rigpa-word-move-up "move up")
+;;   ("x" rigpa-word-delete "delete")
+;;   ("c" rigpa-word-change "change" :exit t)
+;;   ("a" rigpa-word-add-to-end "append" :exit t)
+;;   ("i" rigpa-word-add-to-beginning "insert" :exit t)
+;;   ("A" rigpa-word-add-after "add after" :exit t)
+;;   ("I" rigpa-word-add-before "add before" :exit t)
+;;   ("~" rigpa-word-toggle-case "toggle case")
+;;   ("U" rigpa-word-upper-case "upper case")
+;;   ("u" rigpa-word-lower-case "lower case")
+;;   ("s" rigpa-word-split "split into characters")
+;;   ("s-r" rigpa-word-delete "delete" :exit t)
+;;   ("s-o" rigpa-word-delete-others "delete other words" :exit t)
+;;   ("?" dictionary-lookup-definition "lookup in dictionary" :exit t)
+;;   ("H-m" rigpa-toggle-menu "show/hide this menu")
+;;   ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
+;;   ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-word-mode-entry-hook nil
   "Entry hook for rigpa word mode.")
@@ -226,7 +313,7 @@
 
 (defvar chimera-word-mode
   (make-chimera-mode :name "word"
-                     :enter #'hydra-word/body
+                     :enter #'evil-word-state
                      :pre-entry-hook 'chimera-word-mode-entry-hook
                      :post-exit-hook 'chimera-word-mode-exit-hook
                      :entry-hook 'evil-word-state-entry-hook
