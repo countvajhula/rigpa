@@ -15,23 +15,60 @@
 (defvar rigpa-modes
   (ht))
 
+(defun rigpa--minor-mode-enable-hook (name)
+  "Return a function to enable the minor mode for the mode named NAME.
+
+We need this extra layer of indirection because lambdas as hooks
+can't be removed since they are anonymous. This just gives us a way
+to parametrize the hook but still be able to remove it."
+  (let ((enable-mode
+         (intern
+          (concat "rigpa--enable-" name "-minor-mode"))))
+    enable-mode))
+
+(defun rigpa--disable-other-minor-modes ()
+  "Disable rigpa minor modes other than the one corresponding to the current state."
+  (dolist (name (ht-keys rigpa-modes))
+    (unless (equal name evil-state)
+      (let ((disable-mode
+             (intern
+              (concat "rigpa--disable-" name "-minor-mode"))))
+        (when (fboundp disable-mode)
+          (funcall disable-mode))))))
+
 (defun rigpa-register-mode (mode)
-  "Register MODE-NAME for use with rigpa."
+  "Register MODE for use with rigpa.
+
+This registers callbacks with the hooks provided by the chimera MODE
+to ensure, upon state transitions, that:
+(1) the correct state is reflected,
+(2) any lingering config from prior states is cleaned, and
+(3) the previous state is remembered for possible recall."
   (let ((name (chimera-mode-name mode))
+        (pre-entry-hook (chimera-mode-pre-entry-hook mode))
         (entry-hook (chimera-mode-entry-hook mode))
         (exit-hook (chimera-mode-exit-hook mode)))
     (ht-set! rigpa-modes name mode)
-    (add-hook exit-hook #'rigpa-remember-for-recall)
-    (add-hook entry-hook #'rigpa-reconcile-level)))
+    (let ((minor-mode-entry (rigpa--minor-mode-enable-hook name)))
+      (when (fboundp minor-mode-entry)
+        (add-hook pre-entry-hook minor-mode-entry)))
+    (add-hook entry-hook #'rigpa-reconcile-level)
+    (add-hook pre-entry-hook #'rigpa--disable-other-minor-modes)
+    (add-hook exit-hook #'rigpa-remember-for-recall)))
 
 (defun rigpa-unregister-mode (mode)
-  "Unregister MODE-NAME."
+  "Unregister MODE."
   (let ((name (chimera-mode-name mode))
+        (pre-entry-hook (chimera-mode-pre-entry-hook mode))
         (entry-hook (chimera-mode-entry-hook mode))
         (exit-hook (chimera-mode-exit-hook mode)))
     (ht-remove! rigpa-modes name)
-    (remove-hook exit-hook #'rigpa-remember-for-recall)
-    (remove-hook entry-hook #'rigpa-reconcile-level)))
+    (let ((minor-mode-entry (rigpa--minor-mode-enable-hook name)))
+      (when (fboundp minor-mode-entry)
+        (remove-hook pre-entry-hook minor-mode-entry)))
+    (remove-hook entry-hook #'rigpa-reconcile-level)
+    (remove-hook pre-entry-hook #'rigpa--disable-other-minor-modes)
+    (remove-hook exit-hook #'rigpa-remember-for-recall)))
 
 (defun rigpa-enter-mode (mode-name)
   "Enter mode MODE-NAME."
