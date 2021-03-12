@@ -9,6 +9,8 @@
 (defvar chimera-symex-mode
   (make-chimera-mode :name "symex"
                      :enter #'symex-mode-interface
+                     :pre-entry-hook 'chimera-symex-mode-entry-hook
+                     :post-exit-hook 'chimera-symex-mode-exit-hook
                      :entry-hook 'evil-symex-state-entry-hook
                      :exit-hook 'evil-symex-state-exit-hook))
 

@@ -106,6 +106,8 @@ buffer mode."
 (defvar chimera-tab-mode
   (make-chimera-mode :name "tab"
                      :enter #'hydra-tab/body
+                     :pre-entry-hook 'chimera-tab-mode-entry-hook
+                     :post-exit-hook 'chimera-tab-mode-exit-hook
                      :entry-hook 'evil-tab-state-entry-hook
                      :exit-hook 'evil-tab-state-exit-hook))
 

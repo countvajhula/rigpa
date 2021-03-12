@@ -285,6 +285,8 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
 (defvar chimera-line-mode
   (make-chimera-mode :name "line"
                      :enter #'hydra-line/body
+                     :pre-entry-hook 'chimera-line-mode-entry-hook
+                     :post-exit-hook 'chimera-line-mode-exit-hook
                      :entry-hook 'evil-line-state-entry-hook
                      :exit-hook 'evil-line-state-exit-hook))
 

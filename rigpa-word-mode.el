@@ -215,9 +215,20 @@
 (defvar chimera-word-mode-exit-hook nil
   "Exit hook for rigpa word mode.")
 
+(defun rigpa--enable-word-minor-mode ()
+  "Enable word minor mode."
+  (rigpa-word-mode 1))
+
+(defun rigpa--disable-word-minor-mode ()
+  "Disable word minor mode."
+  (rigpa-word-mode -1))
+
+
 (defvar chimera-word-mode
   (make-chimera-mode :name "word"
                      :enter #'hydra-word/body
+                     :pre-entry-hook 'chimera-word-mode-entry-hook
+                     :post-exit-hook 'chimera-word-mode-exit-hook
                      :entry-hook 'evil-word-state-entry-hook
                      :exit-hook 'evil-word-state-exit-hook))
 

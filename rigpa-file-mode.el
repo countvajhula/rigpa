@@ -67,6 +67,8 @@ Version 2016-04-04"
 (defvar chimera-file-mode
   (make-chimera-mode :name "file"
                      :enter #'hydra-file/body
+                     :pre-entry-hook 'chimera-file-mode-entry-hook
+                     :post-exit-hook 'chimera-file-mode-exit-hook
                      :entry-hook 'evil-file-state-entry-hook
                      :exit-hook 'evil-file-state-exit-hook))
 

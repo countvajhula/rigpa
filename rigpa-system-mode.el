@@ -33,6 +33,8 @@
 (defvar chimera-system-mode
   (make-chimera-mode :name "system"
                      :enter #'hydra-system/body
+                     :pre-entry-hook 'chimera-system-mode-entry-hook
+                     :post-exit-hook 'chimera-system-mode-exit-hook
                      :entry-hook 'evil-system-state-entry-hook
                      :exit-hook 'evil-system-state-exit-hook))
 

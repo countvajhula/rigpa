@@ -162,6 +162,8 @@
 (defvar chimera-char-mode
   (make-chimera-mode :name "char"
                      :enter #'hydra-char/body
+                     :pre-entry-hook 'chimera-char-mode-entry-hook
+                     :post-exit-hook 'chimera-char-mode-exit-hook
                      :entry-hook 'evil-char-state-entry-hook
                      :exit-hook 'evil-char-state-exit-hook))
 

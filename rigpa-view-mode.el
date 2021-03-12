@@ -152,6 +152,8 @@
 (defvar chimera-view-mode
   (make-chimera-mode :name "view"
                      :enter #'hydra-view/body
+                     :pre-entry-hook 'chimera-view-mode-entry-hook
+                     :post-exit-hook 'chimera-view-mode-exit-hook
                      :entry-hook 'evil-view-state-entry-hook
                      :exit-hook 'evil-view-state-exit-hook))
 
