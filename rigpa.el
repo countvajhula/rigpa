@@ -227,7 +227,9 @@ and simply toggles whether the menu is visible or not."
   ;; IOW this keybinding (and some class of bindings more generally)
   ;; is tower-specific
   (dolist (state chimera-evil-states)
-    (let ((keymap (intern (concat "evil-" state "-state-map"))))
+    (let ((keymap (symbol-value
+                   (intern
+                    (concat "evil-" state "-state-map")))))
       (define-key keymap [escape] #'rigpa-enter-higher-level)
       (unless (member state chimera-insertion-states)
         (define-key keymap [return] #'rigpa--enter-lower-or-pass-through))))
