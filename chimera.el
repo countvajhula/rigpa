@@ -16,6 +16,9 @@ always managed by chimera."))
 (defvar chimera-evil-states
   (list "normal" "insert" "emacs" "visual" "replace" "word" "line"))
 
+(defvar chimera-insertion-states
+  (list "insert" "emacs"))
+
 (defun chimera-enter-mode (mode)
   "Enter MODE."
   (interactive)
