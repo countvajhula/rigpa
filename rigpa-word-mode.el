@@ -1,5 +1,4 @@
 (require 'chimera)
-(require 'chimera-hydra)
 (require 'rigpa-evil-support)
 
 (defvar rigpa-word-mode-map (make-sparse-keymap))
@@ -270,7 +269,8 @@
 ;; exiting keys: c, a, i, A, I, s-r (delete), s-o (delete others), ?, Esc, Ret
 
 (rigpa--define-evil-keys-from-spec rigpa--word-mode-keyspec
-                                   rigpa-word-mode-map)
+                                   rigpa-word-mode-map
+                                   'word)
 
 (defvar chimera-word-mode-entry-hook nil
   "Entry hook for rigpa word mode.")

@@ -8,7 +8,14 @@
 ;; similarly for "region-mode", possibly by invoking multiple cursors
 
 (require 'chimera)
-(require 'chimera-hydra)
+(require 'rigpa-evil-support)
+
+(defvar rigpa-line-mode-map (make-sparse-keymap))
+
+(define-minor-mode rigpa-line-mode
+  "Minor mode to modulate keybindings in rigpa line mode."
+  :lighter "line"
+  :keymap rigpa-line-mode-map)
 
 (evil-define-state line
   "Line state."
@@ -228,53 +235,66 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   (interactive)
   (evil-previous-line 9))
 
-(defhydra hydra-line (:columns 4
-                      :post (chimera-hydra-portend-exit chimera-line-mode t)
-                      :after-exit (chimera-hydra-signal-exit chimera-line-mode
-                                                             #'chimera-handle-hydra-exit))
-  "Line mode"
-  ("h" evil-previous-line "previous")
-  ("j" evil-next-line "next")
-  ("k" evil-previous-line "previous")
-  ("l" evil-next-line "next")
-  ("C-j" rigpa-line-jump-down "jump down")
-  ("C-k" rigpa-line-jump-up "jump up")
-  ("M-j" rigpa-line-top "top line")
-  ("M-k" rigpa-line-bottom "bottom line")
-  ("H" rigpa-line-move-left "move left")
-  ("J" rigpa-line-move-down "move down")
-  ("K" rigpa-line-move-up "move up")
-  ("L" rigpa-line-move-right "move right")
-  ("C-." rigpa-line-indent-right "indent right")
-  ("C-," rigpa-line-indent-left "indent left")
-  ("M-H" rigpa-line-move-far-left "move to far left")
-  ("M-J" rigpa-line-move-very-bottom "move to bottom")
-  ("M-K" rigpa-line-move-very-top "move to top")
-  ("M-L" rigpa-line-move-far-right "move to far right")
-  ("x" rigpa-line-delete "delete")
-  ("c" rigpa-line-change "change")
-  ("s-l" indent-according-to-mode "autoindent")
-  ("'" rigpa-line-flashback "flashback")
-  ("s" rigpa-line-split "split by word")
-  ("v" rigpa-line-pulverize "pulverize")
-  ("y" rigpa-line-yank "yank (copy)")
-  ("p" evil-paste-after "paste after")
-  ("P" evil-paste-before "paste before")
-  ("+" evil-open-above "add new line")
-  ("i" evil-open-above "add new line")
-  ("a" evil-open-below "add new line below")
-  ("n" rigpa-line-insert-newline "insert newline")
-  ("C-S-o" rigpa-line-append-newline "append newline")
-  ("o" rigpa-line-join "join")
-  ("O" (lambda ()
-         (interactive)
-         (rigpa-line-join t))
-   "join backwards")
-  (";" rigpa-line-toggle-comment "toggle comment")
-  ("?" rigpa-line-info "info" :exit t)
-  ("H-m" rigpa-toggle-menu "show/hide this menu")
-  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
+(setq rigpa--line-mode-keyspec
+  '(("h" . evil-previous-line)
+    ("j" . evil-next-line)
+    ("k" . evil-previous-line)
+    ("l" . evil-next-line))
+  ;"Key specification for rigpa line mode."
+  )
+
+(rigpa--define-evil-keys-from-spec rigpa--line-mode-keyspec
+                                   rigpa-line-mode-map
+                                   'line)
+
+
+;; (defhydra hydra-line (:columns 4
+;;                       :post (chimera-hydra-portend-exit chimera-line-mode t)
+;;                       :after-exit (chimera-hydra-signal-exit chimera-line-mode
+;;                                                              #'chimera-handle-hydra-exit))
+;;   "Line mode"
+;;   ("h" evil-previous-line "previous")
+;;   ("j" evil-next-line "next")
+;;   ("k" evil-previous-line "previous")
+;;   ("l" evil-next-line "next")
+;;   ("C-j" rigpa-line-jump-down "jump down")
+;;   ("C-k" rigpa-line-jump-up "jump up")
+;;   ("M-j" rigpa-line-top "top line")
+;;   ("M-k" rigpa-line-bottom "bottom line")
+;;   ("H" rigpa-line-move-left "move left")
+;;   ("J" rigpa-line-move-down "move down")
+;;   ("K" rigpa-line-move-up "move up")
+;;   ("L" rigpa-line-move-right "move right")
+;;   ("C-." rigpa-line-indent-right "indent right")
+;;   ("C-," rigpa-line-indent-left "indent left")
+;;   ("M-H" rigpa-line-move-far-left "move to far left")
+;;   ("M-J" rigpa-line-move-very-bottom "move to bottom")
+;;   ("M-K" rigpa-line-move-very-top "move to top")
+;;   ("M-L" rigpa-line-move-far-right "move to far right")
+;;   ("x" rigpa-line-delete "delete")
+;;   ("c" rigpa-line-change "change")
+;;   ("s-l" indent-according-to-mode "autoindent")
+;;   ("'" rigpa-line-flashback "flashback")
+;;   ("s" rigpa-line-split "split by word")
+;;   ("v" rigpa-line-pulverize "pulverize")
+;;   ("y" rigpa-line-yank "yank (copy)")
+;;   ("p" evil-paste-after "paste after")
+;;   ("P" evil-paste-before "paste before")
+;;   ("+" evil-open-above "add new line")
+;;   ("i" evil-open-above "add new line")
+;;   ("a" evil-open-below "add new line below")
+;;   ("n" rigpa-line-insert-newline "insert newline")
+;;   ("C-S-o" rigpa-line-append-newline "append newline")
+;;   ("o" rigpa-line-join "join")
+;;   ("O" (lambda ()
+;;          (interactive)
+;;          (rigpa-line-join t))
+;;    "join backwards")
+;;   (";" rigpa-line-toggle-comment "toggle comment")
+;;   ("?" rigpa-line-info "info" :exit t)
+;;   ("H-m" rigpa-toggle-menu "show/hide this menu")
+;;   ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
+;;   ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-line-mode-entry-hook nil
   "Entry hook for rigpa line mode.")
@@ -282,9 +302,17 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
 (defvar chimera-line-mode-exit-hook nil
   "Exit hook for rigpa line mode.")
 
+(defun rigpa--enable-line-minor-mode ()
+  "Enable line minor mode."
+  (rigpa-line-mode 1))
+
+(defun rigpa--disable-line-minor-mode ()
+  "Disable line minor mode."
+  (rigpa-line-mode -1))
+
 (defvar chimera-line-mode
   (make-chimera-mode :name "line"
-                     :enter #'hydra-line/body
+                     :enter #'evil-line-state
                      :pre-entry-hook 'chimera-line-mode-entry-hook
                      :post-exit-hook 'chimera-line-mode-exit-hook
                      :entry-hook 'evil-line-state-entry-hook
