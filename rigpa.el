@@ -68,7 +68,7 @@
 
 ;; the prefix that will be used in naming all buffers used
 ;; in meta mode representations
-(setq rigpa-buffer-prefix "RIGPA-META")
+(setq rigpa-buffer-prefix "*RIGPA-META*")
 
 (defun rigpa-hide-menu (mode-name)
   "Hide current mode menu."
