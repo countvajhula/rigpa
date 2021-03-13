@@ -20,7 +20,7 @@ to terminate the reference chain."
   ;;(setq cursor-type nil))
   (internal-show-cursor nil nil)
   (when display-line-numbers-mode
-    (display-line-numbers-mode nil))
+    (display-line-numbers-mode -1))
   (hl-line-mode))
 
 (defun rigpa--set-ui-for-meta-modes ()
