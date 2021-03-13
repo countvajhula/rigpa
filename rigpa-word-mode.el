@@ -153,49 +153,50 @@
     (evil-previous-line)
     (rigpa-line-delete)))
 
-(defun rigpa-word-rotate-chars-right ()
+(evil-define-command rigpa-word-rotate-chars-right (count)
   "Rotate characters to the right"
-  (interactive)
-  (save-excursion
-    (let* ((word-bounds (evil-inner-word))
-           (word-start (nth 0 word-bounds))
-           (word-end (nth 1 word-bounds)))
-      (evil-delete-backward-char (- word-end 1)
-                                 word-end
-                                 'exclusive
-                                 nil)
-      (goto-char word-start)
-      (evil-paste-before nil nil))))
+  (interactive "p")
+  (dotimes (i count)
+    (save-excursion
+      (let* ((word-bounds (evil-inner-word))
+             (word-start (nth 0 word-bounds))
+             (word-end (nth 1 word-bounds)))
+        (evil-delete-backward-char (- word-end 1)
+                                   word-end
+                                   'exclusive
+                                   nil)
+        (goto-char word-start)
+        (evil-paste-before nil nil)))))
 
-(defun rigpa-word-rotate-chars-left ()
+(evil-define-command rigpa-word-rotate-chars-left (count)
   "Rotate characters to the left"
-  (interactive)
-  (save-excursion
-    (let* ((word-bounds (evil-inner-word))
-           (word-start (nth 0 word-bounds))
-           (word-end (nth 1 word-bounds)))
-      (evil-delete-char word-start
-                        (+ word-start 1)
-                        'exclusive
-                        nil)
-      (goto-char (- word-end 1))
-      (evil-paste-before nil nil))))
+  (interactive "p")
+  (dotimes (i count)
+    (save-excursion
+      (let* ((word-bounds (evil-inner-word))
+             (word-start (nth 0 word-bounds))
+             (word-end (nth 1 word-bounds)))
+        (evil-delete-char word-start
+                          (+ word-start 1)
+                          'exclusive
+                          nil)
+        (goto-char (- word-end 1))
+        (evil-paste-before nil nil)))))
 
 (defun rigpa-word-scroll-jump-backward ()
   "Scroll jump back across words."
   (interactive)
-  (evil-backward-WORD-begin 3))
+  (rigpa-word-backward 3))
 
 (defun rigpa-word-scroll-jump-forward ()
   "Scroll jump forward across words."
   (interactive)
-  (evil-forward-WORD-begin 3))
+  (rigpa-word-forward 3))
 
 (defun rigpa-word-first-word ()
   "Jump backward to the first word in the paragraph."
   (interactive)
-  (evil-backward-paragraph)
-  (evil-forward-WORD-begin))
+  (goto-char (nth 0 (evil-inner-paragraph))))
 
 (defun rigpa-word-last-word ()
   "Jump forward to the last word in the paragraph."
@@ -267,11 +268,6 @@
 
 ;; TODO: review these:
 ;; exiting keys: c, a, i, A, I, s-r (delete), s-o (delete others), ?, Esc, Ret
-
-;; TODO: review remaining defuns for possible conversion
-;; to evil operators, motions, and commands
-
-;; TODO: review accuracy and behavior
 
 (rigpa--define-evil-keys-from-spec rigpa--word-mode-keyspec
                                    rigpa-word-mode-map)
