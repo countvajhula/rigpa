@@ -276,17 +276,30 @@ is precisely the thing to be done."
            (rigpa--tower-view-narrow (rigpa--ground-tower))
            (rigpa--tower-view-reflect-ground (rigpa--ground-tower)))))
 
+(defun rigpa--reload-tower-wrapper (orig-fn count &rest args)
+  "Wrap interactive commands and reload the tower.
+
+For interactive commands accepting a count argument, we can't use just
+any function as advice since the underying command expects to receive
+an interactive argument from the user. The advising function needs to
+be interactive itself."
+  (interactive "p")
+  (let ((result (apply orig-fn count args)))
+    (rigpa--reload-tower)
+    result))
+
 (defun rigpa--add-meta-side-effects ()
   "Add side effects for primitive mode operations while in meta mode."
-  ;; this should lookup the appropriate side-effect based on the coordinates
-  (advice-add #'rigpa-line-move-down :after #'rigpa--reload-tower)
-  (advice-add #'rigpa-line-move-up :after #'rigpa--reload-tower)
+  ;; this should lookup the appropriate side-effect based on the
+  ;; coordinates and the ground level mode being employed
+  (advice-add #'rigpa-line-move-down :around #'rigpa--reload-tower-wrapper)
+  (advice-add #'rigpa-line-move-up :around #'rigpa--reload-tower-wrapper)
   (advice-add #'rigpa-line-change :around #'rigpa--mode-mode-change))
 
 (defun rigpa--remove-meta-side-effects ()
   "Remove side effects for primitive mode operations that were added for meta modes."
-  (advice-remove #'rigpa-line-move-down #'rigpa--reload-tower)
-  (advice-remove #'rigpa-line-move-up #'rigpa--reload-tower)
+  (advice-remove #'rigpa-line-move-down #'rigpa--reload-tower-wrapper)
+  (advice-remove #'rigpa-line-move-up #'rigpa--reload-tower-wrapper)
   (advice-remove #'rigpa-line-change #'rigpa--mode-mode-change))
 
 ;; TODO: should have a single function that enters
