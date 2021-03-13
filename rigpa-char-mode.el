@@ -1,13 +1,17 @@
 (require 'chimera)
-(require 'chimera-hydra)
+(require 'rigpa-evil-support)
+
+(defvar rigpa-char-mode-map (make-sparse-keymap))
+
+(define-minor-mode rigpa-char-mode
+  "Minor mode to modulate keybindings in rigpa char mode."
+  :lighter "char"
+  :keymap rigpa-char-mode-map)
 
 (evil-define-state char
   "Char state."
   :tag " <X> "
   :message "-- CHAR --"
-  ;;:cursor ;; inherit from normal
-  ;;:exit-hook ;; none
-  ;;:suppress-keymap) ;; should be t, but probably inherits from normal
   :enable (normal))
 
 (defun rigpa-char-info ()
@@ -96,62 +100,67 @@
   (interactive)
   (evil-invert-char (point) (+ (point) 1) (quote exclusive)))
 
-(defhydra hydra-char (:columns 4
-                      :post (chimera-hydra-portend-exit chimera-char-mode t)
-                      :after-exit (chimera-hydra-signal-exit chimera-char-mode
-                                                             #'chimera-handle-hydra-exit))
-  "Character mode"
-  ("h" evil-backward-char "left")
-  ("j" evil-next-line "down")
-  ("k" evil-previous-line "up")
-  ("l" evil-forward-char "right")
-  ("C-h" (lambda ()
-           (interactive)
-           (evil-backward-char 3)) "more left")
-  ("C-j" (lambda ()
-           (interactive)
-           (evil-next-line 3)) "more down")
-  ("C-k" (lambda ()
-           (interactive)
-           (evil-previous-line 3)) "more up")
-  ("C-l" (lambda ()
-           (interactive)
-           (evil-forward-char 3)) "more right")
-  ("M-h" (lambda ()
-           (interactive)
-           (evil-beginning-of-line)) "most left")
-  ("M-j" (lambda ()
-           (interactive)
-           (evil-forward-paragraph)
-           (evil-previous-line)) "most down")
-  ("M-k" (lambda ()
-           (interactive)
-           (evil-backward-paragraph)
-           (evil-next-line)) "most up")
-  ("M-l" (lambda ()
-           (interactive)
-           (evil-end-of-line)) "most right")
-  ("H" rigpa-char-move-left "move left")
-  ("J" rigpa-char-move-down "move down")
-  ("K" rigpa-char-move-up "move up")
-  ("L" rigpa-char-move-right "move right")
-  ("C-S-h" (lambda () (interactive) (rigpa-char-move-left 'more)) "move left more")
-  ("C-S-j" (lambda () (interactive) (rigpa-char-move-down 'more)) "move down more")
-  ("C-S-k" (lambda () (interactive) (rigpa-char-move-up 'more)) "move up more")
-  ("C-S-l" (lambda () (interactive) (rigpa-char-move-right 'more)) "move right more")
-  ("M-H" (lambda () (interactive) (rigpa-char-move-left 'most)) "move to far left")
-  ("M-J" (lambda () (interactive) (rigpa-char-move-down 'most)) "move to bottom")
-  ("M-K" (lambda () (interactive) (rigpa-char-move-up 'most)) "move to top")
-  ("M-L" (lambda () (interactive) (rigpa-char-move-right 'most)) "move to far right")
-  ("c" rigpa-char-change "change" :exit t)
-  ("y" rigpa-char-yank "yank (copy)" :exit t)
-  ("x" rigpa-char-delete "delete")
-  ("~" rigpa-char-toggle-case "toggle case")
-  ("i" rigpa-char-info "info" :exit t)
-  ("?" rigpa-char-info "info" :exit t)
-  ("H-m" rigpa-toggle-menu "show/hide this menu")
-  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
+(setq rigpa--char-mode-keyspec
+  '(("h" . evil-backward-char)
+    ("j" . evil-next-line)
+    ("k" . evil-previous-line)
+    ("l" . evil-forward-char)
+
+  ;; "Key specification for rigpa char mode."
+  ))
+
+(rigpa--define-evil-keys-from-spec rigpa--char-mode-keyspec
+                                   rigpa-char-mode-map
+                                   'char)
+
+;; (defhydra hydra-char (:columns 4
+;;                       :post (chimera-hydra-portend-exit chimera-char-mode t)
+;;                       :after-exit (chimera-hydra-signal-exit chimera-char-mode
+;;                                                              #'chimera-handle-hydra-exit))
+;;   "Character mode"
+;;   ("C-h" (lambda ()
+;;            (interactive)
+;;            (evil-backward-char 3)) "more left")
+;;   ("C-j" (lambda ()
+;;            (interactive)
+;;            (evil-next-line 3)) "more down")
+;;   ("C-k" (lambda ()
+;;            (interactive)
+;;            (evil-previous-line 3)) "more up")
+;;   ("C-l" (lambda ()
+;;            (interactive)
+;;            (evil-forward-char 3)) "more right")
+;;   ("M-h" (lambda ()
+;;            (interactive)
+;;            (evil-beginning-of-line)) "most left")
+;;   ("M-j" (lambda ()
+;;            (interactive)
+;;            (evil-forward-paragraph)
+;;            (evil-previous-line)) "most down")
+;;   ("M-k" (lambda ()
+;;            (interactive)
+;;            (evil-backward-paragraph)
+;;            (evil-next-line)) "most up")
+;;   ("M-l" (lambda ()
+;;            (interactive)
+;;            (evil-end-of-line)) "most right")
+;;   ("H" rigpa-char-move-left "move left")
+;;   ("J" rigpa-char-move-down "move down")
+;;   ("K" rigpa-char-move-up "move up")
+;;   ("L" rigpa-char-move-right "move right")
+;;   ("C-S-h" (lambda () (interactive) (rigpa-char-move-left 'more)) "move left more")
+;;   ("C-S-j" (lambda () (interactive) (rigpa-char-move-down 'more)) "move down more")
+;;   ("C-S-k" (lambda () (interactive) (rigpa-char-move-up 'more)) "move up more")
+;;   ("C-S-l" (lambda () (interactive) (rigpa-char-move-right 'more)) "move right more")
+;;   ("M-H" (lambda () (interactive) (rigpa-char-move-left 'most)) "move to far left")
+;;   ("M-J" (lambda () (interactive) (rigpa-char-move-down 'most)) "move to bottom")
+;;   ("M-K" (lambda () (interactive) (rigpa-char-move-up 'most)) "move to top")
+;;   ("M-L" (lambda () (interactive) (rigpa-char-move-right 'most)) "move to far right")
+;;   ("i" rigpa-char-info "info" :exit t)
+;;   ("?" rigpa-char-info "info" :exit t)
+;;   ("H-m" rigpa-toggle-menu "show/hide this menu")
+;;   ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
+;;   ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-char-mode-entry-hook nil
   "Entry hook for rigpa char mode.")
@@ -159,9 +168,17 @@
 (defvar chimera-char-mode-exit-hook nil
   "Exit hook for rigpa char mode.")
 
+(defun rigpa--enable-char-minor-mode ()
+  "Enable char minor mode."
+  (rigpa-char-mode 1))
+
+(defun rigpa--disable-char-minor-mode ()
+  "Disable char minor mode."
+  (rigpa-char-mode -1))
+
 (defvar chimera-char-mode
   (make-chimera-mode :name "char"
-                     :enter #'hydra-char/body
+                     :enter #'evil-char-state
                      :pre-entry-hook 'chimera-char-mode-entry-hook
                      :post-exit-hook 'chimera-char-mode-exit-hook
                      :entry-hook 'evil-char-state-entry-hook
