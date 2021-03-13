@@ -166,6 +166,11 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   :motion evil-line
   (evil-change beg end type register yank-handler))
 
+(evil-define-operator rigpa-line-indent (beg end type register yank-handler)
+  "Indent line"
+  :motion evil-line
+  (evil-indent beg end))
+
 (evil-define-command rigpa-line-insert-newline (count)
   "Insert newline and reindent."
   (interactive "p")
@@ -219,8 +224,8 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
     ("J" . rigpa-line-move-down)
     ("K" . rigpa-line-move-up)
     ("L" . rigpa-line-move-right)
-    ("<tab>" . indent-according-to-mode)
-    ("s-l" . indent-according-to-mode)
+    ("<tab>" . rigpa-line-indent)
+    ("s-l" . rigpa-line-indent)
     (">" . evil-shift-right-line)
     ("<" . evil-shift-left-line)
     ("M-H" . rigpa-line-move-far-left)
