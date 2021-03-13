@@ -19,68 +19,91 @@
   (interactive)
   (what-cursor-position))
 
-(defun rigpa-char-delete ()
-  "Delete character"
-  (interactive)
-  (evil-delete-char (point)
-                    (+ (point) 1)
-                    (quote exclusive) nil))
+(evil-define-command rigpa-char-move-left (count)
+  "Move character left."
+  (interactive "p")
+  (forward-char)
+  (transpose-chars (- count))
+  (backward-char))
 
-;; TODO: seems to vary depending on the value of evil-move-cursor-back
-(defun rigpa-char-move-left (&optional superlative)
-  "Move character left"
+(defun rigpa-char-move-left-more ()
+  "Move character left more."
   (interactive)
-  (when (not (bolp))
-    (rigpa-char-delete)
-    (let ((at-eol (eolp)))
-      (cond ((eq superlative nil) (evil-backward-char))
-            ((eq superlative 'more) (evil-backward-char 3))
-            ((eq superlative 'most) (evil-beginning-of-line)))
-      (if at-eol
-          ;; for some reason delete-char doesn't update point
-          ;; while in hydra at EOL, so the handling here
-          ;; is different than it otherwise would be
-          (if (bolp)
-              (evil-paste-before nil nil)
-            (progn (evil-paste-after nil nil)
-                   (backward-char)))
-        (evil-paste-before nil nil)))))
+  (rigpa-char-move-left 3))
 
-(defun rigpa-char-move-right (&optional superlative)
-  "Move character right"
+(defun rigpa-char-move-left-most ()
+  "Move character left most."
   (interactive)
-  (when (not (eolp))
-    (rigpa-char-delete)
-    (cond ((eq superlative 'more)
-           (condition-case nil
-               (evil-forward-char 2)
-             (error nil)))
-          ((eq superlative 'most) (evil-end-of-line)))
-    (evil-paste-after nil nil)
-    ;; Note: The above is sufficient when this command is run
-    ;; interactively via M-x. But when run via the hydra, it
-    ;; moves point forward an extra character. Not sure why this
-    ;; happens but since hydra is the main entry point to this,
-    ;; adding the line below for usage via hydra.
+  (evil-delete-char (point) (1+ (point)))
+  (beginning-of-line)
+  (evil-paste-before nil nil)
+  (backward-char))
+
+(evil-define-command rigpa-char-move-right (count)
+  "Move character right."
+  (interactive "p")
+  (forward-char)
+  (transpose-chars count)
+  (backward-char))
+
+(defun rigpa-char-move-right-more ()
+  "Move character right more."
+  (interactive)
+  (rigpa-char-move-right 3))
+
+(defun rigpa-char-move-right-most ()
+  "Move character right most."
+  (interactive)
+  (evil-delete-char (point) (1+ (point)))
+  (end-of-line)
+  (evil-paste-after nil nil))
+
+(evil-define-command rigpa-char-move-down (count)
+  "Move character down."
+  (interactive "p")
+  (evil-delete-char (point) (1+ (point)))
+  (evil-next-line count)
+  (evil-paste-before nil nil)
+  (backward-char))
+
+(defun rigpa-char-move-down-more ()
+  "Move character down more."
+  (interactive)
+  (rigpa-char-move-down 3))
+
+(defun rigpa-char-move-down-most ()
+  "Move character down most."
+  (interactive)
+  (let ((orig-column (current-column)))
+    (evil-delete-char (point) (1+ (point)))
+    (goto-char (nth 1 (evil-inner-paragraph)))
+    (evil-previous-line)
+    (evil-goto-column orig-column)
+    (evil-paste-before nil nil)
     (backward-char)))
 
-(defun rigpa-char-move-down (&optional superlative)
-  "Move character down"
-  (interactive)
-  (rigpa-char-delete)
-  (cond ((eq superlative nil) (evil-next-line))
-        ((eq superlative 'more) (evil-next-line 3))
-        ((eq superlative 'most) (evil-forward-paragraph)))
-  (evil-paste-before nil nil))
+(evil-define-command rigpa-char-move-up (count)
+  "Move character up."
+  (interactive "p")
+  (evil-delete-char (point) (1+ (point)))
+  (evil-previous-line count)
+  (evil-paste-before nil nil)
+  (backward-char))
 
-(defun rigpa-char-move-up (&optional superlative)
-  "Move character up"
+(defun rigpa-char-move-up-more ()
+  "Move character up more."
   (interactive)
-  (rigpa-char-delete)
-  (cond ((eq superlative nil) (evil-previous-line))
-        ((eq superlative 'more) (evil-previous-line 3))
-        ((eq superlative 'most) (evil-backward-paragraph)))
-  (evil-paste-before nil nil))
+  (rigpa-char-move-up 3))
+
+(defun rigpa-char-move-up-most ()
+  "Move character up most."
+  (interactive)
+  (let ((orig-column (current-column)))
+    (evil-delete-char (point) (1+ (point)))
+    (goto-char (nth 0 (evil-inner-paragraph)))
+    (evil-goto-column orig-column)
+    (evil-paste-before nil nil)
+    (backward-char)))
 
 (defun rigpa-char-change ()
   "Change character"
@@ -90,77 +113,62 @@
                    (quote exclusive)
                    nil))
 
-(defun rigpa-char-yank ()
+(evil-define-operator rigpa-char-yank (beg end type register yank-handler)
   "Yank (copy) character"
-  (interactive)
-  (evil-yank-characters (point) (+ (point) 1)))
+  :motion evil-forward-char
+  (evil-yank beg end type register yank-handler))
 
-(defun rigpa-char-toggle-case ()
-  "Toggle upper-/lower-case"
-  (interactive)
-  (evil-invert-char (point) (+ (point) 1) (quote exclusive)))
-
-(setq rigpa--char-mode-keyspec
-  '(("h" . evil-backward-char)
-    ("j" . evil-next-line)
-    ("k" . evil-previous-line)
-    ("l" . evil-forward-char)
-
-  ;; "Key specification for rigpa char mode."
-  ))
+(defvar rigpa--char-mode-keyspec
+      '(("h" . evil-backward-char)
+        ("j" . evil-next-line)
+        ("k" . evil-previous-line)
+        ("l" . evil-forward-char)
+        ("c" . evil-substitute)
+        ("y" . rigpa-char-yank)
+        ("C-h" . (lambda ()
+                   (interactive)
+                   (evil-backward-char 3)))
+        ("C-j" . (lambda ()
+                   (interactive)
+                   (evil-next-line 3)))
+        ("C-k" . (lambda ()
+                   (interactive)
+                   (evil-previous-line 3)))
+        ("C-l" . (lambda ()
+                   (interactive)
+                   (evil-forward-char 3)))
+        ("M-h" . (lambda ()
+                   (interactive)
+                   (evil-beginning-of-line)))
+        ("M-j" . (lambda ()
+                   (interactive)
+                   (evil-forward-paragraph)
+                   (evil-previous-line)))
+        ("M-k" . (lambda ()
+                   (interactive)
+                   (evil-backward-paragraph)
+                   (evil-next-line)))
+        ("M-l" . (lambda ()
+                   (interactive)
+                   (evil-end-of-line)))
+        ("H" . rigpa-char-move-left)
+        ("J" . rigpa-char-move-down)
+        ("K" . rigpa-char-move-up)
+        ("L" . rigpa-char-move-right)
+        ("?" . rigpa-char-info)
+        ("C-S-h" . rigpa-char-move-left-more)
+        ("C-S-j" . rigpa-char-move-down-more)
+        ("C-S-k" . rigpa-char-move-up-more)
+        ("C-S-l" . rigpa-char-move-right-more)
+        ("M-H" . rigpa-char-move-left-most)
+        ("M-J" . rigpa-char-move-down-most)
+        ("M-K" . rigpa-char-move-up-most)
+        ("M-L" . rigpa-char-move-right-most))
+      "Key specification for rigpa char mode.")
 
 (rigpa--define-evil-keys-from-spec rigpa--char-mode-keyspec
                                    rigpa-char-mode-map
                                    'char)
-
-;; (defhydra hydra-char (:columns 4
-;;                       :post (chimera-hydra-portend-exit chimera-char-mode t)
-;;                       :after-exit (chimera-hydra-signal-exit chimera-char-mode
-;;                                                              #'chimera-handle-hydra-exit))
-;;   "Character mode"
-;;   ("C-h" (lambda ()
-;;            (interactive)
-;;            (evil-backward-char 3)) "more left")
-;;   ("C-j" (lambda ()
-;;            (interactive)
-;;            (evil-next-line 3)) "more down")
-;;   ("C-k" (lambda ()
-;;            (interactive)
-;;            (evil-previous-line 3)) "more up")
-;;   ("C-l" (lambda ()
-;;            (interactive)
-;;            (evil-forward-char 3)) "more right")
-;;   ("M-h" (lambda ()
-;;            (interactive)
-;;            (evil-beginning-of-line)) "most left")
-;;   ("M-j" (lambda ()
-;;            (interactive)
-;;            (evil-forward-paragraph)
-;;            (evil-previous-line)) "most down")
-;;   ("M-k" (lambda ()
-;;            (interactive)
-;;            (evil-backward-paragraph)
-;;            (evil-next-line)) "most up")
-;;   ("M-l" (lambda ()
-;;            (interactive)
-;;            (evil-end-of-line)) "most right")
-;;   ("H" rigpa-char-move-left "move left")
-;;   ("J" rigpa-char-move-down "move down")
-;;   ("K" rigpa-char-move-up "move up")
-;;   ("L" rigpa-char-move-right "move right")
-;;   ("C-S-h" (lambda () (interactive) (rigpa-char-move-left 'more)) "move left more")
-;;   ("C-S-j" (lambda () (interactive) (rigpa-char-move-down 'more)) "move down more")
-;;   ("C-S-k" (lambda () (interactive) (rigpa-char-move-up 'more)) "move up more")
-;;   ("C-S-l" (lambda () (interactive) (rigpa-char-move-right 'more)) "move right more")
-;;   ("M-H" (lambda () (interactive) (rigpa-char-move-left 'most)) "move to far left")
-;;   ("M-J" (lambda () (interactive) (rigpa-char-move-down 'most)) "move to bottom")
-;;   ("M-K" (lambda () (interactive) (rigpa-char-move-up 'most)) "move to top")
-;;   ("M-L" (lambda () (interactive) (rigpa-char-move-right 'most)) "move to far right")
-;;   ("i" rigpa-char-info "info" :exit t)
-;;   ("?" rigpa-char-info "info" :exit t)
-;;   ("H-m" rigpa-toggle-menu "show/hide this menu")
-;;   ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
-;;   ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
 
 (defvar chimera-char-mode-entry-hook nil
   "Entry hook for rigpa char mode.")
