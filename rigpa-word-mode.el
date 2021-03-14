@@ -231,6 +231,13 @@
   (interactive)
   (evil-insert-state))
 
+(evil-define-command rigpa-word-paste-after (count &optional register yank-handler)
+  "Paste after word."
+  (interactive "p")
+  (evil-forward-WORD-end)
+  (forward-char)
+  (evil-paste-after count register yank-handler))
+
 (defvar rigpa--word-mode-keyspec
   '(("h" . rigpa-word-backward)
     ("j" . rigpa-word-down)
@@ -262,6 +269,7 @@
     ("i" . rigpa-word-add-to-beginning)
     ("A" . rigpa-word-add-after)
     ("I" . rigpa-word-add-before)
+    ("p" . rigpa-word-paste-after)
     ("?" . dictionary-lookup-definition))
   "Key specification for rigpa word mode.")
 
