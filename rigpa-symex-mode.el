@@ -6,6 +6,14 @@
 (defvar chimera-symex-mode-exit-hook nil
   "Exit hook for rigpa symex mode.")
 
+(defun rigpa--enable-symex-minor-mode ()
+  "Enable symex minor mode."
+  (symex-enable-editing-minor-mode))
+
+(defun rigpa--disable-symex-minor-mode ()
+  "Disable symex minor mode."
+  (symex-disable-editing-minor-mode))
+
 (defvar chimera-symex-mode
   (make-chimera-mode :name "symex"
                      :enter #'symex-mode-interface

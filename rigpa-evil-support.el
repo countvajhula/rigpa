@@ -15,3 +15,4 @@
 
 
 (provide 'rigpa-evil-support)
+;;; rigpa-evil-support.el ends here
