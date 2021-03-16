@@ -33,33 +33,16 @@ to parametrize the hook but still be able to remove it."
     enable-mode))
 
 (defun rigpa--disable-other-minor-modes ()
-  "Disable rigpa minor modes other than the one corresponding to the current state."
+  "Disable all rigpa mode minor modes.
+
+This is called on state transitions to ensure that all minor modes are
+first disabled prior to the minor mode for new state being enabled."
   (dolist (name (ht-keys rigpa-modes))
-    ;; it works even without this exclusion, i.e. even if we
-    ;; simply turn off ALL minor modes. Not exactly sure why.
-    ;; but it seems to have something to do with the fact that
-    ;; this function is only called when we intentionally enter
-    ;; a rigpa mode via Esc or Enter. And furthermore, by a stroke
-    ;; of luck, the enabling of the minor mode is at the tail end
-    ;; of the pre-entry hook and this function is at the head,
-    ;; meaning that it disables all modes first and then enables
-    ;; the right one.
-    ;; it's because visual, operator, and replace states aren't
-    ;; ever explicitly entered in this manner that they work
-    ;; correctly when entered from within a rigpa state, i.e.
-    ;; even though these are considered rigpa evil states, the
-    ;; pre-entry hooks aren't triggered upon implicit entry
-    ;; That may be just fine. We could explicitly say that, yes,
-    ;; we only want to trigger minor mode modulation upon
-    ;; explicit, user-directed state transitions.
-    ;; But as a separate issue, these hooks not being triggered on
-    ;; implicit transitions could be a problem
-    (unless (equal name (symbol-name evil-state))
-      (let ((disable-mode
-             (intern
-              (concat "rigpa--disable-" name "-minor-mode"))))
-        (when (fboundp disable-mode)
-          (funcall disable-mode))))))
+    (let ((disable-mode
+           (intern
+            (concat "rigpa--disable-" name "-minor-mode"))))
+      (when (fboundp disable-mode)
+        (funcall disable-mode)))))
 
 (defun rigpa-register-mode (mode)
   "Register MODE for use with rigpa.
