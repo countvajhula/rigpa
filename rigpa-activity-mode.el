@@ -82,6 +82,8 @@
 (defvar chimera-activity-mode
   (make-chimera-mode :name "activity"
                      :enter #'hydra-activity/body
+                     :pre-entry-hook 'chimera-activity-mode-entry-hook
+                     :post-exit-hook 'chimera-activity-mode-exit-hook
                      :entry-hook 'evil-activity-state-entry-hook
                      :exit-hook 'evil-activity-state-exit-hook))
 

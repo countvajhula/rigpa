@@ -109,33 +109,73 @@ and simply toggles whether the menu is visible or not."
   (define-key rigpa-meta-tower-mode-map (kbd "g r") 'rigpa--reload-tower))
 
 ;; wrap native evil states in chimera modes
+(defvar chimera-normal-mode-entry-hook nil
+  "Entry hook for rigpa normal mode.")
+
+(defvar chimera-normal-mode-exit-hook nil
+  "Exit hook for rigpa normal mode.")
+
 (defvar chimera-normal-mode
   (make-chimera-mode :name "normal"
                      :enter #'evil-normal-state
+                     :pre-entry-hook 'chimera-normal-mode-entry-hook
+                     :post-exit-hook 'chimera-normal-mode-exit-hook
                      :entry-hook 'evil-normal-state-entry-hook
                      :exit-hook 'evil-normal-state-exit-hook))
+
+(defvar chimera-insert-mode-entry-hook nil
+  "Entry hook for rigpa insert mode.")
+
+(defvar chimera-insert-mode-exit-hook nil
+  "Exit hook for rigpa insert mode.")
 
 (defvar chimera-insert-mode
   (make-chimera-mode :name "insert"
                      :enter #'evil-insert-state
+                     :pre-entry-hook 'chimera-insert-mode-entry-hook
+                     :post-exit-hook 'chimera-insert-mode-exit-hook
                      :entry-hook 'evil-insert-state-entry-hook
                      :exit-hook 'evil-insert-state-exit-hook))
+
+(defvar chimera-emacs-mode-entry-hook nil
+  "Entry hook for rigpa emacs mode.")
+
+(defvar chimera-emacs-mode-exit-hook nil
+  "Exit hook for rigpa emacs mode.")
 
 (defvar chimera-emacs-mode
   (make-chimera-mode :name "emacs"
                      :enter #'evil-emacs-state
+                     :pre-entry-hook 'chimera-emacs-mode-entry-hook
+                     :post-exit-hook 'chimera-emacs-mode-exit-hook
                      :entry-hook 'evil-emacs-state-entry-hook
                      :exit-hook 'evil-emacs-state-exit-hook))
+
+(defvar chimera-visual-mode-entry-hook nil
+  "Entry hook for rigpa visual mode.")
+
+(defvar chimera-visual-mode-exit-hook nil
+  "Exit hook for rigpa visual mode.")
 
 (defvar chimera-visual-mode
   (make-chimera-mode :name "visual"
                      :enter #'evil-visual-state
+                     :pre-entry-hook 'chimera-visual-mode-entry-hook
+                     :post-exit-hook 'chimera-visual-mode-exit-hook
                      :entry-hook 'evil-visual-state-entry-hook
                      :exit-hook 'evil-visual-state-exit-hook))
+
+(defvar chimera-replace-mode-entry-hook nil
+  "Entry hook for rigpa replace mode.")
+
+(defvar chimera-replace-mode-exit-hook nil
+  "Exit hook for rigpa replace mode.")
 
 (defvar chimera-replace-mode
   (make-chimera-mode :name "replace"
                      :enter #'evil-replace-state
+                     :pre-entry-hook 'chimera-replace-mode-entry-hook
+                     :post-exit-hook 'chimera-replace-mode-exit-hook
                      :entry-hook 'evil-replace-state-entry-hook
                      :exit-hook 'evil-replace-state-exit-hook))
 
@@ -179,29 +219,29 @@ and simply toggles whether the menu is visible or not."
            (Custom-newline (point)))
           (t (rigpa-enter-lower-level)))))
 
-(defun rigpa--integrate-evil ()
+(defun rigpa--integrate-evil-states ()
   "Map standard evil state entry and exit points so they're managed by rigpa."
   ;; evil interop keybindings
-  (define-key evil-normal-state-map [escape] 'rigpa-enter-higher-level)
-  (define-key evil-normal-state-map [return] 'rigpa--enter-lower-or-pass-through)
+  ;; TODO: these (Esc/Ret) should be dependent on whether there are any
+  ;; other modes in the tower. If not, then this shouldn't be bound
+  ;; IOW this keybinding (and some class of bindings more generally)
+  ;; is tower-specific
+  (dolist (state chimera-evil-states)
+    (let ((keymap (symbol-value
+                   (intern
+                    (concat "evil-" state "-state-map")))))
+      (define-key keymap [escape] #'rigpa-enter-higher-level)
+      (unless (member state chimera-insertion-states)
+        (define-key keymap [return] #'rigpa--enter-lower-or-pass-through))))
+  ;; exit visual state gracefully
   (define-key evil-visual-state-map [escape] (lambda ()
                                                (interactive)
-                                               ;; exit visual state gracefully
                                                (evil-exit-visual-state)
                                                (rigpa-enter-higher-level)))
   (define-key evil-visual-state-map [return] (lambda ()
                                                (interactive)
-                                               ;; exit visual state gracefully
                                                (evil-exit-visual-state)
-                                               (rigpa-enter-lower-level)))
-  (define-key evil-replace-state-map [escape] 'rigpa-enter-higher-level)
-  (define-key evil-replace-state-map [return] 'rigpa-enter-lower-level)
-  (define-key evil-insert-state-map [escape] 'rigpa-enter-higher-level)
-  ;; TODO: this keybinding should be dependent on whether there are any
-  ;; other modes in the tower. If not, then this shouldn't be bound
-  ;; IOW this keybinding (and some class of bindings more generally)
-  ;; is tower-specific
-  (define-key evil-emacs-state-map [escape] 'rigpa-enter-higher-level))
+                                               (rigpa-enter-lower-level))))
 
 (defun rigpa--register-modes ()
   "Register the standard modes with the framework."
@@ -331,7 +371,7 @@ and simply toggles whether the menu is visible or not."
   ;; should make this optional via a defcustom flag
   ;; or potentially even have it in a separate evil-adapter package
   (when (boundp 'evil-mode)
-    (rigpa--integrate-evil))
+    (rigpa--integrate-evil-states))
   (rigpa--create-editing-structures)
   (rigpa--provide-editing-structures)
   (if (and (boundp 'rigpa-show-menus) rigpa-show-menus)

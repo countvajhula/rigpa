@@ -8,7 +8,14 @@
 ;; similarly for "region-mode", possibly by invoking multiple cursors
 
 (require 'chimera)
-(require 'chimera-hydra)
+(require 'rigpa-evil-support)
+
+(defvar rigpa-line-mode-map (make-sparse-keymap))
+
+(define-minor-mode rigpa-line-mode
+  "Minor mode to modulate keybindings in rigpa line mode."
+  :lighter "line"
+  :keymap rigpa-line-mode-map)
 
 (evil-define-state line
   "Line state."
@@ -16,33 +23,30 @@
   :message "-- LINE --"
   :enable (normal))
 
-(defun rigpa-line-move-down (&optional count)
+(evil-define-command rigpa-line-move-down (count)
   "Move line down"
-  (interactive)
+  (interactive "p")
   (unless (save-excursion
             (end-of-line)
             (or (eobp)
                 (save-excursion
                   (evil-next-line)
                   (eobp))))
-    (unless count (setq count 1))
     (evil-next-line)
     (transpose-lines count)
     (evil-previous-line)))
 
-(defun rigpa-line-move-up (&optional count)
+(evil-define-command rigpa-line-move-up (count)
   "Move line up"
-  (interactive)
-  (unless (save-excursion (beginning-of-line)
-                          (bobp))
-    (unless count (setq count 1))
-    (transpose-lines count)
-    (evil-previous-line 2)))
+  (interactive "p")
+  (dotimes (i count)
+    (unless (= 1 (line-number-at-pos))
+      (transpose-lines 1)
+      (evil-previous-line 2))))
 
-(defun rigpa-line-move-left (&optional count)
+(evil-define-command rigpa-line-move-left (count)
   "Move line left"
-  (interactive)
-  (unless count (setq count 1))
+  (interactive "p")
   (save-excursion
     (evil-first-non-blank)
     (setq starting-from (- (point) count))
@@ -54,10 +58,9 @@
                                'exclusive
                                nil)))
 
-(defun rigpa-line-move-right (&optional count)
+(evil-define-command rigpa-line-move-right (count)
   "Move line right"
-  (interactive)
-  (unless count (setq count 1))
+  (interactive "p")
   (save-excursion
     (evil-first-non-blank)
     (insert-char #x20 count)))
@@ -99,17 +102,10 @@
   (evil-execute-in-normal-state)
   (execute-kbd-macro (kbd ":.m0")))
 
-(defun rigpa-line-delete ()
-  "Delete line"
-  (interactive)
-  (let* ((line-start-position (line-beginning-position))
-         (line-end-position (if (eobp)
-                                (line-end-position)
-                              (1+ (line-end-position)))))
-    (evil-delete-whole-line line-start-position
-                            line-end-position
-                            (quote line)
-                            nil)))
+(evil-define-operator rigpa-line-delete (beg end type register yank-handler)
+  "Delete line."
+  :motion evil-line
+  (evil-delete beg end type register yank-handler))
 
 (defun rigpa-line-flashback ()
   "Flashback to prev line"
@@ -119,15 +115,16 @@
 (defun rigpa-line-split ()
   "Split line on word separators"
   (interactive)
-  (evil-beginning-of-line)
-  (while (not (eolp))
-    (unless (equal (- (line-end-position)
-                      (line-beginning-position))
-                   1)
-      (evil-forward-word-end))
-    (execute-kbd-macro (kbd "a"))
-    (newline)
-    (evil-force-normal-state)))
+  (with-undo-collapse
+    (evil-beginning-of-line)
+    (while (not (eolp))
+      (unless (equal (- (line-end-position)
+                        (line-beginning-position))
+                     1)
+        (evil-forward-word-end))
+      (execute-kbd-macro (kbd "a"))
+      (newline)
+      (evil-force-normal-state))))
 
 (defun rigpa-line-pulverize ()
   "Split on every character"
@@ -154,63 +151,49 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   (setq current-line-length (line-length current-line-number))
   (message "Line %d, length = %d" current-line-number current-line-length))
 
-(defun rigpa-line-toggle-comment ()
+(evil-define-command rigpa-line-toggle-comment (count)
   "Comment / uncomment line"
-  (interactive)
-  (comment-line 1))
+  (interactive "p")
+  (comment-line count))
 
-(defun rigpa-line-yank ()
+(evil-define-operator rigpa-line-yank (beg end type register yank-handler)
   "Yank (copy) line"
-  (interactive)
-  (evil-yank-line (line-beginning-position) (line-end-position) 'line nil))
+  :motion evil-line
+  (evil-yank-line beg end type register))
 
-(defun rigpa-line-change ()
-  "Change line"
-  (interactive)
-  (evil-change-whole-line (line-beginning-position)
-                          (+ 1 (line-end-position))
-                          (quote line)
-                          nil))
+(evil-define-operator rigpa-line-change (beg end type register yank-handler)
+  "Change line."
+  :motion evil-line
+  (evil-change beg end type register yank-handler))
 
-(defun rigpa-line-indent-left ()
-  "Reduce line indent"
-  (interactive)
-  (indent-rigidly-left-to-tab-stop (line-beginning-position)
-                                   (line-end-position)))
+(evil-define-operator rigpa-line-indent (beg end type register yank-handler)
+  "Indent line"
+  :motion evil-line
+  (evil-indent beg end))
 
-(defun rigpa-line-indent-right ()
-  "Increase line indent"
-  (interactive)
-  (indent-rigidly-right-to-tab-stop (line-beginning-position)
-                                    (line-end-position)))
-
-(defun rigpa-line-insert-newline ()
+(evil-define-command rigpa-line-insert-newline (count)
   "Insert newline and reindent."
-  (interactive)
-  (save-excursion
-    (beginning-of-line)
-    (newline-and-indent)))
+  (interactive "p")
+  (if (bolp)
+      (newline-and-indent count)
+    (save-excursion
+      (beginning-of-line)
+      (newline-and-indent count))))
 
-(defun rigpa-line-append-newline ()
+(evil-define-command rigpa-line-append-newline (count)
   "Append newline and reindent."
-  (interactive)
+  (interactive "p")
   (save-excursion
     (forward-line)
-    (newline-and-indent)))
+    (newline-and-indent count)))
 
-(defun rigpa-line-join (&optional backwards)
-  "Join lines."
-  (interactive)
+(evil-define-command rigpa-line-join-backwards (count)
+  "Join lines backwards."
+  (interactive "p")
   (save-excursion
-    (if backwards
-        (progn (evil-previous-line)
-               (if (current-line-empty-p)
-                   (evil-join (line-beginning-position)
-                              (1+ (line-beginning-position)))
-                 (evil-join (line-beginning-position)
-                            (line-end-position))))
-      (evil-join (line-beginning-position)
-       (line-end-position)))))
+    (evil-previous-line count)
+    (let ((current-prefix-arg count))
+      (call-interactively #'evil-join))))
 
 (defun rigpa-line-top ()
   (interactive)
@@ -228,53 +211,49 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   (interactive)
   (evil-previous-line 9))
 
-(defhydra hydra-line (:columns 4
-                      :post (chimera-hydra-portend-exit chimera-line-mode t)
-                      :after-exit (chimera-hydra-signal-exit chimera-line-mode
-                                                             #'chimera-handle-hydra-exit))
-  "Line mode"
-  ("h" evil-previous-line "previous")
-  ("j" evil-next-line "next")
-  ("k" evil-previous-line "previous")
-  ("l" evil-next-line "next")
-  ("C-j" rigpa-line-jump-down "jump down")
-  ("C-k" rigpa-line-jump-up "jump up")
-  ("M-j" rigpa-line-top "top line")
-  ("M-k" rigpa-line-bottom "bottom line")
-  ("H" rigpa-line-move-left "move left")
-  ("J" rigpa-line-move-down "move down")
-  ("K" rigpa-line-move-up "move up")
-  ("L" rigpa-line-move-right "move right")
-  ("C-." rigpa-line-indent-right "indent right")
-  ("C-," rigpa-line-indent-left "indent left")
-  ("M-H" rigpa-line-move-far-left "move to far left")
-  ("M-J" rigpa-line-move-very-bottom "move to bottom")
-  ("M-K" rigpa-line-move-very-top "move to top")
-  ("M-L" rigpa-line-move-far-right "move to far right")
-  ("x" rigpa-line-delete "delete")
-  ("c" rigpa-line-change "change")
-  ("s-l" indent-according-to-mode "autoindent")
-  ("'" rigpa-line-flashback "flashback")
-  ("s" rigpa-line-split "split by word")
-  ("v" rigpa-line-pulverize "pulverize")
-  ("y" rigpa-line-yank "yank (copy)")
-  ("p" evil-paste-after "paste after")
-  ("P" evil-paste-before "paste before")
-  ("+" evil-open-above "add new line")
-  ("i" evil-open-above "add new line")
-  ("a" evil-open-below "add new line below")
-  ("n" rigpa-line-insert-newline "insert newline")
-  ("C-S-o" rigpa-line-append-newline "append newline")
-  ("o" rigpa-line-join "join")
-  ("O" (lambda ()
-         (interactive)
-         (rigpa-line-join t))
-   "join backwards")
-  (";" rigpa-line-toggle-comment "toggle comment")
-  ("?" rigpa-line-info "info" :exit t)
-  ("H-m" rigpa-toggle-menu "show/hide this menu")
-  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
+(defvar rigpa--line-mode-keyspec
+  '(("h" . evil-previous-line)
+    ("j" . evil-next-line)
+    ("k" . evil-previous-line)
+    ("l" . evil-next-line)
+    ("C-j" . rigpa-line-jump-down)
+    ("C-k" . rigpa-line-jump-up)
+    ("M-j" . rigpa-line-top)
+    ("M-k" . rigpa-line-bottom)
+    ("H" . rigpa-line-move-left)
+    ("J" . rigpa-line-move-down)
+    ("K" . rigpa-line-move-up)
+    ("L" . rigpa-line-move-right)
+    ("<tab>" . rigpa-line-indent)
+    ("s-l" . rigpa-line-indent)
+    (">" . evil-shift-right-line)
+    ("<" . evil-shift-left-line)
+    ("M-H" . rigpa-line-move-far-left)
+    ("M-J" . rigpa-line-move-very-bottom)
+    ("M-K" . rigpa-line-move-very-top)
+    ("M-L" . rigpa-line-move-far-right)
+    ("x" . rigpa-line-delete)
+    ("c" . rigpa-line-change)
+    ("y" . rigpa-line-yank)
+    ("p" . evil-paste-after)
+    ("P" . evil-paste-before)
+    ("'" . rigpa-line-flashback)
+    ("s" . rigpa-line-split)
+    ("v" . rigpa-line-pulverize)
+    ("+" . evil-open-above)
+    ("i" . evil-open-above)
+    ("a" . evil-open-below)
+    ("n" . rigpa-line-insert-newline)
+    ("C-S-o" . rigpa-line-append-newline)
+    ("o" . evil-join)
+    ("O" . rigpa-line-join-backwards)
+    (";" . rigpa-line-toggle-comment)
+    ("?" . rigpa-line-info))
+  "Key specification for rigpa line mode.")
+
+(rigpa--define-evil-keys-from-spec rigpa--line-mode-keyspec
+                                   rigpa-line-mode-map
+                                   'line)
 
 (defvar chimera-line-mode-entry-hook nil
   "Entry hook for rigpa line mode.")
@@ -282,9 +261,19 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
 (defvar chimera-line-mode-exit-hook nil
   "Exit hook for rigpa line mode.")
 
+(defun rigpa--enable-line-minor-mode ()
+  "Enable line minor mode."
+  (rigpa-line-mode 1))
+
+(defun rigpa--disable-line-minor-mode ()
+  "Disable line minor mode."
+  (rigpa-line-mode -1))
+
 (defvar chimera-line-mode
   (make-chimera-mode :name "line"
-                     :enter #'hydra-line/body
+                     :enter #'evil-line-state
+                     :pre-entry-hook 'chimera-line-mode-entry-hook
+                     :post-exit-hook 'chimera-line-mode-exit-hook
                      :entry-hook 'evil-line-state-entry-hook
                      :exit-hook 'evil-line-state-exit-hook))
 

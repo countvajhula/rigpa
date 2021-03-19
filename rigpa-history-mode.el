@@ -34,6 +34,8 @@
 (defvar chimera-history-mode
   (make-chimera-mode :name "history"
                      :enter #'hydra-history/body
+                     :pre-entry-hook 'chimera-history-mode-entry-hook
+                     :post-exit-hook 'chimera-history-mode-exit-hook
                      :entry-hook 'evil-history-state-entry-hook
                      :exit-hook 'evil-history-state-exit-hook))
 

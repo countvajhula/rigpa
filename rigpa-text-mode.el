@@ -29,6 +29,8 @@
 (defvar chimera-text-mode
   (make-chimera-mode :name "text"
                      :enter #'hydra-text/body
+                     :pre-entry-hook 'chimera-text-mode-entry-hook
+                     :post-exit-hook 'chimera-text-mode-exit-hook
                      :entry-hook 'evil-text-state-entry-hook
                      :exit-hook 'evil-text-state-exit-hook))
 

@@ -220,6 +220,8 @@ positions."
 (defvar chimera-window-mode
   (make-chimera-mode :name "window"
                      :enter #'hydra-window/body
+                     :pre-entry-hook 'chimera-window-mode-entry-hook
+                     :post-exit-hook 'chimera-window-mode-exit-hook
                      :entry-hook 'evil-window-state-entry-hook
                      :exit-hook 'evil-window-state-exit-hook))
 

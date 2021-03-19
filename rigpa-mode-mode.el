@@ -15,23 +15,68 @@
 (defvar rigpa-modes
   (ht))
 
+(defun rigpa--minor-mode-enable-hook (name)
+  "Return a function to enable the minor mode for the mode named NAME.
+
+We modulate keybindings in evil states (e.g. in particular visual and
+operator states) via a minor mode. As it looks like this only works if
+the minor mode is activated *before* entering the evil state, we need
+to define pre-entry hooks at the chimera level and can't just use the
+evil entry hooks.
+
+We need this extra layer of indirection because lambdas as hooks
+can't be removed since they are anonymous. This just gives us a way
+to parametrize the hook but still be able to remove it."
+  (let ((enable-mode
+         (intern
+          (concat "rigpa--enable-" name "-minor-mode"))))
+    enable-mode))
+
+(defun rigpa--disable-other-minor-modes ()
+  "Disable all rigpa mode minor modes.
+
+This is called on state transitions to ensure that all minor modes are
+first disabled prior to the minor mode for new state being enabled."
+  (dolist (name (ht-keys rigpa-modes))
+    (let ((disable-mode
+           (intern
+            (concat "rigpa--disable-" name "-minor-mode"))))
+      (when (fboundp disable-mode)
+        (funcall disable-mode)))))
+
 (defun rigpa-register-mode (mode)
-  "Register MODE-NAME for use with rigpa."
+  "Register MODE for use with rigpa.
+
+This registers callbacks with the hooks provided by the chimera MODE
+to ensure, upon state transitions, that:
+(1) the correct state is reflected,
+(2) any lingering config from prior states is cleaned, and
+(3) the previous state is remembered for possible recall."
   (let ((name (chimera-mode-name mode))
+        (pre-entry-hook (chimera-mode-pre-entry-hook mode))
         (entry-hook (chimera-mode-entry-hook mode))
         (exit-hook (chimera-mode-exit-hook mode)))
     (ht-set! rigpa-modes name mode)
-    (add-hook exit-hook #'rigpa-remember-for-recall)
-    (add-hook entry-hook #'rigpa-reconcile-level)))
+    (let ((minor-mode-entry (rigpa--minor-mode-enable-hook name)))
+      (when (fboundp minor-mode-entry)
+        (add-hook pre-entry-hook minor-mode-entry)))
+    (add-hook entry-hook #'rigpa-reconcile-level)
+    (add-hook pre-entry-hook #'rigpa--disable-other-minor-modes)
+    (add-hook exit-hook #'rigpa-remember-for-recall)))
 
 (defun rigpa-unregister-mode (mode)
-  "Unregister MODE-NAME."
+  "Unregister MODE."
   (let ((name (chimera-mode-name mode))
+        (pre-entry-hook (chimera-mode-pre-entry-hook mode))
         (entry-hook (chimera-mode-entry-hook mode))
         (exit-hook (chimera-mode-exit-hook mode)))
     (ht-remove! rigpa-modes name)
-    (remove-hook exit-hook #'rigpa-remember-for-recall)
-    (remove-hook entry-hook #'rigpa-reconcile-level)))
+    (let ((minor-mode-entry (rigpa--minor-mode-enable-hook name)))
+      (when (fboundp minor-mode-entry)
+        (remove-hook pre-entry-hook minor-mode-entry)))
+    (remove-hook entry-hook #'rigpa-reconcile-level)
+    (remove-hook pre-entry-hook #'rigpa--disable-other-minor-modes)
+    (remove-hook exit-hook #'rigpa-remember-for-recall)))
 
 (defun rigpa-enter-mode (mode-name)
   "Enter mode MODE-NAME."
@@ -233,17 +278,30 @@ is precisely the thing to be done."
            (rigpa--tower-view-narrow (rigpa--ground-tower))
            (rigpa--tower-view-reflect-ground (rigpa--ground-tower)))))
 
+(defun rigpa--reload-tower-wrapper (orig-fn count &rest args)
+  "Wrap interactive commands and reload the tower.
+
+For interactive commands accepting a count argument, we can't use just
+any function as advice since the underying command expects to receive
+an interactive argument from the user. The advising function needs to
+be interactive itself."
+  (interactive "p")
+  (let ((result (apply orig-fn count args)))
+    (rigpa--reload-tower)
+    result))
+
 (defun rigpa--add-meta-side-effects ()
   "Add side effects for primitive mode operations while in meta mode."
-  ;; this should lookup the appropriate side-effect based on the coordinates
-  (advice-add #'rigpa-line-move-down :after #'rigpa--reload-tower)
-  (advice-add #'rigpa-line-move-up :after #'rigpa--reload-tower)
+  ;; this should lookup the appropriate side-effect based on the
+  ;; coordinates and the ground level mode being employed
+  (advice-add #'rigpa-line-move-down :around #'rigpa--reload-tower-wrapper)
+  (advice-add #'rigpa-line-move-up :around #'rigpa--reload-tower-wrapper)
   (advice-add #'rigpa-line-change :around #'rigpa--mode-mode-change))
 
 (defun rigpa--remove-meta-side-effects ()
   "Remove side effects for primitive mode operations that were added for meta modes."
-  (advice-remove #'rigpa-line-move-down #'rigpa--reload-tower)
-  (advice-remove #'rigpa-line-move-up #'rigpa--reload-tower)
+  (advice-remove #'rigpa-line-move-down #'rigpa--reload-tower-wrapper)
+  (advice-remove #'rigpa-line-move-up #'rigpa--reload-tower-wrapper)
   (advice-remove #'rigpa-line-change #'rigpa--mode-mode-change))
 
 ;; TODO: should have a single function that enters

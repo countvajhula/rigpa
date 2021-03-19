@@ -117,6 +117,8 @@
 (defvar chimera-application-mode
   (make-chimera-mode :name "application"
                      :enter #'hydra-application/body
+                     :pre-entry-hook 'chimera-application-mode-entry-hook
+                     :post-exit-hook 'chimera-application-mode-exit-hook
                      :entry-hook 'evil-application-state-entry-hook
                      :exit-hook 'evil-application-state-exit-hook))
 
