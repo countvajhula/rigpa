@@ -11,6 +11,7 @@
 (require 'rigpa-evil-support)
 
 (defvar rigpa-line-mode-map (make-sparse-keymap))
+(defvar rigpa-line--column 1)
 
 (define-minor-mode rigpa-line-mode
   "Minor mode to modulate keybindings in rigpa line mode."
@@ -263,11 +264,19 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
 
 (defun rigpa--enable-line-minor-mode ()
   "Enable line minor mode."
-  (rigpa-line-mode 1))
+  ;; probably want to rename this function to reflect
+  ;; its broader scope of line mode entry actions
+  (rigpa-line-mode 1)
+  (setq rigpa-line--column (current-column))
+  (beginning-of-line)
+  (hl-line-mode 1))
 
 (defun rigpa--disable-line-minor-mode ()
   "Disable line minor mode."
-  (rigpa-line-mode -1))
+  (when rigpa-line-mode
+    (rigpa-line-mode -1)
+    (hl-line-mode -1)
+    (evil-goto-column rigpa-line--column)))
 
 (defvar chimera-line-mode
   (make-chimera-mode :name "line"
