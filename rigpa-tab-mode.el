@@ -7,28 +7,28 @@
   :message "-- TAB --"
   :enable (normal))
 
-(defun setup-tab-marks-table ()
+(defun rigpa-tab-setup-marks-table ()
   "Initialize the tab marks hashtable and add an entry for the
 current ('original') tab."
   (interactive)
   (defvar rigpa-tab-marks-hash
     (make-hash-table :test 'equal))
-  (save-tab 'original))
+  (rigpa-tab-save 'original))
 
-(defun save-tab (key)
+(defun rigpa-tab-save (key)
   "Save current tab as original tab."
   (interactive)
   (puthash key (current-buffer)
            rigpa-tab-marks-hash))
 
-(defun load-tab (key)
+(defun rigpa-tab-load (key)
   "Return to the buffer we were in at the time of entering
 buffer mode."
   (interactive)
   (switch-to-buffer
    (gethash key rigpa-tab-marks-hash)))
 
-(defun flash-to-original-tab-and-back ()
+(defun rigpa-tab-flash-to-original ()
   "Go momentarily to original tab and return.
 
 This 'flash' allows the original tab, rather than the previous one
@@ -38,8 +38,8 @@ happen quickly enough not to be noticeable."
   (interactive)
   (unless (equal (current-buffer) (rigpa-tab-original))
     (let ((inhibit-redisplay t)) ;; not sure if this is doing anything but FWIW
-      (load-tab 'original)
-      (save-tab 'previous)
+      (rigpa-tab-load 'original)
+      (rigpa-tab-save 'previous)
       (evil-switch-to-windows-last-buffer))))
 
 (defun rigpa-tab-original ()
@@ -47,15 +47,22 @@ happen quickly enough not to be noticeable."
   (interactive)
   (gethash 'original rigpa-tab-marks-hash))
 
-(defun return-to-original-tab ()
-  "Return to the buffer we were in at the time of entering
+(defun rigpa-tab-return-to-original ()
+  "Return to the tab we were in at the time of entering
 buffer mode."
   (interactive)
-  (load-tab 'original))
+  (rigpa-tab-load 'original))
+
+(defun rigpa-tab-switch-to-last ()
+  (interactive)
+  (rigpa-tab-save 'temp-previous)
+  (rigpa-tab-load 'previous)
+  (puthash 'previous (gethash 'temp-previous rigpa-tab-marks-hash)
+           rigpa-tab-marks-hash))
 
 (defhydra hydra-tab (:columns 2
-                     :body-pre (setup-tab-marks-table) ; maybe put in ad-hoc entry function
-                     :post (progn (flash-to-original-tab-and-back)
+                     :body-pre (rigpa-tab-setup-marks-table) ; maybe put in ad-hoc entry function
+                     :post (progn (rigpa-tab-flash-to-original)
                                   (chimera-hydra-portend-exit chimera-tab-mode t))
                      :after-exit (chimera-hydra-signal-exit chimera-tab-mode
                                                             #'chimera-handle-hydra-exit))
@@ -74,25 +81,15 @@ buffer mode."
          (centaur-tabs-forward-group)) "next group")
   ("H" centaur-tabs-move-current-tab-to-left "move left")
   ("L" centaur-tabs-move-current-tab-to-right "move right")
-  ("s-t" (lambda ()
-           (interactive)
-           (save-tab 'temp-previous)
-           (load-tab 'previous)
-           (puthash 'previous (gethash 'temp-previous rigpa-tab-marks-hash)
-                    rigpa-tab-marks-hash)) "switch to last" :exit t)
-  ("t" (lambda ()
-         (interactive)
-         (save-tab 'temp-previous)
-         (load-tab 'previous)
-         (puthash 'previous (gethash 'temp-previous rigpa-tab-marks-hash)
-                  rigpa-tab-marks-hash)) "switch to last" :exit t)
+  ("s-t" rigpa-tab-switch-to-last "switch to last" :exit t)
+  ("t" rigpa-tab-switch-to-last "switch to last" :exit t)
   ("n" (lambda ()
          (interactive)
          (rigpa-buffer-create nil nil :switch-p t))
    "new" :exit t)
   ("x" kill-buffer "delete")
   ("?" rigpa-buffer-info "info" :exit t)
-  ("q" return-to-original-tab "return to original" :exit t)
+  ("q" rigpa-tab-return-to-original "return to original" :exit t)
   ("H-m" rigpa-toggle-menu "show/hide this menu")
   ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
   ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))

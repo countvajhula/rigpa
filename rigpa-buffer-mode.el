@@ -97,7 +97,7 @@ buffer mode."
   (interactive)
   (switch-to-buffer (rigpa-buffer-original-buffer)))
 
-(defun flash-to-original-and-back ()
+(defun rigpa-buffer-flash-to-original ()
   "Go momentarily to original buffer and return.
 
 This 'flash' allows the original buffer, rather than the previous one
@@ -110,15 +110,15 @@ happen quickly enough not to be noticeable."
       (rigpa-buffer-return-to-original)
       (evil-switch-to-windows-last-buffer))))
 
-(defun setup-buffer-marks-table ()
+(defun rigpa-buffer-setup-marks-table ()
   "Initialize the buffer marks hashtable and add an entry for the
 current ('original') buffer."
   (interactive)
   (defvar rigpa-buffer-marks-hash
     (make-hash-table :test 'equal))
-  (save-original-buffer))
+  (rigpa-buffer-save-original))
 
-(defun save-original-buffer ()
+(defun rigpa-buffer-save-original ()
   "Save current buffer as original buffer."
   (interactive)
   (rigpa-buffer-set-mark ?0))
@@ -158,8 +158,8 @@ current ('original') buffer."
 ;; probably do this very thing. But in this case it may be better to
 ;; simply use (buffer-list) directly which appears to keep track of recency
 (defhydra hydra-buffer (:columns 3
-                        :body-pre (setup-buffer-marks-table) ; maybe put in ad-hoc entry
-                        :post (progn (flash-to-original-and-back)
+                        :body-pre (rigpa-buffer-setup-marks-table) ; maybe put in ad-hoc entry
+                        :post (progn (rigpa-buffer-flash-to-original)
                                      (chimera-hydra-portend-exit chimera-buffer-mode t))
                         :after-exit (chimera-hydra-signal-exit chimera-buffer-mode
                                                                #'chimera-handle-hydra-exit))
