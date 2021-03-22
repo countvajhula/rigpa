@@ -164,7 +164,47 @@ positions."
   (interactive)
   (rigpa-window--exchange-buffer 'down))
 
+(defun rigpa-window-setup-marks-table ()
+  "Initialize the buffer marks hashtable and add an entry for the
+current ('original') buffer."
+  (interactive)
+  (defvar rigpa-window-marks-hash
+    (make-hash-table :test 'equal))
+  (rigpa-window-save-original))
+
+(defun rigpa-window-save-original ()
+  "Save current buffer as original buffer."
+  (interactive)
+  (rigpa-window-set-mark ?0))
+
+(defun rigpa-window-original-configuration ()
+  "Get original buffer identifier"
+  (interactive)
+  (rigpa-window-get-mark ?0))
+
+(defun rigpa-window-set-mark (mark-name)
+  "Set a mark"
+  (interactive "cMark name?")
+  (puthash mark-name (winner-configuration) rigpa-window-marks-hash)
+  (message "Mark '%c' set." mark-name))
+
+(defun rigpa-window-get-mark (mark-name)
+  "Retrieve a mark"
+  (gethash mark-name rigpa-window-marks-hash))
+
+(defun rigpa-window-return-to-mark (mark-name)
+  "Return to mark"
+  (interactive "cMark name?")
+  (winner-set (rigpa-window-get-mark mark-name)))
+
+(defun rigpa-window-return-to-original ()
+  "Return to the buffer we were in at the time of entering
+buffer mode."
+  (interactive)
+  (winner-set (rigpa-window-original-configuration)))
+
 (defhydra hydra-window (:columns 4
+                        :body-pre (rigpa-window-setup-marks-table)
                         :post (chimera-hydra-portend-exit chimera-window-mode t)
                         :after-exit (chimera-hydra-signal-exit chimera-window-mode
                                                                #'chimera-handle-hydra-exit))
@@ -197,6 +237,10 @@ positions."
   ("|" evil-window-vsplit "")
   ("u" winner-undo "undo")
   ("C-r" winner-redo "redo")
+  ("m" rigpa-window-set-mark "set mark")
+  ("'" rigpa-window-return-to-mark "return to mark" :exit t)
+  ("`" rigpa-window-return-to-mark "return to mark" :exit t)
+  ("q" rigpa-window-return-to-original "return to original" :exit t)
   ("/" ace-window "search")
   ("+" evil-window-increase-height "expand vertically")
   ("-" evil-window-decrease-height "shrink vertically")
