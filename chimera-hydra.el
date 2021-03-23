@@ -22,6 +22,12 @@ If no VALUE is provided, this clears the flag."
       (funcall callback mode)
       (chimera--hydra-set-flag hydra :exiting))))
 
+(defun chimera-hydra-signal-entry (mode)
+  "Helper to witness hydra entry."
+  (let* ((mode-name (chimera-mode-name mode))
+         (hydra (chimera--hydra-for-state mode-name)))
+    (chimera--hydra-set-flag hydra :entry-buffer (current-buffer))))
+
 (defun chimera-handle-hydra-exit (mode)
   "Adapter helper for hydra to call hooks upon exit."
   (let ((mode-name (chimera-mode-name mode)))
@@ -36,6 +42,12 @@ If no VALUE is provided, this clears the flag."
       (unless (rigpa-ensemble-member-position-by-name (rigpa--local-tower)
                                                       (symbol-name evil-state))
         (rigpa--enter-appropriate-mode)))
+    (let* ((hydra (chimera--hydra-for-state mode-name))
+           (entry-buffer (hydra-get-property hydra :entry-buffer)))
+      (when entry-buffer
+        ;; ensure the entry buffer reverts to a sane state
+        (rigpa--enter-appropriate-mode entry-buffer)
+        (chimera--hydra-set-flag hydra :entry-buffer)))
     (when (chimera-mode-manage-hooks mode)
       (run-hooks (chimera-mode-exit-hook mode)))))
 

@@ -39,6 +39,7 @@ Version 2016-04-04"
   (insert-register ?f))
 
 (defhydra hydra-file (:columns 2
+                      :body-pre (chimera-hydra-signal-entry chimera-file-mode)
                       :post (chimera-hydra-portend-exit chimera-file-mode t)
                       :after-exit (chimera-hydra-signal-exit chimera-file-mode
                                                              #'chimera-handle-hydra-exit))

@@ -9,6 +9,7 @@
 
 
 (defhydra hydra-text (:columns 2
+                      :body-pre (chimera-hydra-signal-entry chimera-text-mode)
                       :post (chimera-hydra-portend-exit chimera-text-mode t)
                       :after-exit (chimera-hydra-signal-exit chimera-text-mode
                                                              #'chimera-handle-hydra-exit))

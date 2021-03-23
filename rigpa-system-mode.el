@@ -14,6 +14,7 @@
   (display-message-or-buffer (shell-command-to-string "pmset -g batt")))
 
 (defhydra hydra-system (:exit t
+                        :body-pre (chimera-hydra-signal-entry chimera-system-mode)
                         :post (chimera-hydra-portend-exit chimera-system-mode t)
                         :after-exit (chimera-hydra-signal-exit chimera-system-mode
                                                                #'chimera-handle-hydra-exit))

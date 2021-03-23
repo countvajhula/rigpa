@@ -92,6 +92,7 @@
 
 (defhydra hydra-application (:columns 1
                              :exit t
+                             :body-pre (chimera-hydra-signal-entry chimera-application-mode)
                              :post (chimera-hydra-portend-exit chimera-application-mode t)
                              :after-exit (chimera-hydra-signal-exit chimera-application-mode
                                                                     #'chimera-handle-hydra-exit))

@@ -61,7 +61,8 @@ buffer mode."
            rigpa-tab-marks-hash))
 
 (defhydra hydra-tab (:columns 2
-                     :body-pre (rigpa-tab-setup-marks-table) ; maybe put in ad-hoc entry function
+                     :body-pre (progn (rigpa-tab-setup-marks-table) ; maybe put in ad-hoc entry function
+                                      (chimera-hydra-signal-entry chimera-tab-mode))
                      :post (progn (rigpa-tab-flash-to-original)
                                   (chimera-hydra-portend-exit chimera-tab-mode t))
                      :after-exit (chimera-hydra-signal-exit chimera-tab-mode

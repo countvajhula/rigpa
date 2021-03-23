@@ -94,6 +94,7 @@
 
 
 (defhydra hydra-view (:columns 5
+                      :body-pre (chimera-hydra-signal-entry chimera-view-mode)
                       :post (chimera-hydra-portend-exit chimera-view-mode t)
                       :after-exit (chimera-hydra-signal-exit chimera-view-mode
                                                              #'chimera-handle-hydra-exit))

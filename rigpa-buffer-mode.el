@@ -158,7 +158,8 @@ current ('original') buffer."
 ;; probably do this very thing. But in this case it may be better to
 ;; simply use (buffer-list) directly which appears to keep track of recency
 (defhydra hydra-buffer (:columns 3
-                        :body-pre (rigpa-buffer-setup-marks-table) ; maybe put in ad-hoc entry
+                        :body-pre (progn (rigpa-buffer-setup-marks-table) ; maybe put in ad-hoc entry
+                                         (chimera-hydra-signal-entry chimera-buffer-mode))
                         :post (progn (rigpa-buffer-flash-to-original)
                                      (chimera-hydra-portend-exit chimera-buffer-mode t))
                         :after-exit (chimera-hydra-signal-exit chimera-buffer-mode

@@ -54,6 +54,7 @@
 
 
 (defhydra hydra-activity (:columns 2
+                          :body-pre (chimera-hydra-signal-entry chimera-activity-mode)
                           :post (chimera-hydra-portend-exit chimera-activity-mode t)
                           :after-exit (chimera-hydra-signal-exit chimera-activity-mode
                                                                  #'chimera-handle-hydra-exit))

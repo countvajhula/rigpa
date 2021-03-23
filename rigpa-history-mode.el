@@ -9,7 +9,8 @@
 
 (defhydra hydra-history (:columns 2
                          ; maybe put body-pre in ad hoc entry
-                         :body-pre (unless git-timemachine-mode (git-timemachine))
+                         :body-pre (progn (unless git-timemachine-mode (git-timemachine))
+                                          (chimera-hydra-signal-entry chimera-history-mode))
                          :post (chimera-hydra-portend-exit chimera-history-mode t)
                          :after-exit (chimera-hydra-signal-exit chimera-history-mode
                                                                 #'chimera-handle-hydra-exit))

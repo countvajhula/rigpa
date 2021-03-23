@@ -204,7 +204,8 @@ buffer mode."
   (winner-set (rigpa-window-original-configuration)))
 
 (defhydra hydra-window (:columns 4
-                        :body-pre (rigpa-window-setup-marks-table)
+                        :body-pre (progn (rigpa-window-setup-marks-table)
+                                         (chimera-hydra-signal-entry chimera-window-mode))
                         :post (chimera-hydra-portend-exit chimera-window-mode t)
                         :after-exit (chimera-hydra-signal-exit chimera-window-mode
                                                                #'chimera-handle-hydra-exit))
