@@ -78,6 +78,10 @@ to ensure, upon state transitions, that:
     (remove-hook pre-entry-hook #'rigpa--disable-other-minor-modes)
     (remove-hook exit-hook #'rigpa-remember-for-recall)))
 
+(defun rigpa-current-mode ()
+  "Current rigpa mode."
+  (chimera--mode-for-state (symbol-name evil-state)))
+
 (defun rigpa-enter-mode (mode-name)
   "Enter mode MODE-NAME."
   (chimera-enter-mode (ht-get rigpa-modes mode-name)))
@@ -123,14 +127,20 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
           (3) default level for tower (which could default to lowest
               if unspecified - TODO)."
   (with-current-buffer (or buffer (current-buffer))
-    (let ((recall-mode (rigpa--local-recall-mode))
-          (default-mode (editing-ensemble-default (rigpa--local-tower))))
-      (if recall-mode
-          ;; recall if available
-          (progn (rigpa--clear-local-recall)
-                 (rigpa-enter-mode recall-mode))
-        ;; otherwise default for tower
-        (rigpa-enter-mode default-mode)))))
+    (let* ((current-mode (rigpa-current-mode))
+           (current-mode-name (chimera-mode-name current-mode))
+           (recall-mode-name (rigpa--local-recall-mode))
+           (default-mode-name (editing-ensemble-default (rigpa--local-tower))))
+      (cond ((rigpa--member-of-ensemble-p current-mode
+                                          (rigpa--local-tower))
+             ;; do nothing in this case
+             nil)
+            (recall-mode-name
+             ;; recall if available
+             (progn (rigpa--clear-local-recall)
+                    (rigpa-enter-mode recall-mode-name)))
+            ;; otherwise default for tower
+            (t (rigpa-enter-mode default-mode-name))))))
 
 (defun rigpa-enter-higher-level ()
   "Enter higher level."

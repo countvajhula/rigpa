@@ -47,6 +47,9 @@ always managed by chimera."))
   (interactive)
   (funcall (chimera-mode-exit mode)))
 
+(defun chimera--mode-for-state (mode-name)
+  (symbol-value (intern (concat "chimera-" mode-name "-mode"))))
+
 
 (provide 'chimera)
 ;;; chimera.el ends here

@@ -18,6 +18,7 @@ entity, such as modes, towers or complexes.")
   (editing-ensemble-name entity))
 
 (defun rigpa-ensemble-member-position-by-name (ensemble name)
+  "The position of a member in an ensemble, by name."
   (seq-position (seq-map #'rigpa-editing-entity-name
                          (editing-ensemble-members ensemble))
                 name))
@@ -29,6 +30,10 @@ entity, such as modes, towers or complexes.")
 (defun rigpa-ensemble-member-at-position (tower position)
   "Mode at LEVEL in the TOWER."
   (nth position (editing-ensemble-members tower)))
+
+(defun rigpa--member-of-ensemble-p (entity ensemble)
+  "A predicate asserting whether ENTITY is a member of ENSEMBLE."
+  (memq entity (editing-ensemble-members ensemble)))
 
 
 (provide 'rigpa-types)
