@@ -89,13 +89,17 @@ Version 2017-11-01"
 (defun rigpa-buffer-return-to-mark (mark-name)
   "Return to mark"
   (interactive "cMark name?")
-  (switch-to-buffer (rigpa-buffer-get-mark mark-name)))
+  (condition-case nil
+      (switch-to-buffer (rigpa-buffer-get-mark mark-name))
+    (error (message "Buffer no longer exists!"))))
 
 (defun rigpa-buffer-return-to-original ()
   "Return to the buffer we were in at the time of entering
 buffer mode."
   (interactive)
-  (switch-to-buffer (rigpa-buffer-original-buffer)))
+  (condition-case nil
+      (switch-to-buffer (rigpa-buffer-original-buffer))
+    (error (message "Buffer no longer exists!"))))
 
 (defun rigpa-buffer-flash-to-original ()
   "Go momentarily to original buffer and return.

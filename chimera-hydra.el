@@ -44,10 +44,10 @@ If no VALUE is provided, this clears the flag."
         (rigpa--enter-appropriate-mode)))
     (let* ((hydra (chimera--hydra-for-state mode-name))
            (entry-buffer (hydra-get-property hydra :entry-buffer)))
-      (when entry-buffer
+      (when (and entry-buffer (buffer-live-p entry-buffer))
         ;; ensure the entry buffer reverts to a sane state
-        (rigpa--enter-appropriate-mode entry-buffer)
-        (chimera--hydra-set-flag hydra :entry-buffer)))
+        (rigpa--enter-appropriate-mode entry-buffer))
+      (chimera--hydra-set-flag hydra :entry-buffer))
     (when (chimera-mode-manage-hooks mode)
       (run-hooks (chimera-mode-exit-hook mode)))))
 
