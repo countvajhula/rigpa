@@ -323,9 +323,9 @@ be interactive itself."
   "Enter a buffer containing a textual representation of the
 current editing tower."
   (interactive)
+  (rigpa--set-ui-for-meta-modes) ; TODO: do this only for meta buffers
   (rigpa-render-tower-for-mode-mode (rigpa--local-tower))
   (rigpa--switch-to-tower rigpa--current-tower-index) ; TODO: base this on "state" instead
-  (rigpa--set-ui-for-meta-modes)
   (rigpa--add-meta-side-effects))
 
 (defun rigpa-exit-mode-mode ()
