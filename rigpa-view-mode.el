@@ -5,6 +5,8 @@
 (require 'chimera)
 (require 'chimera-hydra)
 
+(defvar-local rigpa-view--original-position nil)
+
 (evil-define-state view
   "View state."
   :tag " <V> "
@@ -92,6 +94,12 @@
       (narrow-to-region (region-beginning) (region-end))
     (narrow-to-defun)))
 
+(defun rigpa-view-return-to-original-position ()
+  "Return to position prior to view mode entry."
+  (interactive)
+  (goto-char rigpa-view--original-position)
+  (recenter))
+
 
 (defhydra hydra-view (:columns 5
                       :body-pre (chimera-hydra-signal-entry chimera-view-mode)
@@ -141,6 +149,7 @@
   ("w" widen "widen to full view")
   ("H-m" rigpa-toggle-menu "show/hide this menu")
   ("i" nil "exit" :exit t)
+  ("q" rigpa-view-return-to-original-position "exit" :exit t)
   ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
   ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
 
@@ -152,6 +161,7 @@
 
 (defun rigpa--on-view-mode-entry ()
   "Actions to take upon entry into view mode."
+  (setq rigpa-view--original-position (point))
   (blink-cursor-mode -1)
   (internal-show-cursor nil nil))
 
