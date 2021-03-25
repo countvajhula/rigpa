@@ -150,6 +150,16 @@
 (defvar chimera-view-mode-exit-hook nil
   "Exit hook for rigpa view mode.")
 
+(defun rigpa--on-view-mode-entry ()
+  "Actions to take upon entry into view mode."
+  (blink-cursor-mode -1)
+  (internal-show-cursor nil nil))
+
+(defun rigpa--on-view-mode-exit ()
+  "Actions to take upon exit from view mode."
+  (blink-cursor-mode 1) ; TODO: depend on user config instead
+  (internal-show-cursor nil t))
+
 (defvar chimera-view-mode
   (make-chimera-mode :name "view"
                      :enter #'hydra-view/body

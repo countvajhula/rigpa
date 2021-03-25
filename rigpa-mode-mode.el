@@ -32,6 +32,20 @@ to parametrize the hook but still be able to remove it."
           (concat "rigpa--enable-" name "-minor-mode"))))
     enable-mode))
 
+(defun rigpa--on-mode-entry (name)
+  "Return the function that takes actions upon mode entry."
+  (let ((on-entry
+         (intern
+          (concat "rigpa--on-" name "-mode-entry"))))
+    on-entry))
+
+(defun rigpa--on-mode-exit (name)
+  "Return the function that takes actions upon mode exit."
+  (let ((on-exit
+         (intern
+          (concat "rigpa--on-" name "-mode-exit"))))
+    on-exit))
+
 (defun rigpa--disable-other-minor-modes ()
   "Disable all rigpa mode minor modes.
 
@@ -60,6 +74,12 @@ to ensure, upon state transitions, that:
     (let ((minor-mode-entry (rigpa--minor-mode-enable-hook name)))
       (when (fboundp minor-mode-entry)
         (add-hook pre-entry-hook minor-mode-entry)))
+    (let ((on-mode-entry (rigpa--on-mode-entry name)))
+      (when (fboundp on-mode-entry)
+        (add-hook pre-entry-hook on-mode-entry)))
+    (let ((on-mode-exit (rigpa--on-mode-exit name)))
+      (when (fboundp on-mode-exit)
+        (add-hook exit-hook on-mode-exit)))
     (add-hook entry-hook #'rigpa-reconcile-level)
     (add-hook pre-entry-hook #'rigpa--disable-other-minor-modes)
     (add-hook exit-hook #'rigpa-remember-for-recall)))
@@ -74,6 +94,12 @@ to ensure, upon state transitions, that:
     (let ((minor-mode-entry (rigpa--minor-mode-enable-hook name)))
       (when (fboundp minor-mode-entry)
         (remove-hook pre-entry-hook minor-mode-entry)))
+    (let ((on-mode-entry (rigpa--on-mode-entry name)))
+      (when (fboundp on-mode-entry)
+        (remove-hook pre-entry-hook on-mode-entry)))
+    (let ((on-mode-exit (rigpa--on-mode-exit name)))
+      (when (fboundp on-mode-exit)
+        (remove-hook exit-hook on-mode-exit)))
     (remove-hook entry-hook #'rigpa-reconcile-level)
     (remove-hook pre-entry-hook #'rigpa--disable-other-minor-modes)
     (remove-hook exit-hook #'rigpa-remember-for-recall)))
