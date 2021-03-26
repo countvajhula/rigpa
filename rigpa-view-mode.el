@@ -97,8 +97,10 @@
 (defun rigpa-view-return-to-original-position ()
   "Return to position prior to view mode entry."
   (interactive)
-  (goto-char rigpa-view--original-position)
-  (recenter))
+  (if (pos-visible-in-window-p rigpa-view--original-position)
+      (goto-char rigpa-view--original-position)
+    (goto-char rigpa-view--original-position)
+    (recenter)))
 
 
 (defhydra hydra-view (:columns 5
@@ -168,7 +170,9 @@
 (defun rigpa--on-view-mode-exit ()
   "Actions to take upon exit from view mode."
   (blink-cursor-mode 1) ; TODO: depend on user config instead
-  (internal-show-cursor nil t))
+  (internal-show-cursor nil t)
+  (when (pos-visible-in-window-p rigpa-view--original-position)
+    (goto-char rigpa-view--original-position)))
 
 (defvar chimera-view-mode
   (make-chimera-mode :name "view"
