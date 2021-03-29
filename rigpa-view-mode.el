@@ -171,8 +171,9 @@
   "Actions to take upon exit from view mode."
   (blink-cursor-mode 1) ; TODO: depend on user config instead
   (internal-show-cursor nil t)
-  (when (pos-visible-in-window-p rigpa-view--original-position)
-    (goto-char rigpa-view--original-position)))
+  (if (pos-visible-in-window-p rigpa-view--original-position)
+      (goto-char rigpa-view--original-position)
+    (evil-window-middle)))
 
 (defvar chimera-view-mode
   (make-chimera-mode :name "view"
