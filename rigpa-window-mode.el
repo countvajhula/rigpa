@@ -230,6 +230,7 @@ buffer mode."
   ("c" evil-window-delete)
   ("Q" rigpa-window-quit-other "quit other window" :exit t)
   ("o" rigpa-window-mru "Jump to most recent (like Alt-Tab)" :exit t)
+  ("s-w" rigpa-window-mru "Jump to most recent (like Alt-Tab)" :exit t)
   ("n" other-window "next")
   ("w" delete-other-windows "maximize" :exit t)
   ("s" evil-window-split "split horizontally")
