@@ -178,14 +178,22 @@ current ('original') buffer."
   (rigpa-window-set-mark ?0))
 
 (defun rigpa-window-original-configuration ()
-  "Get original buffer identifier"
+  "Get original window configuration."
   (interactive)
-  (rigpa-window-get-mark ?0))
+  (cdr (rigpa-window-get-mark ?0)))
+
+(defun rigpa-window-original-window ()
+  "Get original selected window."
+  (interactive)
+  (car (rigpa-window-get-mark ?0)))
 
 (defun rigpa-window-set-mark (mark-name)
   "Set a mark"
   (interactive "cMark name?")
-  (puthash mark-name (winner-configuration) rigpa-window-marks-hash)
+  (puthash mark-name
+           (cons (selected-window)
+                 (winner-configuration))
+           rigpa-window-marks-hash)
   (message "Mark '%c' set." mark-name))
 
 (defun rigpa-window-get-mark (mark-name)
@@ -195,18 +203,38 @@ current ('original') buffer."
 (defun rigpa-window-return-to-mark (mark-name)
   "Return to mark"
   (interactive "cMark name?")
-  (winner-set (rigpa-window-get-mark mark-name)))
+  (winner-set (cdr (rigpa-window-get-mark mark-name))))
 
-(defun rigpa-window-return-to-original ()
-  "Return to the buffer we were in at the time of entering
-buffer mode."
+(defun rigpa-window-return-to-original-configuration ()
+  "Return to the window configuration we were in at the time of entering
+window mode."
   (interactive)
   (winner-set (rigpa-window-original-configuration)))
+
+(defun rigpa-window-return-to-original-window ()
+  "Return to the window we were in at the time of entering
+window mode."
+  (interactive)
+  (select-window (rigpa-window-original-window)))
+
+(defun rigpa-window-flash-to-original ()
+  "Go momentarily to original window and return.
+
+This 'flash' allows the original window, rather than the previous one
+encountered while navigating to the present one, to be treated as the
+last window for 'flashback' ('Alt-tab') purposes. The flash should
+happen quickly enough not to be noticeable."
+  (interactive)
+  (unless (eq (selected-window) (rigpa-window-original-window))
+    (let ((inhibit-redisplay t)) ;; not sure if this is doing anything but FWIW
+      (save-window-excursion
+        (rigpa-window-return-to-original-window)))))
 
 (defhydra hydra-window (:columns 4
                         :body-pre (progn (rigpa-window-setup-marks-table)
                                          (chimera-hydra-signal-entry chimera-window-mode))
-                        :post (chimera-hydra-portend-exit chimera-window-mode t)
+                        :post (progn (rigpa-window-flash-to-original)
+                                     (chimera-hydra-portend-exit chimera-window-mode t))
                         :after-exit (chimera-hydra-signal-exit chimera-window-mode
                                                                #'chimera-handle-hydra-exit))
   "Window mode"
@@ -242,7 +270,7 @@ buffer mode."
   ("m" rigpa-window-set-mark "set mark")
   ("'" rigpa-window-return-to-mark "return to mark" :exit t)
   ("`" rigpa-window-return-to-mark "return to mark" :exit t)
-  ("q" rigpa-window-return-to-original "return to original" :exit t)
+  ("q" rigpa-window-return-to-original-configuration "return to original" :exit t)
   ("/" ace-window "search")
   ("+" evil-window-increase-height "expand vertically")
   ("-" evil-window-decrease-height "shrink vertically")
