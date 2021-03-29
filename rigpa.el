@@ -179,6 +179,20 @@ and simply toggles whether the menu is visible or not."
                      :entry-hook 'evil-replace-state-entry-hook
                      :exit-hook 'evil-replace-state-exit-hook))
 
+(defvar chimera-operator-mode-entry-hook nil
+  "Entry hook for rigpa operator mode.")
+
+(defvar chimera-operator-mode-exit-hook nil
+  "Exit hook for rigpa operator mode.")
+
+(defvar chimera-operator-mode
+  (make-chimera-mode :name "operator"
+                     :enter #'evil-operator-state
+                     :pre-entry-hook 'chimera-operator-mode-entry-hook
+                     :post-exit-hook 'chimera-operator-mode-exit-hook
+                     :entry-hook 'evil-operator-state-entry-hook
+                     :exit-hook 'evil-operator-state-exit-hook))
+
 (defun rigpa--enter-lower-or-pass-through ()
   "Enter a lower level, or pass through to underlying keymap."
   (interactive)
@@ -241,7 +255,14 @@ and simply toggles whether the menu is visible or not."
   (define-key evil-visual-state-map [return] (lambda ()
                                                (interactive)
                                                (evil-exit-visual-state)
-                                               (rigpa-enter-lower-level))))
+                                               (rigpa-enter-lower-level)))
+  ;; interrupting operator state should unconditionally "escape"
+  ;; but by default an operator enters insert state as a follow-on.
+  ;; we use the default normal override binding here to avoid this.
+  ;; This will bypass any rigpa-specific behavior, but as it seems
+  ;; unlikely that we'd want to incorporate operator state formally
+  ;; as part of any structures, this seems a reasonable hack
+  (define-key evil-operator-state-map [escape] #'evil-force-normal-state))
 
 (defun rigpa--register-modes ()
   "Register the standard modes with the framework."
@@ -251,6 +272,7 @@ and simply toggles whether the menu is visible or not."
   (rigpa-register-mode chimera-emacs-mode)
   (rigpa-register-mode chimera-visual-mode)
   (rigpa-register-mode chimera-replace-mode)
+  (rigpa-register-mode chimera-operator-mode)
 
   ;; register all the other modes
   (rigpa-register-mode chimera-application-mode)

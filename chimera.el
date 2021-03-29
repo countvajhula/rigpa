@@ -14,7 +14,16 @@ If not, they are expected to be run by the underlying mode provider \
 always managed by chimera."))
 
 (defvar chimera-evil-states
-  (list "normal" "insert" "emacs" "visual" "replace" "word" "line" "char" "symex"))
+  (list "normal"
+        "insert"
+        "emacs"
+        "visual"
+        "replace"
+        "operator"
+        "word"
+        "line"
+        "char"
+        "symex"))
 
 (defvar chimera-insertion-states
   (list "insert" "emacs"))

@@ -163,8 +163,8 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
              nil)
             (recall-mode-name
              ;; recall if available
-             (progn (rigpa--clear-local-recall)
-                    (rigpa-enter-mode recall-mode-name)))
+             (rigpa--clear-local-recall)
+             (rigpa-enter-mode recall-mode-name))
             ;; otherwise default for tower
             (t (rigpa-enter-mode default-mode-name))))))
 
