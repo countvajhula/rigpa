@@ -2,6 +2,7 @@
 (require 'winner)
 (require 'chimera)
 (require 'chimera-hydra)
+(require 'dash)
 
 (evil-define-state window
   "Window state."
@@ -16,6 +17,20 @@
 ;; enable winner mode, used to provide "undo/redo" functionality
 ;; in window mode
 (winner-mode t)
+
+(defun rigpa-window-for-buffer (buffer)
+  "Window identifier for BUFFER if it is visible, or nil."
+  (let* ((buffer-name (if (bufferp buffer)
+                          (buffer-name buffer)
+                        buffer))
+         (windows (window-list-1))
+         (buffers (seq-map (-compose #'buffer-name
+                                     #'window-buffer)
+                           windows)))
+    (let ((index (position buffer-name buffers
+                           :test #'equal)))
+      (when index
+        (nth index windows)))))
 
 (defun rigpa-window-mru ()
   "Jump to most recent window, or other window if there is only one other.
