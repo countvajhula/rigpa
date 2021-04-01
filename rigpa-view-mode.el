@@ -6,6 +6,9 @@
 (require 'chimera-hydra)
 
 (defvar-local rigpa-view--original-position nil)
+;; ideally replace with "fit to width"
+;; as well as, in addition, mark and recall
+(defvar rigpa-view-preferred-zoom-level 3)
 
 (evil-define-state view
   "View state."
@@ -143,6 +146,9 @@
   ("L" rigpa-view-recenter-at-bottom "recenter at bottom")
   ("<backspace>" rigpa-view-reset-zoom "reset zoom")
   ("=" rigpa-view-reset-zoom "reset zoom")
+  ("<tab>" (lambda ()
+             (interactive)
+             (text-scale-set rigpa-view-preferred-zoom-level)) "reset to preferred")
   ("K" rigpa-view-zoom-in "zoom in")
   ("J" rigpa-view-zoom-out "zoom out")
   ("u" rigpa-view-scroll-half-page-up "leap up")
