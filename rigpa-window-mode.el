@@ -18,6 +18,9 @@
 ;; in window mode
 (winner-mode t)
 
+;; enable fitting window to buffer width
+(setq fit-window-to-buffer-horizontally t)
+
 (defun rigpa-window-mru ()
   "Jump to most recent window, or other window if there is only one other.
 
@@ -290,6 +293,7 @@ happen quickly enough not to be noticeable."
            (interactive)
            (evil-window-decrease-width 5)) "shrink horizontally more")
   ("=" balance-windows "balance")
+  ("<tab>" fit-window-to-buffer "fit to width")
   ("r" evil-window-rotate-downwards "rotate downwards")
   ("R" evil-window-rotate-upwards "rotate upwards")
   ("f" ffap-other-window "go to file in other window" :exit t)
