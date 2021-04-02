@@ -58,6 +58,12 @@
   (text-scale-adjust 0)
   (recenter))
 
+(defun rigpa-view-reset-preferred-zoom ()
+  "Reset zoom level to preferred"
+  (interactive)
+  (text-scale-set rigpa-view-preferred-zoom-level)
+  (recenter))
+
 (defun rigpa-view-scroll-left (&optional superlative)
   "Scroll view left"
   (interactive)
@@ -146,9 +152,7 @@
   ("L" rigpa-view-recenter-at-bottom "recenter at bottom")
   ("<backspace>" rigpa-view-reset-zoom "reset zoom")
   ("=" rigpa-view-reset-zoom "reset zoom")
-  ("<tab>" (lambda ()
-             (interactive)
-             (text-scale-set rigpa-view-preferred-zoom-level)) "reset to preferred")
+  ("<tab>" rigpa-view-reset-preferred-zoom "reset to preferred")
   ("K" rigpa-view-zoom-in "zoom in")
   ("J" rigpa-view-zoom-out "zoom out")
   ("u" rigpa-view-scroll-half-page-up "leap up")
