@@ -2,3 +2,7 @@
 *~
 *.sw?
 
+# Build
+.cask
+*.elc
+dist
