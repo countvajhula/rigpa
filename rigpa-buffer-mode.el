@@ -27,6 +27,7 @@
 ;;; Code:
 
 
+(require 'cl-lib)
 (require 'ivy)
 (require 'chimera)
 (require 'chimera-hydra)

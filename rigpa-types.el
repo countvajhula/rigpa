@@ -26,6 +26,7 @@
 
 ;;; Code:
 
+(require 'cl-lib)
 (require 'chimera)
 
 (cl-defstruct editing-ensemble

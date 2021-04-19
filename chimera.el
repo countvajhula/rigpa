@@ -26,6 +26,8 @@
 
 ;;; Code:
 
+(require 'cl-lib)
+
 (cl-defstruct chimera-mode
   "Specification for a mode."
   name
