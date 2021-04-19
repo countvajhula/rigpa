@@ -182,6 +182,29 @@
         (goto-char (- word-end 1))
         (evil-paste-before nil nil)))))
 
+(evil-define-command rigpa-word-join-forwards (count)
+  "Join words forwards."
+  (interactive "p")
+  (dotimes (i count)
+    (save-excursion
+      (evil-forward-WORD-end)
+      (forward-char)
+      (if (eolp)
+          (progn (next-line)
+                 (beginning-of-line)
+                 (delete-horizontal-space)
+                 (apply #'evil-delete (evil-inner-WORD))
+                 (previous-line)
+                 (end-of-line)
+                 (evil-paste-after 1))
+        (delete-horizontal-space)))))
+
+(evil-define-command rigpa-word-join-backwards (count)
+  "Join words backwards."
+  (interactive "p")
+  (evil-backward-WORD-begin)
+  (rigpa-word-join-forwards count))
+
 (defun rigpa-word-scroll-jump-backward ()
   "Scroll jump back across words."
   (interactive)
@@ -255,6 +278,8 @@
     ("gt" . rigpa-word-title-case)
     ("s" . rigpa-word-split)
     ("s-o" . rigpa-word-delete-others)
+    ("C-S-k" . rigpa-word-join-forwards)
+    ("C-S-j" . rigpa-word-join-backwards)
     ("C-S-h" . rigpa-word-rotate-chars-left)
     ("C-S-l" . rigpa-word-rotate-chars-right)
     ("C-h" . rigpa-word-scroll-jump-backward)
