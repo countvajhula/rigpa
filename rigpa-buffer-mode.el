@@ -28,6 +28,8 @@
 
 
 (require 'cl-lib)
+(require 'evil)
+(require 'hydra)
 (require 'ivy)
 (require 'chimera)
 (require 'chimera-hydra)

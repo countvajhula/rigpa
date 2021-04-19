@@ -42,6 +42,8 @@
 
 ;;; Code:
 
+(require 'evil)
+(require 'hydra)
 (require 'chimera)
 (require 'ht)
 (require 'rigpa-char-mode)

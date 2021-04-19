@@ -26,6 +26,8 @@
 
 ;;; Code:
 
+(require 'evil)
+(require 'hydra)
 (require 'chimera)
 (require 'chimera-hydra)
 

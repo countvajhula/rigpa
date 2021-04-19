@@ -27,6 +27,7 @@
 ;;; Code:
 
 (require 'cl-lib)
+(require 'evil)
 
 (cl-defstruct chimera-mode
   "Specification for a mode."

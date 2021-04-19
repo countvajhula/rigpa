@@ -26,6 +26,8 @@
 
 ;;; Code:
 
+(require 'evil)
+(require 'hydra)
 
 (defun chimera--hydra-for-state (mode-name)
   (intern (concat "hydra-" mode-name)))

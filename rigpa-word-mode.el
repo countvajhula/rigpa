@@ -26,6 +26,7 @@
 
 ;;; Code:
 
+(require 'evil)
 (require 'chimera)
 (require 'rigpa-evil-support)
 

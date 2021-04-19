@@ -26,6 +26,8 @@
 
 ;;; Code:
 
+(require 'evil)
+(require 'hydra)
 (require 'ace-window)
 (require 'winner)
 (require 'chimera)

@@ -31,6 +31,8 @@
 ;; TODO: region does not persist on entering mode, e.g. for
 ;;       use in "narrow" functionality
 
+(require 'evil)
+(require 'hydra)
 (require 'chimera)
 (require 'chimera-hydra)
 

@@ -26,6 +26,7 @@
 
 ;;; Code:
 
+(require 'symex)
 (require 'chimera)
 
 (defvar chimera-symex-mode-entry-hook nil

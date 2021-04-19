@@ -36,6 +36,7 @@
 ;; - copy line
 ;; similarly for "region-mode", possibly by invoking multiple cursors
 
+(require 'evil)
 (require 'chimera)
 (require 'rigpa-evil-support)
 

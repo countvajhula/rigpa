@@ -27,6 +27,7 @@
 ;;; Code:
 
 (require 'ht)
+(require 'evil)
 (require 'rigpa-text-parsers)
 (require 'rigpa-meta)
 

@@ -26,6 +26,8 @@
 
 ;;; Code:
 
+(require 'evil)
+
 (defun rigpa--define-evil-key (key fn map state)
   "Define an evil keybinding in an evil-backed rigpa mode."
   (evil-define-key (list state 'visual 'operator)
