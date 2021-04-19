@@ -29,6 +29,9 @@
 (require 'evil)
 (require 'hydra)
 (require 'chimera-hydra)
+(require 'centaur-tabs)
+(require 'beacon)
+(require 'counsel)
 
 (evil-define-state application
   "Application state."

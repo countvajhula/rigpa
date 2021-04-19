@@ -30,6 +30,7 @@
 (require 'hydra)
 (require 'chimera)
 (require 'chimera-hydra)
+(require 'centaur-tabs)
 
 (evil-define-state tab
   "Tab state."
