@@ -33,6 +33,8 @@
 (require 'beacon)
 (require 'counsel)
 
+(defvar rigpa-application--original-transparency (rigpa-application-current-transparency))
+
 (evil-define-state application
   "Application state."
   :tag " <A> "
@@ -46,81 +48,83 @@
                                nil
                              'ignore)))
 
-(defun current-transparency ()
-  (nth 0
-       (frame-parameter (selected-frame)
-			'alpha)))
+(defun rigpa-application-current-transparency ()
+  (or (nth 0
+           (frame-parameter (selected-frame)
+                            'alpha))
+      100))
 
-(defun bound (value min-bound max-bound)
+(defun rigpa-application--bound (value min-bound max-bound)
   "Bound a value within the provided range."
   (min (max value min-bound) max-bound))
 
 ;; Set transparency of emacs
 ;; From: https://www.emacswiki.org/emacs/TransparentEmacs
-(defun transparency (value)
- "Sets the transparency of the frame window. 0=transparent/100=opaque"
- (interactive "nTransparency Value 0 - 100 opaque:")
- (set-frame-parameter (selected-frame) 'alpha (cons value value)))
+(defun rigpa-application-set-transparency (value)
+  "Sets the transparency of the frame window. 0=transparent/100=opaque"
+  (interactive "nTransparency Value 0 - 100 opaque:")
+  (set-frame-parameter (selected-frame) 'alpha (cons value value)))
 
-(defun adjust-transparency (delta)
+(defun rigpa-application--adjust-transparency (delta)
   "Adjust the transparency of the frame window by the configured delta,
    in the range: 0=transparent/100=opaque"
   (interactive)
-  (transparency (bound (+ (current-transparency)
-                          delta)
-                       0
-                       100)))
+  (rigpa-application-set-transparency
+   (bound (+ (rigpa-application-current-transparency)
+             delta)
+          0
+          100)))
 
-(defun increase-transparency (&optional superlative)
+(defun rigpa-application-increase-transparency (&optional superlative)
   "Increase frame transparency."
   (interactive)
   (cond ((eq superlative nil)
-         (adjust-transparency -1))
+         (rigpa-application--adjust-transparency -1))
         ((eq superlative 'more)
-         (adjust-transparency -5))
-        (t (maximize-transparency))))
+         (rigpa-application--adjust-transparency -5))
+        (t (rigpa-application-maximize-transparency))))
 
-(defun decrease-transparency (&optional superlative)
+(defun rigpa-application-decrease-transparency (&optional superlative)
   "Decrease frame transparency."
   (interactive)
   (cond ((eq superlative nil)
-         (adjust-transparency 1))
+         (rigpa-application--adjust-transparency 1))
         ((eq superlative 'more)
-         (adjust-transparency 5))
-        (t (minimize-transparency))))
+         (rigpa-application--adjust-transparency 5))
+        (t (rigpa-application-minimize-transparency))))
 
-(defun maximize-transparency ()
+(defun rigpa-application-maximize-transparency ()
   "Maximize frame transparency (i.e. make transparent)"
   (interactive)
-  (transparency 0))
+  (rigpa-application-set-transparency 0))
 
-(defun minimize-transparency ()
+(defun rigpa-application-minimize-transparency ()
   "Minimize frame transparency (i.e. make opaque)"
   (interactive)
-  (transparency 100))
+  (rigpa-application-set-transparency 100))
 
-(defun return-to-original-transparency ()
+(defun rigpa-application-return-to-original-transparency ()
   "Return to original transparency prior to making changes."
   (interactive)
-  (transparency original-transparency))
+  (rigpa-application-set-transparency rigpa-application--original-transparency))
 
 (defhydra hydra-transparency (:columns 1
-                              :body-pre (setq original-transparency
-                                              (current-transparency)))
+                              :body-pre (setq rigpa-application--original-transparency
+                                              (rigpa-application-current-transparency)))
   "Control frame transparency"
-  ("+" decrease-transparency "decrease transparency")
-  ("-" increase-transparency "increase transparency")
-  ("k" decrease-transparency "decrease transparency")
+  ("+" rigpa-application-decrease-transparency "decrease transparency")
+  ("-" rigpa-application-increase-transparency "increase transparency")
+  ("k" rigpa-application-decrease-transparency "decrease transparency")
   ("C-k" (lambda ()
            (interactive)
-           (decrease-transparency 'more)) "decrease transparency more")
+           (rigpa-application-decrease-transparency 'more)) "decrease transparency more")
   ("j" increase-transparency "increase transparency")
   ("C-j" (lambda ()
            (interactive)
-           (increase-transparency 'more)) "increase transparency more")
-  ("M-k" minimize-transparency "least transparent (opaque)")
-  ("M-j" maximize-transparency "most transparent")
-  ("q" return-to-original-transparency  "return to original transparency" :exit t)
+           (rigpa-application-increase-transparency 'more)) "increase transparency more")
+  ("M-k" rigpa-application-minimize-transparency "least transparent (opaque)")
+  ("M-j" rigpa-application-maximize-transparency "most transparent")
+  ("q" rigpa-application-return-to-original-transparency  "return to original transparency" :exit t)
   ("<escape>" ignore "quit" :exit t))
 
 (defhydra hydra-application (:columns 1

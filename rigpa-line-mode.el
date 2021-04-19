@@ -179,9 +179,9 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
       (if (zerop (forward-line (1- n)))
           (- (line-end-position)
              (line-beginning-position)))))
-  (setq current-line-number (line-number-at-pos))
-  (setq current-line-length (line-length current-line-number))
-  (message "Line %d, length = %d" current-line-number current-line-length))
+  (message "Line %d, length = %d"
+           (line-number-at-pos)
+           (line-length current-line-number)))
 
 (evil-define-command rigpa-line-toggle-comment (count)
   "Comment / uncomment line"
