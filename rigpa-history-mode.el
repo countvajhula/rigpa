@@ -30,6 +30,7 @@
 (require 'hydra)
 (require 'chimera)
 (require 'chimera-hydra)
+(require 'git-timemachine)
 
 (evil-define-state history
   "History state."

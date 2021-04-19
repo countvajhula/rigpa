@@ -245,7 +245,7 @@ current level reflects the mode's position in the tower."
   (let* ((mode-name (symbol-name evil-state))
          (level-number
           (rigpa-ensemble-member-position-by-name (rigpa--local-tower)
-                                                mode-name)))
+                                                  mode-name)))
     (when level-number
       (setq rigpa--current-level level-number))))
 
@@ -296,7 +296,7 @@ is precisely the thing to be done."
   "Remember the current state to 'recall' it later."
   (setq-local rigpa-recall mode-name))
 
-(defun rigpa-serialize-mode (mode)
+(defun rigpa-serialize-mode (mode tower level-number)
   "A string representation of a mode."
   (let ((name (rigpa-editing-entity-name mode)))
     (concat "|―――"

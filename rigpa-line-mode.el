@@ -79,15 +79,16 @@
   "Move line left"
   (interactive "p")
   (save-excursion
-    (evil-first-non-blank)
-    (setq starting-from (- (point) count))
-    (if (< starting-from
-           (line-beginning-position))
-        (setq starting-from (line-beginning-position)))
-    (evil-delete-backward-char starting-from
-                               (point)
-                               'exclusive
-                               nil)))
+    (let (starting-from)
+      (evil-first-non-blank)
+      (setq starting-from (- (point) count))
+      (if (< starting-from
+             (line-beginning-position))
+          (setq starting-from (line-beginning-position)))
+      (evil-delete-backward-char starting-from
+                                 (point)
+                                 'exclusive
+                                 nil))))
 
 (evil-define-command rigpa-line-move-right (count)
   "Move line right"
@@ -115,11 +116,11 @@
     (unless (bobp)
       (evil-previous-line)
       (evil-first-non-blank)
-      (setq line-position (- (point)
-                             (line-beginning-position)))
-      (evil-next-line)
-      (rigpa-line-move-far-left)
-      (rigpa-line-move-right line-position))))
+      (let ((line-position (- (point)
+                              (line-beginning-position))))
+        (evil-next-line)
+        (rigpa-line-move-far-left)
+        (rigpa-line-move-right line-position)))))
 
 (defun rigpa-line-move-very-bottom ()
   "Move line to bottom"

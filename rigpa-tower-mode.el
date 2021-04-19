@@ -118,7 +118,7 @@
                                                    level-number)))
         (setq tower-str
               (concat tower-str
-                      (rigpa-serialize-mode mode)
+                      (rigpa-serialize-mode mode tower level-number)
                       "\n"))))
     (concat (string-trim tower-str)
             "\n"
