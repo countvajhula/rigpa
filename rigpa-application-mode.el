@@ -33,7 +33,7 @@
 (require 'beacon)
 (require 'counsel)
 
-(defvar rigpa-application--original-transparency (rigpa-application-current-transparency))
+(defvar rigpa-application--original-transparency 100)
 
 (evil-define-state application
   "Application state."
@@ -70,10 +70,10 @@
    in the range: 0=transparent/100=opaque"
   (interactive)
   (rigpa-application-set-transparency
-   (bound (+ (rigpa-application-current-transparency)
-             delta)
-          0
-          100)))
+   (rigpa-application--bound (+ (rigpa-application-current-transparency)
+                                delta)
+                             0
+                             100)))
 
 (defun rigpa-application-increase-transparency (&optional superlative)
   "Increase frame transparency."
@@ -118,7 +118,7 @@
   ("C-k" (lambda ()
            (interactive)
            (rigpa-application-decrease-transparency 'more)) "decrease transparency more")
-  ("j" increase-transparency "increase transparency")
+  ("j" rigpa-application-increase-transparency "increase transparency")
   ("C-j" (lambda ()
            (interactive)
            (rigpa-application-increase-transparency 'more)) "increase transparency more")
