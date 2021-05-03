@@ -30,10 +30,10 @@
 
 (defun rigpa--define-evil-key (key fn map state)
   "Define an evil keybinding in an evil-backed rigpa mode."
-  (evil-define-key (list state 'visual 'operator)
-                   map
-                   (kbd key)
-                   fn))
+  (evil-define-key* (list state 'visual 'operator)
+                    map
+                    (kbd key)
+                    fn))
 
 (defun rigpa--define-evil-keys-from-spec (keyspec keymap state)
   "Define evil keys from a specification."
