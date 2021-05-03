@@ -39,7 +39,7 @@
 (defvar-local rigpa-view--original-position nil)
 ;; ideally replace with "fit to width"
 ;; as well as, in addition, mark and recall
-(defvar rigpa-view-preferred-zoom-level 3)
+(defvar rigpa-view-preferred-zoom-level 2)
 
 (evil-define-state view
   "View state."
@@ -182,7 +182,7 @@
   ("H" rigpa-view-recenter-at-top "recenter at top")
   ("L" rigpa-view-recenter-at-bottom "recenter at bottom")
   ("<backspace>" rigpa-view-reset-zoom "reset zoom")
-  ("=" rigpa-view-reset-zoom "reset zoom")
+  ("=" rigpa-view-reset-preferred-zoom "reset to preferred")
   ("<tab>" rigpa-view-reset-preferred-zoom "reset to preferred")
   ("K" rigpa-view-zoom-in "zoom in")
   ("J" rigpa-view-zoom-out "zoom out")
