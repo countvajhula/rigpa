@@ -188,8 +188,10 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
            (default-mode-name (editing-ensemble-default (rigpa--local-tower))))
       (cond ((rigpa--member-of-ensemble-p current-mode
                                           (rigpa--local-tower))
-             ;; do nothing in this case
-             nil)
+             ;; we don't want to do anything in this case,
+             ;; but re-enter the current mode to ensure
+             ;; that it reconciles state with the new tower
+             (rigpa-enter-mode current-mode-name))
             (recall-mode-name
              ;; recall if available
              (rigpa--clear-local-recall)
