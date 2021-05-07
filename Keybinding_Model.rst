@@ -4,7 +4,7 @@ Keybinding Model
 Spatial
 -------
 	← ↓ ↑ →  h j k l
-	
+
 	> < + - expand contract
 
 Temporal
@@ -62,11 +62,13 @@ Entry/Exit
 Concepts
 --------
 	"Canonical Action":
-		- Each mode has a "canonical" action which is mapped to the same keybinding as direct entry (e.g. s-b s-b, or s-w w)
+		- Each mode has a "canonical" action which is mapped to the same keybinding as direct entry (e.g. s-b s-b, or s-w s-w)
 		- Canonical action usually (always?) exits the mode
-		- E.g. window: maximize, buffer: flashback/"alt-tab", view: recenter, symex: evaluate
+		- E.g. window: "other window", buffer: flashback/"alt-tab", view: recenter, symex: evaluate
+	"Format":
+		Tab set to "preferred" (e.g. window: fit to width, view: preferred zoom, symex: indent)
 	"Default":
-		= return settings to some notion of "default" (e.g. window: equal split, view: normal zoom, symex: indent)
+		Backspace return settings to some notion of "default" (e.g. window: equal split, view: normal zoom)
 	The base (unmodified) keybindings set may include any higher-level keybindings (e.g. ? which would also fall under H-)
 
 	Simplicity over consistency.
