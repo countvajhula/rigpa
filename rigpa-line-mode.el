@@ -188,6 +188,11 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   (interactive "p")
   (comment-line count))
 
+(evil-define-command rigpa-line-clear (count)
+  "Clear line"
+  (interactive "p")
+  (evil-delete (line-beginning-position) (line-end-position)))
+
 (evil-define-operator rigpa-line-yank (beg end type register yank-handler)
   "Yank (copy) line"
   :motion evil-line
@@ -257,6 +262,7 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
     ("K" . rigpa-line-move-up)
     ("L" . rigpa-line-move-right)
     ("<tab>" . rigpa-line-indent)
+    ("<backspace>" . rigpa-line-clear)
     ("s-l" . rigpa-line-indent)
     (">" . evil-shift-right-line)
     ("<" . evil-shift-left-line)
