@@ -64,8 +64,10 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
 (defun rigpa-window-quit-other ()
   "Quit other window without changing focus."
   (interactive)
-  (other-window 1)
-  (quit-window))
+  (let ((original-window (selected-window)))
+    (other-window 1)
+    (quit-window)
+    (select-window original-window)))
 
 (defun rigpa-window--opposite-direction (direction)
   "The opposite direction."
