@@ -246,7 +246,7 @@ current ('original') buffer."
   ("s" rigpa-buffer-search "search" :exit t)
   ("/" rigpa-buffer-search "search" :exit t)
   ("i" ibuffer "list (ibuffer)" :exit t)
-  ("x" kill-buffer "delete")
+  ("x" kill-buffer "delete" :exit t)
   ("?" rigpa-buffer-info "info" :exit t)
   ("q" rigpa-buffer-return-to-original "return to original" :exit t)
   ("H-m" rigpa-toggle-menu "show/hide this menu")
