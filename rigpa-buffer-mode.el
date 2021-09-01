@@ -156,6 +156,8 @@ happen quickly enough not to be noticeable."
                     (s-starts-with-p rigpa-buffer-prefix (buffer-name buf)))
                   (buffer-list))
     (seq-filter (lambda (buf)
+                  ;; names of "invisible" buffers start with a space
+                  ;; https://www.emacswiki.org/emacs/InvisibleBuffers
                   (not (s-starts-with-p " " (buffer-name buf))))
                 (buffer-list))))
 
@@ -173,7 +175,15 @@ happen quickly enough not to be noticeable."
                                    ring-name)))
     (buffer-ring-torus-delete-ring buffer-ring-name)
     (dolist (buf (rigpa-buffer--active-buffers))
-      (buffer-ring-add buffer-ring-name buf))))
+      (buffer-ring-add buffer-ring-name buf))
+    ;; surface the current buffer for ab initio
+    ;; synchronization. It might make sense for buffer-ring
+    ;; to provide an interface `buffer-ring-create-with-buffers`
+    ;; that handles this, since it's a "chariot" necessity
+    ;; and not a factor while adding single buffers
+    (buffer-ring-surface-buffer (current-buffer))
+    (buffer-ring-torus-switch-to-ring buffer-ring-name)
+    (message "buffer ring size is %s" (buffer-ring-size))))
 
 (defun rigpa-buffer--setup-buffer-marks-table ()
   "Initialize the buffer marks hashtable and add an entry for the
