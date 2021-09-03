@@ -46,6 +46,7 @@
 (require 'hydra)
 (require 'chimera)
 (require 'ht)
+(require 'rigpa-custom)
 (require 'rigpa-char-mode)
 (require 'rigpa-word-mode)
 (require 'rigpa-line-mode)
