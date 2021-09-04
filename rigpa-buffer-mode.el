@@ -180,10 +180,8 @@ re-insert (i.e. \"break insert\") the exit buffer at that position."
                  (buffer-list)))))
 
 (defun rigpa-buffer-create-ring ()
-  "Create the buffer ring upon entry into buffer mode."
+  "Create or update the buffer ring upon entry into buffer mode."
   (interactive)
-  ;; delete buffer ring and rebuild from scratch each time, for now,
-  ;; instead of maintaining a persistent buffer ring via hooks
   (let* ((ring-name (if (eq rigpa--complex rigpa-meta-tower-complex)
                         "2"
                       "0")) ; TODO: derive from coordinates later
