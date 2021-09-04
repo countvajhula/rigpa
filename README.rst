@@ -71,8 +71,9 @@ This package isn't on `MELPA <https://melpa.org/>`_ yet, but you can install a p
     (global-set-key (kbd "C-<return>")
                     (lambda ()
                       (interactive)
-                      (rigpa-exit-tower-mode)
-                      (rigpa-enter-mode-mode)))
+                      (when (eq rigpa--complex rigpa-meta-tower-complex)
+                        (rigpa-exit-tower-mode)
+                        (rigpa-enter-mode-mode))))
 
     ;; indexed entry to various modes
     (global-set-key (kbd "s-n") 'evil-normal-state)
