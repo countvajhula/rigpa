@@ -29,6 +29,7 @@
 (require 'evil)
 (require 'hydra)
 (require 'ace-window)
+(require 'transpose-frame)
 (require 'winner)
 (require 'chimera)
 (require 'chimera-hydra)
@@ -292,6 +293,7 @@ happen quickly enough not to be noticeable."
   ("M-L" evil-window-move-far-right "move to far right")
   ("x" evil-window-delete "delete")
   ("c" evil-window-delete)
+  ("X" transpose-frame "transpose") ; there are more in transpose-frame that may be useful
   ("Q" rigpa-window-quit-other "quit other window" :exit t)
   ("o" rigpa-window-mru "Jump to most recent (like Alt-Tab)" :exit t)
   ("s-w" rigpa-window-mru "Jump to most recent (like Alt-Tab)" :exit t)
