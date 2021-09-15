@@ -65,7 +65,11 @@
 
 ;; define face for use in meta modes
 (make-face 'rigpa-face)
-(set-face-font 'rigpa-face "-*-Consolas-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1")
+(set-face-font 'rigpa-face
+               (cond ((find-font (font-spec :name "Consolas"))
+                      "Consolas")
+                     (t "Courier New")))
+
 (set-face-foreground 'rigpa-face "tomato")
 
 ;; the prefix that will be used in naming all buffers used
