@@ -33,6 +33,20 @@
 (require 'ivy)
 (require 'chimera)
 (require 'chimera-hydra)
+(require 's)
+(require 'dynaring)
+(require 'buffer-ring)
+
+(defconst rigpa-buffer-ring-name-prefix "rigpa-buffer-ring")
+
+(defgroup rigpa-buffer nil
+  "Rigpa buffer mode."
+  :group 'rigpa)
+
+(defcustom rigpa-buffer-ignore-buffers nil
+  "Buffers to ignore in navigation."
+  :type 'list
+  :group 'rigpa-buffer)
 
 (evil-define-state buffer
   "Buffer state."
@@ -133,28 +147,86 @@ buffer mode."
       (switch-to-buffer (rigpa-buffer-original-buffer))
     (error (message "Buffer no longer exists!"))))
 
-(defun rigpa-buffer-flash-to-original ()
-  "Go momentarily to original buffer and return.
+(defun rigpa-buffer-link-to-original ()
+  "Reinsert the exit buffer near the original head of the ring.
 
-This 'flash' allows the original buffer, rather than the previous one
-encountered while navigating to the present one, to be treated as the
-last buffer for 'flashback' ('Alt-tab') purposes. The flash should
-happen quickly enough not to be noticeable."
+When we exit buffer mode, the buffer we exit into should be considered
+proximate to the original buffer upon entry into buffer mode, not to
+the buffers encountered in transit to this buffer. To retain this notion
+of recency, we rotate the ring back to the original orientation and then
+re-insert (i.e. \"break insert\") the exit buffer at that position."
   (interactive)
-  (unless (equal (current-buffer) (rigpa-buffer-original-buffer))
-    (let ((inhibit-redisplay t)) ;; not sure if this is doing anything but FWIW
-      (rigpa-buffer-return-to-original)
-      (evil-switch-to-windows-last-buffer))))
+  (let ((exit-buffer (current-buffer))
+        (original-buffer (rigpa-buffer-original-buffer)))
+    (unless (eq exit-buffer original-buffer)
+      ;; rotate the ring back so the original buffer is at head, and
+      ;; then surface the exit buffer so it's proximate to the original
+      (dynaring-rotate-until (buffer-ring-ring-ring (buffer-ring-current-ring))
+                             #'dynaring-rotate-right
+                             (lambda (buf)
+                               (eq original-buffer buf)))
+      (buffer-ring-surface-buffer exit-buffer))))
 
-(defun rigpa-buffer-setup-marks-table ()
+(defun rigpa-buffer--active-buffers ()
+  "Get active buffers."
+  (seq-reverse ; for consistency with next-buffer / prev-buffer directions
+   (if (eq rigpa--complex rigpa-meta-tower-complex)
+       (seq-filter (lambda (buf)
+                     (s-starts-with-p rigpa-buffer-prefix (buffer-name buf)))
+                   (buffer-list))
+     (seq-filter (lambda (buf)
+                   ;; names of "invisible" buffers start with a space
+                   ;; https://www.emacswiki.org/emacs/InvisibleBuffers
+                   (and (not (s-starts-with-p " " (buffer-name buf)))
+                        (not (member (buffer-name buf) rigpa-buffer-ignore-buffers))))
+                 (buffer-list)))))
+
+(defun rigpa-buffer-create-ring ()
+  "Create or update the buffer ring upon entry into buffer mode."
+  (interactive)
+  (let* ((ring-name (if (eq rigpa--complex rigpa-meta-tower-complex)
+                        "2"
+                      "0")) ; TODO: derive from coordinates later
+         (buffer-ring-name (concat rigpa-buffer-ring-name-prefix
+                                   "-"
+                                   ring-name))
+         (ring-buffer-hash (make-hash-table :test #'equal)))
+    ;; add any buffers in the current active list of buffers
+    ;; to the buffer ring that aren't already there (e.g. buffers
+    ;; created since the last entry into buffer mode). If this is
+    ;; the first entry into buffer mode, create the buffer ring
+    ;; from scratch with all of the currently active buffers
+    (let ((active-buffers (rigpa-buffer--active-buffers))
+          (ring-buffers (dynaring-values
+                         (buffer-ring-ring-ring
+                          (buffer-ring-torus-get-ring buffer-ring-name)))))
+      (dolist (buf ring-buffers)
+        (puthash (buffer-name buf) t ring-buffer-hash))
+      (let ((fresh-buffers
+             (seq-filter (lambda (buf)
+                           (not (gethash (buffer-name buf)
+                                         ring-buffer-hash)))
+                         active-buffers)))
+        ;; we could just add all the buffers to the ring naively,
+        ;; and that would be fine since buffer-ring takes no action
+        ;; if the buffer happens to already be a member. But we don't
+        ;; do that since each time this happens a message is echoed
+        ;; to indicate that to the user, and the cost of I/O over
+        ;; possibly hundreds of buffer additions could add a perceptible
+        ;; lag in buffer mode entry. So we efficiently compute the
+        ;; difference and just add those buffers
+        (dolist (buf fresh-buffers)
+          (buffer-ring-add buffer-ring-name buf))))))
+
+(defun rigpa-buffer--setup-buffer-marks-table ()
   "Initialize the buffer marks hashtable and add an entry for the
 current ('original') buffer."
   (interactive)
   (defvar rigpa-buffer-marks-hash
     (make-hash-table :test 'equal))
-  (rigpa-buffer-save-original))
+  (rigpa-buffer--save-original-buffer))
 
-(defun rigpa-buffer-save-original ()
+(defun rigpa-buffer--save-original-buffer ()
   "Save current buffer as original buffer."
   (interactive)
   (rigpa-buffer-set-mark ?0))
@@ -180,33 +252,29 @@ current ('original') buffer."
   (rigpa-buffer-return-to-original)
   (ivy-switch-buffer))
 
-;; TODO: implement a dynamic ring buffer storing every visited buffer
-;; then, buffer mode retains a pointer to the current position (buffer)
-;; and reverses direction of traversal each time buffer mode is exited
-;; h and l should then use this wrapped form of previous and next buffer
-;; we also wouldn't need to rely on evil-switch-to-windows-last-buffer
-;; so there would be no need to "flash back"
-;; this should be an independent utility library so that it can be used
-;; in all modes that need an intuitive way to keep track of recency
-;; maybe `recency-ring`, has a nice... ring to it
+(defun rigpa-buffer-alternate ()
+  "Switch to most recent buffer."
+  (interactive)
+  (let* ((ring (buffer-ring-ring-ring (buffer-ring-current-ring)))
+         (other-buffer (dynaring-segment-value
+                        (dynaring-segment-next (dynaring-head ring)))))
+    ;; we can't simply rotate because we want to reinsert (i.e. "break insert")
+    ;; it so that recency ordering reflects correctly
+    (buffer-ring-switch-to-buffer other-buffer)))
 
-;; See the existing packages "dynamic-ring" and "buffer-ring" that
-;; probably do this very thing. But in this case it may be better to
-;; simply use (buffer-list) directly which appears to keep track of recency
 (defhydra hydra-buffer (:columns 3
-                        :body-pre (progn (rigpa-buffer-setup-marks-table) ; maybe put in ad-hoc entry
-                                         (chimera-hydra-signal-entry chimera-buffer-mode))
-                        :post (progn (rigpa-buffer-flash-to-original)
+                        :body-pre (chimera-hydra-signal-entry chimera-buffer-mode)
+                        :post (progn (rigpa-buffer-link-to-original)
                                      (chimera-hydra-portend-exit chimera-buffer-mode t))
                         :after-exit (chimera-hydra-signal-exit chimera-buffer-mode
                                                                #'chimera-handle-hydra-exit))
   "Buffer mode"
-  ("s-b" evil-switch-to-windows-last-buffer "switch to last" :exit t)
-  ("b" evil-switch-to-windows-last-buffer "switch to last" :exit t)
-  ("h" previous-buffer "previous")
+  ("s-b" rigpa-buffer-alternate "switch to last" :exit t)
+  ("b" rigpa-buffer-alternate "switch to last" :exit t)
+  ("h" buffer-ring-next-buffer "previous")
   ("j" ignore nil)
   ("k" ignore nil)
-  ("l" next-buffer "next")
+  ("l" buffer-ring-prev-buffer "next")
   ("y" rigpa-buffer-yank "yank")
   ("p" rigpa-buffer-paste "paste")
   ("n" (lambda ()
@@ -219,7 +287,7 @@ current ('original') buffer."
   ("s" rigpa-buffer-search "search" :exit t)
   ("/" rigpa-buffer-search "search" :exit t)
   ("i" ibuffer "list (ibuffer)" :exit t)
-  ("x" kill-buffer "delete")
+  ("x" kill-buffer "delete" :exit t)
   ("?" rigpa-buffer-info "info" :exit t)
   ("q" rigpa-buffer-return-to-original "return to original" :exit t)
   ("H-m" rigpa-toggle-menu "show/hide this menu")
@@ -232,9 +300,24 @@ current ('original') buffer."
 (defvar chimera-buffer-mode-exit-hook nil
   "Exit hook for rigpa buffer mode.")
 
+(defun rigpa-buffer-enter-mode ()
+  "Enter buffer mode (idempotent)."
+  (interactive)
+  (rigpa-buffer--setup-buffer-marks-table)
+  (rigpa-buffer-create-ring)
+  (unless (chimera-hydra-is-active-p "buffer")
+    (let* ((ring-name (if (eq rigpa--complex rigpa-meta-tower-complex)
+                          "2"
+                        "0"))    ; TODO: derive from coordinates later
+           (buffer-ring-name (concat rigpa-buffer-ring-name-prefix
+                                     "-"
+                                     ring-name)))
+      (buffer-ring-torus-switch-to-ring buffer-ring-name))
+    (hydra-buffer/body)))
+
 (defvar chimera-buffer-mode
   (make-chimera-mode :name "buffer"
-                     :enter #'hydra-buffer/body
+                     :enter #'rigpa-buffer-enter-mode
                      :pre-entry-hook 'chimera-buffer-mode-entry-hook
                      :post-exit-hook 'chimera-buffer-mode-exit-hook
                      :entry-hook 'evil-buffer-state-entry-hook

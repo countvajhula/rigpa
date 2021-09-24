@@ -48,8 +48,7 @@ to terminate the reference chain."
   ;;(setq cursor-type nil))
   (internal-show-cursor nil nil)
   (when display-line-numbers-mode
-    (display-line-numbers-mode -1))
-  (hl-line-mode))
+    (display-line-numbers-mode -1)))
 
 (defun rigpa--set-ui-for-meta-modes ()
   "Set (for now, global) UI parameters for meta modes."

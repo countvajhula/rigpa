@@ -38,6 +38,11 @@
 If no VALUE is provided, this clears the flag."
   (hydra-set-property hydra flag value))
 
+(defun chimera-hydra-is-active-p (name)
+  "Check whether the hydra named NAME is active."
+  (let ((hydra-keymap (symbol-value (intern (concat "hydra-" name "/keymap")))))
+    (eq hydra-curr-map hydra-keymap)))
+
 (defun chimera-hydra-portend-exit (mode &optional value)
   "Set a mode exit flag to indicate cleanup operations need to be performed."
   (let* ((mode-name (chimera-mode-name mode))
