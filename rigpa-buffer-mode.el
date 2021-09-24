@@ -214,9 +214,7 @@ re-insert (i.e. \"break insert\") the exit buffer at that position."
         ;; lag in buffer mode entry. So we efficiently compute the
         ;; difference and just add those buffers
         (dolist (buf fresh-buffers)
-          (buffer-ring-add buffer-ring-name buf))
-        (buffer-ring-torus-switch-to-ring buffer-ring-name)
-        (message "buffer ring size is %s" (buffer-ring-size))))))
+          (buffer-ring-add buffer-ring-name buf))))))
 
 (defun rigpa-buffer--setup-buffer-marks-table ()
   "Initialize the buffer marks hashtable and add an entry for the
@@ -263,9 +261,7 @@ current ('original') buffer."
     (buffer-ring-switch-to-buffer other-buffer)))
 
 (defhydra hydra-buffer (:columns 3
-                        :body-pre (progn (rigpa-buffer--setup-buffer-marks-table)
-                                         (chimera-hydra-signal-entry chimera-buffer-mode)
-                                         (rigpa-buffer-create-ring)) ; maybe put in ad-hoc entry
+                        :body-pre (chimera-hydra-signal-entry chimera-buffer-mode)
                         :post (progn (rigpa-buffer-link-to-original)
                                      (chimera-hydra-portend-exit chimera-buffer-mode t))
                         :after-exit (chimera-hydra-signal-exit chimera-buffer-mode
@@ -302,9 +298,24 @@ current ('original') buffer."
 (defvar chimera-buffer-mode-exit-hook nil
   "Exit hook for rigpa buffer mode.")
 
+(defun rigpa-buffer-enter-mode ()
+  "Enter buffer mode (idempotent)."
+  (interactive)
+  (rigpa-buffer--setup-buffer-marks-table)
+  (rigpa-buffer-create-ring)
+  (unless (chimera-hydra-is-active-p "buffer")
+    (let* ((ring-name (if (eq rigpa--complex rigpa-meta-tower-complex)
+                          "2"
+                        "0"))    ; TODO: derive from coordinates later
+           (buffer-ring-name (concat rigpa-buffer-ring-name-prefix
+                                     "-"
+                                     ring-name)))
+      (buffer-ring-torus-switch-to-ring buffer-ring-name))
+    (hydra-buffer/body)))
+
 (defvar chimera-buffer-mode
   (make-chimera-mode :name "buffer"
-                     :enter #'hydra-buffer/body
+                     :enter #'rigpa-buffer-enter-mode
                      :pre-entry-hook 'chimera-buffer-mode-entry-hook
                      :post-exit-hook 'chimera-buffer-mode-exit-hook
                      :entry-hook 'evil-buffer-state-entry-hook

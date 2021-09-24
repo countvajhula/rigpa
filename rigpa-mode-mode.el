@@ -391,7 +391,8 @@ current editing tower."
                        rigpa--current-tower-index)))
     (switch-to-buffer             ; TODO: base this on "state" instead
      (rigpa--buffer-name
-      (rigpa--tower tower-index)))))
+      (rigpa--tower tower-index)))
+    (rigpa--enter-appropriate-mode)))
 
 (defun rigpa-exit-mode-mode ()
   "Exit mode mode."

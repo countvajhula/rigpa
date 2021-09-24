@@ -144,7 +144,6 @@
       (setq rigpa--ground-buffer ground)
       (rigpa--set-meta-buffer-appearance)
       (insert (rigpa-serialize-tower tower))
-      (rigpa--enter-appropriate-mode)
       ;; store the tower index in the buffer so it can be read
       ;; in the tower buffer navigation side effect
       (setq-local rigpa--tower-index tower-index))
@@ -226,8 +225,10 @@ initial editing tower."
   (let ((tower-index (with-current-buffer (rigpa--get-ground-buffer)
                        rigpa--current-tower-index)))
     (switch-to-buffer
-     (rigpa--buffer-name
-      (rigpa--tower tower-index)))))
+     (let ((name (rigpa--buffer-name
+                  (rigpa--tower tower-index))))
+       name))
+    (rigpa--enter-appropriate-mode)))
 
 (defun rigpa-exit-tower-mode ()
   "Exit tower mode."
