@@ -34,6 +34,8 @@
 (require 'chimera)
 (require 'chimera-hydra)
 (require 's)
+(require 'dynaring)
+(require 'buffer-ring)
 
 (defconst rigpa-buffer-ring-name-prefix "rigpa-buffer-ring")
 
