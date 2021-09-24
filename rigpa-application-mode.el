@@ -127,7 +127,7 @@
   ("q" rigpa-application-return-to-original-transparency  "return to original transparency" :exit t)
   ("<escape>" ignore "quit" :exit t))
 
-(defhydra hydra-application (:columns 1
+(defhydra hydra-application (:columns 2
                              :exit t
                              :body-pre (chimera-hydra-signal-entry chimera-application-mode)
                              :post (chimera-hydra-portend-exit chimera-application-mode t)
@@ -142,6 +142,7 @@
   ("s" scroll-bar-mode "toggle scroll bar")
   ("l" hl-line-mode "toggle highlight line")
   ("c" counsel-load-theme "change color scheme")
+  ("f" set-frame-font "change font")
   ("H-m" rigpa-toggle-menu "show/hide this menu" :exit nil)
   ("<return>" rigpa-enter-lower-level "enter lower level")
   ("<escape>" rigpa-enter-higher-level "escape to higher level"))
