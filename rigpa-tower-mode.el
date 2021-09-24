@@ -225,9 +225,8 @@ initial editing tower."
   (let ((tower-index (with-current-buffer (rigpa--get-ground-buffer)
                        rigpa--current-tower-index)))
     (switch-to-buffer
-     (let ((name (rigpa--buffer-name
-                  (rigpa--tower tower-index))))
-       name))
+     (rigpa--buffer-name
+      (rigpa--tower tower-index)))
     (rigpa--enter-appropriate-mode)))
 
 (defun rigpa-exit-tower-mode ()
