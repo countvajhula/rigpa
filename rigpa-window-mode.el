@@ -29,6 +29,7 @@
 (require 'evil)
 (require 'hydra)
 (require 'ace-window)
+(require 'transpose-frame)
 (require 'winner)
 (require 'chimera)
 (require 'chimera-hydra)
@@ -64,8 +65,10 @@ TODO: This doesn't work with more than 2 windows that are all the same buffer."
 (defun rigpa-window-quit-other ()
   "Quit other window without changing focus."
   (interactive)
-  (other-window 1)
-  (quit-window))
+  (let ((original-window (selected-window)))
+    (other-window 1)
+    (quit-window)
+    (select-window original-window)))
 
 (defun rigpa-window--opposite-direction (direction)
   "The opposite direction."
@@ -290,6 +293,7 @@ happen quickly enough not to be noticeable."
   ("M-L" evil-window-move-far-right "move to far right")
   ("x" evil-window-delete "delete")
   ("c" evil-window-delete)
+  ("X" transpose-frame "transpose") ; there are more in transpose-frame that may be useful
   ("Q" rigpa-window-quit-other "quit other window" :exit t)
   ("o" rigpa-window-mru "Jump to most recent (like Alt-Tab)" :exit t)
   ("s-w" rigpa-window-mru "Jump to most recent (like Alt-Tab)" :exit t)

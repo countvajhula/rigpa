@@ -55,14 +55,6 @@
   (interactive)
   (evil-scroll-line-up 3))
 
-(defun rigpa-view-scroll-half-page-up ()
-  (interactive)
-  (evil-scroll-line-up (/ (window-total-height) 2)))
-
-(defun rigpa-view-scroll-half-page-down ()
-  (interactive)
-  (evil-scroll-line-down (/ (window-total-height) 2)))
-
 (defun rigpa-view-scroll-skip-up ()
   (interactive)
   (evil-scroll-line-up 9))
@@ -186,8 +178,8 @@
   ("<tab>" rigpa-view-reset-preferred-zoom "reset to preferred")
   ("K" rigpa-view-zoom-in "zoom in")
   ("J" rigpa-view-zoom-out "zoom out")
-  ("u" rigpa-view-scroll-half-page-up "leap up")
-  ("d" rigpa-view-scroll-half-page-down "leap down")
+  ("u" evil-scroll-up "leap up")
+  ("d" evil-scroll-down "leap down")
   ("n" rigpa-view-narrow "narrow context")
   ("w" widen "widen to full view")
   ("H-m" rigpa-toggle-menu "show/hide this menu")

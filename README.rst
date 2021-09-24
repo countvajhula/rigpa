@@ -71,8 +71,9 @@ This package isn't on `MELPA <https://melpa.org/>`_ yet, but you can install a p
     (global-set-key (kbd "C-<return>")
                     (lambda ()
                       (interactive)
-                      (rigpa-exit-tower-mode)
-                      (rigpa-enter-mode-mode)))
+                      (when (eq rigpa--complex rigpa-meta-tower-complex)
+                        (rigpa-exit-tower-mode)
+                        (rigpa-enter-mode-mode))))
 
     ;; indexed entry to various modes
     (global-set-key (kbd "s-n") 'evil-normal-state)
@@ -133,6 +134,14 @@ This package isn't on `MELPA <https://melpa.org/>`_ yet, but you can install a p
                     (lambda ()
                       (interactive)
                       (rigpa-enter-mode "word"))))
+
+Usage
+=====
+"Direct entry" into modes is (by default) done via the "super" key prefix, e.g. ``s-v`` goes into View Mode. ``Esc`` and ``Enter`` will always return you to a tower-native state and also navigate that tower. If you leave a buffer or window while in some state, by momentarily entering buffer or window mode, you will be placed back in your original state when you return. In-buffer states like Symex, Word, Character mode are backed by Evil, and do not show menus. Global states like View, Window, Buffer, are hydra-backed and can show/dismiss menus on demand (default binding ``H-m``).
+
+The most useful towers at the moment are Vim tower, Lisp tower (containing Symex mode), and Emacs tower. If you are working with Lisp code, then alternating (e.g. via ``s-m s-m``) between Vim and Lisp towers, or between Emacs and Lisp towers, is a common usage pattern. Whatever towers you define, you will probably want to leverage direct entry into View, Window, Buffer modes as part of normal usage, especially for their canonical actions. E.g. ``s-b s-b`` to alternate to most recent buffer, ``s-w s-w`` to alternate to most recent window, ``s-v <tab>`` to set to preferred zoom, ``s-w w`` to maximize window, besides using the usual navigation commands in these modes to get around.
+
+See the `Keybinding Model <https://github.com/countvajhula/rigpa/blob/master/Keybinding_Model.rst>`_ for keys that work in every mode, including navigations for getting around, and transformations for moving things around, or deleting, transforming them in some way.
 
 "License"
 ==========
