@@ -69,7 +69,9 @@
 (set-face-font 'rigpa-face
                (cond ((find-font (font-spec :name "Consolas"))
                       "Consolas")
-                     (t "Courier New")))
+                     ((find-font (font-spec :name "Courier New"))
+                      "Courier New")
+                     (t (font-get (face-attribute 'default :font) :name))))
 
 (set-face-foreground 'rigpa-face "tomato")
 
