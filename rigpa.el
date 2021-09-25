@@ -2,7 +2,7 @@
 
 ;; Author: Siddhartha Kasivajhula <sid@countvajhula.com>
 ;; URL: https://github.com/countvajhula/rigpa
-;; Version: 0.1
+;; Version: 0.5
 ;; Package-Requires: ((emacs "26.1") (evil "1.2.14") (hydra "0.15.0") (symex "0.8.1") (dynaring "0.3") (buffer-ring "0.3.1") (ivy "0.13.0") (centaur-tabs "3.1") (beacon "1.3.4") (dictionary "1.11") (ace-window "0.9.0") (git-timemachine "4.11") (parsec "0.1.3") (ht "2.0") (s "1.12.0") (dash "2.18.0") (transpose-frame "0.2.0"))
 ;; Keywords: emulations, frames, convenience
 
