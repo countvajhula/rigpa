@@ -144,7 +144,7 @@ Version 2017-11-01"
 buffer mode."
   (interactive)
   (condition-case nil
-      (switch-to-buffer (rigpa-buffer-original-buffer))
+      (buffer-ring-rotate-to-buffer (rigpa-buffer-original-buffer))
     (error (message "Buffer no longer exists!"))))
 
 (defun rigpa-buffer-link-to-original ()
@@ -161,11 +161,8 @@ re-insert (i.e. \"break insert\") the exit buffer at that position."
     (unless (eq exit-buffer original-buffer)
       ;; rotate the ring back so the original buffer is at head, and
       ;; then surface the exit buffer so it's proximate to the original
-      (dynaring-rotate-until (buffer-ring-ring-ring (buffer-ring-current-ring))
-                             #'dynaring-rotate-right
-                             (lambda (buf)
-                               (eq original-buffer buf)))
-      (buffer-ring-surface-buffer exit-buffer))))
+      (buffer-ring-rotate-to-buffer original-buffer)
+      (buffer-ring-switch-to-buffer exit-buffer))))
 
 (defun rigpa-buffer--active-buffers ()
   "Get active buffers."
@@ -181,7 +178,7 @@ re-insert (i.e. \"break insert\") the exit buffer at that position."
                         (not (member (buffer-name buf) rigpa-buffer-ignore-buffers))))
                  (buffer-list)))))
 
-(defun rigpa-buffer-create-ring ()
+(defun rigpa-buffer-refresh-ring ()
   "Create or update the buffer ring upon entry into buffer mode."
   (interactive)
   (let* ((ring-name (if (eq rigpa--complex rigpa-meta-tower-complex)
@@ -264,8 +261,7 @@ current ('original') buffer."
 
 (defhydra hydra-buffer (:columns 3
                         :body-pre (chimera-hydra-signal-entry chimera-buffer-mode)
-                        :post (progn (rigpa-buffer-link-to-original)
-                                     (chimera-hydra-portend-exit chimera-buffer-mode t))
+                        :post (chimera-hydra-portend-exit chimera-buffer-mode t)
                         :after-exit (chimera-hydra-signal-exit chimera-buffer-mode
                                                                #'chimera-handle-hydra-exit))
   "Buffer mode"
@@ -304,7 +300,7 @@ current ('original') buffer."
   "Enter buffer mode (idempotent)."
   (interactive)
   (rigpa-buffer--setup-buffer-marks-table)
-  (rigpa-buffer-create-ring)
+  (rigpa-buffer-refresh-ring)
   (unless (chimera-hydra-is-active-p "buffer")
     (let* ((ring-name (if (eq rigpa--complex rigpa-meta-tower-complex)
                           "2"
@@ -314,6 +310,10 @@ current ('original') buffer."
                                      ring-name)))
       (buffer-ring-torus-switch-to-ring buffer-ring-name))
     (hydra-buffer/body)))
+
+(defun rigpa--on-buffer-mode-post-exit ()
+  "Actions to take upon exit from buffer mode."
+  (rigpa-buffer-link-to-original))
 
 (defvar chimera-buffer-mode
   (make-chimera-mode :name "buffer"

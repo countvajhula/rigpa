@@ -200,7 +200,7 @@
   (blink-cursor-mode -1)
   (internal-show-cursor nil nil))
 
-(defun rigpa--on-view-mode-exit ()
+(defun rigpa--on-view-mode-post-exit ()
   "Actions to take upon exit from view mode."
   (blink-cursor-mode 1) ; TODO: depend on user config instead
   (internal-show-cursor nil t)

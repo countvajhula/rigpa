@@ -54,6 +54,9 @@ If no VALUE is provided, this clears the flag."
   (let* ((mode-name (chimera-mode-name mode))
          (hydra (chimera--hydra-for-state mode-name)))
     (when (hydra-get-property hydra :exiting)
+      ;; TODO: probably don't need a generic callback here
+      ;; rather, we should invoke handle-exit directly,
+      ;; forwarding any callback(s) to it
       (funcall callback mode)
       (chimera--hydra-set-flag hydra :exiting))))
 
@@ -66,6 +69,19 @@ If no VALUE is provided, this clears the flag."
 (defun chimera-handle-hydra-exit (mode)
   "Adapter helper for hydra to call hooks upon exit."
   (let ((mode-name (chimera-mode-name mode)))
+    (when (chimera-mode-manage-hooks mode)
+      (run-hooks (chimera-mode-exit-hook mode)))
+    ;; TODO: chimera mustn't know about rigpa, so we should operate in
+    ;; terms of callbacks here rather than call the rigpa interfaces
+    ;; directly
+    ;; TODO: there does not seem to be a way to use this to
+    ;; identify post-exit in the case where a hydra is exited through
+    ;; a non-head, since after-exit isn't called in that case ¯\_(ツ)_/¯
+    ;; .. unless we can detect that a foreign key has been pressed in
+    ;; the post hook, since that _is_ called always including for
+    ;; foreign keys (but, alas, before executing the command).
+    ;; In any case, this means that exit through non-head is not
+    ;; a clean exit at this point.
     (when (equal (symbol-name evil-state) mode-name)
       ;; hydra has exited but we haven't gone to a new state.
       ;; This means limbo, and we need to enter an appropriate
@@ -83,8 +99,7 @@ If no VALUE is provided, this clears the flag."
         ;; ensure the entry buffer reverts to a sane state
         (rigpa--enter-appropriate-mode entry-buffer))
       (chimera--hydra-set-flag hydra :entry-buffer))
-    (when (chimera-mode-manage-hooks mode)
-      (run-hooks (chimera-mode-exit-hook mode)))))
+    (run-hooks (chimera-mode-post-exit-hook mode))))
 
 (provide 'chimera-hydra)
 ;;; chimera-hydra.el ends here
