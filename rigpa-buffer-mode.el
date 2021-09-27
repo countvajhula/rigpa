@@ -188,6 +188,11 @@ re-insert (i.e. \"break insert\") the exit buffer at that position."
                                    "-"
                                    ring-name))
          (ring-buffer-hash (make-hash-table :test #'equal)))
+    ;; activate buffer-ring minor mode if it isn't already active,
+    ;; which ensures that hooks etc. are in place to keep buffers
+    ;; and rings synchronized.
+    (unless buffer-ring-mode
+      (buffer-ring-mode))
     ;; add any buffers in the current active list of buffers
     ;; to the buffer ring that aren't already there (e.g. buffers
     ;; created since the last entry into buffer mode). If this is
