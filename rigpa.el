@@ -71,7 +71,10 @@
                       "Consolas")
                      ((find-font (font-spec :name "Courier New"))
                       "Courier New")
-                     (t (font-get (face-attribute 'default :font) :name))))
+                     (t (let ((font (face-attribute 'default :font)))
+                          (if (eq font 'unspecified)
+                              'unspecified
+                            (font-get font :name))))))
 
 (set-face-foreground 'rigpa-face "tomato")
 
