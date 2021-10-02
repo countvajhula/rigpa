@@ -1,7 +1,7 @@
 rigpa
 =====
 
-Modular editing levels and towers for Emacs.
+A modal UI framework for Emacs.
 
 Rigpa allows you to construct structures relating editing modes (these
 could be evil modes or hydras, or anything implementing a common modal
@@ -17,6 +17,16 @@ includes conventions around keybindings for moving up and down the
 hierarchy of editing levels, standard semantics of modifier keys,
 defining a canonical action for each mode, and other such conventions
 to ensure semantic uniformity across editing levels.
+
+Watch the demo from EmacsConf 2020:
+
+.. raw:: html
+
+  <p align="center">
+    <a href="https://www.youtube.com/watch?v=jBUurG3f_aM">
+      <img width=70% src="https://i.imgur.com/EV3q6G7.png" alt="Watch video" title="Watch video"/>
+    </a>
+  </p>
 
 Installation
 ============
