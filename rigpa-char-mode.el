@@ -154,6 +154,8 @@
         ("l" . evil-forward-char)
         ("c" . evil-substitute)
         ("y" . rigpa-char-yank)
+        ("g" . goto-char) ; improve these to have beginning/end
+        ("G" . goto-char) ; default behavior
         ("C-h" . (lambda ()
                    (interactive)
                    (evil-backward-char 3)))
