@@ -48,6 +48,9 @@ This package isn't on `MELPA <https://melpa.org/>`_ yet, but you can install a p
     :config
     (setq rigpa-mode t)
 
+    ;; temporary workaround for https://github.com/countvajhula/rigpa/issues/9
+    (remove-hook 'evil-symex-state-exit-hook #'symex-disable-editing-minor-mode)
+
     ;; custom config
     (setq rigpa-show-menus nil)
 
