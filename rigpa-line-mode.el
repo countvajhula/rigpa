@@ -243,6 +243,13 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   (rigpa-line-delete-remaining)
   (evil-insert-state))
 
+;; TODO: this doesn't trigger feedback via evil-goggles
+;; probably needs to be defined in a more idiomatic way
+(evil-define-command rigpa-line-yank-remaining ()
+  "Yank (copy) remaining lines."
+  (interactive)
+  (evil-yank (line-beginning-position) (point-max) 'line))
+
 (defun rigpa-line-top ()
   (interactive)
   (evil-goto-line))
@@ -287,6 +294,7 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
     ("p" . evil-paste-after)
     ("D" . rigpa-line-delete-remaining)
     ("C" . rigpa-line-change-remaining)
+    ("Y" . rigpa-line-yank-remaining)
     ("P" . evil-paste-before)
     ("'" . rigpa-line-flashback)
     ("s" . rigpa-line-split)

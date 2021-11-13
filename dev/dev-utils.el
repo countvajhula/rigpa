@@ -19,7 +19,8 @@ result."
 
 (setq rigpa-line--user-evil-keyspec
       '(("D" . rigpa-line-delete-remaining)
-        ("C" . rigpa-line-change-remaining)))
+        ("C" . rigpa-line-change-remaining)
+        ("Y" . rigpa-line-yank-remaining)))
 
 (let ((keyspec (rigpa--combine-alists rigpa-line--user-evil-keyspec
                                       rigpa--line-mode-keyspec)))
