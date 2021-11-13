@@ -232,6 +232,17 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
     (let ((current-prefix-arg count))
       (call-interactively #'evil-join))))
 
+(defun rigpa-line-delete-remaining ()
+  "Delete remaining lines."
+  (interactive)
+  (evil-delete (line-beginning-position) (point-max)))
+
+(defun rigpa-line-change-remaining ()
+  "Change remaining lines."
+  (interactive)
+  (rigpa-line-delete-remaining)
+  (evil-insert-state))
+
 (defun rigpa-line-top ()
   (interactive)
   (evil-goto-line))
@@ -274,6 +285,8 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
     ("c" . rigpa-line-change)
     ("y" . rigpa-line-yank)
     ("p" . evil-paste-after)
+    ("D" . rigpa-line-delete-remaining)
+    ("C" . rigpa-line-change-remaining)
     ("P" . evil-paste-before)
     ("'" . rigpa-line-flashback)
     ("s" . rigpa-line-split)

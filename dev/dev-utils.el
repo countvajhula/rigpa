@@ -17,8 +17,12 @@ result."
       '(("g" . goto-char)
         ("G" . goto-char)))
 
-(let ((keyspec (rigpa--combine-alists rigpa-char--user-evil-keyspec
-                                      rigpa--char-mode-keyspec)))
+(setq rigpa-line--user-evil-keyspec
+      '(("D" . rigpa-line-delete-remaining)
+        ("C" . rigpa-line-change-remaining)))
+
+(let ((keyspec (rigpa--combine-alists rigpa-line--user-evil-keyspec
+                                      rigpa--line-mode-keyspec)))
   (rigpa--define-evil-keys-from-spec keyspec
-                                     rigpa-char-mode-map
-                                     'char))
+                                     rigpa-line-mode-map
+                                     'line))
