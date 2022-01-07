@@ -214,11 +214,10 @@ and simply toggles whether the menu is visible or not."
       ;; what should happen on a per-mode basis here
       (cond ((eq major-mode 'dired-mode)
              (dired-find-file))
-            ((eq major-mode 'help-mode)
-             (push-button))
-            ((eq major-mode 'debugger-mode)
-             (push-button))
-            ((eq major-mode 'ert-results-mode)
+            ((memq major-mode '(help-mode
+                                debugger-mode
+                                ert-results-mode
+                                racket-describe-mode))
              (push-button))
             ((eq major-mode 'occur-mode)
              (occur-mode-goto-occurrence))
@@ -240,6 +239,8 @@ and simply toggles whether the menu is visible or not."
              (xref-goto-xref))
             ((eq major-mode 'ibuffer-mode)
              (ibuffer-visit-buffer))
+            ((eq major-mode 'sr-mode)
+             (sr-advertised-find-file))
             (t (rigpa-enter-lower-level)))
     (cond ((eq major-mode 'Custom-mode)
            (Custom-newline (point)))
