@@ -178,36 +178,43 @@ re-insert (i.e. \"break insert\") the exit buffer at that position."
                         (not (member (buffer-name buf) rigpa-buffer-ignore-buffers))))
                  (buffer-list)))))
 
-(defun rigpa-buffer-refresh-ring ()
-  "Create or update the buffer ring upon entry into buffer mode."
-  (interactive)
-  (let* ((ring-name (if (eq rigpa--complex rigpa-meta-tower-complex)
-                        "2"
-                      "0")) ; TODO: derive from coordinates later
-         (buffer-ring-name (concat rigpa-buffer-ring-name-prefix
-                                   "-"
-                                   ring-name))
+(defun rigpa-buffer--special-p (&optional buffer)
+  "Predicate to check if BUFFER is special rather than typical, e.g. a REPL."
+  ;; TODO: better to be explicit about what this category is,
+  ;; e.g. "I/O buffers" - it's fine for now though since there
+  ;; are only two categories
+  (let ((buffer (buffer-ring--parse-buffer buffer)))
+    (string-match-p "^\*" (buffer-name buffer))))
+
+(defun rigpa-buffer--refresh-ring (ring-name
+                                   ring-membership-criterion-p
+                                   active-buffers)
+  "Create or update the buffers in ring RING-NAME."
+  (let* ((ring-prefix (if (eq rigpa--complex rigpa-meta-tower-complex)
+                          "2"
+                        "0")) ; TODO: derive from coordinates later
+         (ring-name (concat rigpa-buffer-ring-name-prefix
+                            "-"
+                            ring-prefix
+                            "-"
+                            ring-name))
          (ring-buffer-hash (make-hash-table :test #'equal)))
-    ;; activate buffer-ring minor mode if it isn't already active,
-    ;; which ensures that hooks etc. are in place to keep buffers
-    ;; and rings synchronized.
-    (unless buffer-ring-mode
-      (buffer-ring-mode))
     ;; add any buffers in the current active list of buffers
     ;; to the buffer ring that aren't already there (e.g. buffers
     ;; created since the last entry into buffer mode). If this is
     ;; the first entry into buffer mode, create the buffer ring
     ;; from scratch with all of the currently active buffers
-    (let ((active-buffers (rigpa-buffer--active-buffers))
-          (ring-buffers (dynaring-values
+    (let ((ring-buffers (dynaring-values
                          (buffer-ring-ring-ring
-                          (buffer-ring-torus-get-ring buffer-ring-name)))))
+                          (buffer-ring-torus-get-ring ring-name)))))
       (dolist (buf ring-buffers)
         (puthash (buffer-name buf) t ring-buffer-hash))
       (let ((fresh-buffers
              (seq-filter (lambda (buf)
-                           (not (gethash (buffer-name buf)
-                                         ring-buffer-hash)))
+                           (and (funcall ring-membership-criterion-p buf)
+                                (not
+                                 (gethash (buffer-name buf)
+                                          ring-buffer-hash))))
                          active-buffers)))
         ;; we could just add all the buffers to the ring naively,
         ;; and that would be fine since buffer-ring takes no action
@@ -218,7 +225,38 @@ re-insert (i.e. \"break insert\") the exit buffer at that position."
         ;; lag in buffer mode entry. So we efficiently compute the
         ;; difference and just add those buffers
         (dolist (buf fresh-buffers)
-          (buffer-ring-add buffer-ring-name buf))))))
+          (buffer-ring-add ring-name buf))))))
+
+(defun rigpa-buffer-refresh-ring ()
+  "Create or update the buffer ring upon entry into buffer mode."
+  (interactive)
+  ;; activate buffer-ring minor mode if it isn't already active,
+  ;; which ensures that hooks etc. are in place to keep buffers
+  ;; and rings synchronized.
+  (unless buffer-ring-mode
+    (buffer-ring-mode))
+  ;; add any buffers in the current active list of buffers
+  ;; to the buffer ring that aren't already there (e.g. buffers
+  ;; created since the last entry into buffer mode). If this is
+  ;; the first entry into buffer mode, create the buffer ring
+  ;; from scratch with all of the currently active buffers
+  (let ((active-buffers (rigpa-buffer--active-buffers)))
+    ;; we could just add all the buffers to the ring naively,
+    ;; and that would be fine since buffer-ring takes no action
+    ;; if the buffer happens to already be a member. But we don't
+    ;; do that since each time this happens a message is echoed
+    ;; to indicate that to the user, and the cost of I/O over
+    ;; possibly hundreds of buffer additions could add a perceptible
+    ;; lag in buffer mode entry. So we efficiently compute the
+    ;; difference and just add those buffers
+    (dolist (ring-config
+             (list (list "typical" (lambda (buf)
+                                     (not
+                                      (rigpa-buffer--special-p buf))))
+                   (list "special" #'rigpa-buffer--special-p)))
+      (rigpa-buffer--refresh-ring (nth 0 ring-config)
+                                  (nth 1 ring-config)
+                                  active-buffers))))
 
 (defun rigpa-buffer--setup-buffer-marks-table ()
   "Initialize the buffer marks hashtable and add an entry for the
@@ -312,7 +350,16 @@ current ('original') buffer."
                         "0"))    ; TODO: derive from coordinates later
            (buffer-ring-name (concat rigpa-buffer-ring-name-prefix
                                      "-"
-                                     ring-name)))
+                                     ring-name
+                                     (if (rigpa-buffer--special-p)
+                                         "-special"
+                                       "-typical"))))
+      ;; TODO: the appropriate ring is a function of both the current
+      ;; meta level but also the current buffer.  we could probably
+      ;; make this selection of appropriate ring more robust by using
+      ;; something like bufler, whose categories could correspond to
+      ;; distinct rings, and maybe meta level could simply be another
+      ;; category here.
       (buffer-ring-torus-switch-to-ring buffer-ring-name))
     (hydra-buffer/body)))
 
