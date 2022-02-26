@@ -270,8 +270,7 @@ happen quickly enough not to be noticeable."
 (defhydra hydra-window (:columns 4
                         :body-pre (progn (rigpa-window-setup-marks-table)
                                          (chimera-hydra-signal-entry chimera-window-mode))
-                        :post (progn (rigpa-window-flash-to-original)
-                                     (chimera-hydra-portend-exit chimera-window-mode t))
+                        :post (progn (chimera-hydra-portend-exit chimera-window-mode t))
                         :after-exit (chimera-hydra-signal-exit chimera-window-mode
                                                                #'chimera-handle-hydra-exit))
   "Window mode"
@@ -336,6 +335,10 @@ happen quickly enough not to be noticeable."
   ("H-m" rigpa-toggle-menu "show/hide this menu")
   ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
   ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
+
+(defun rigpa--on-window-mode-post-exit ()
+  "Actions to take upon exit from window mode."
+  (rigpa-window-flash-to-original))
 
 (defvar chimera-window-mode-entry-hook nil
   "Entry hook for rigpa window mode.")
