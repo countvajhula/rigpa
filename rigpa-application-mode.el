@@ -31,7 +31,6 @@
 (require 'chimera-hydra)
 (require 'centaur-tabs)
 (require 'beacon)
-(require 'counsel)
 
 (defvar rigpa-application--original-transparency 100)
 
@@ -127,6 +126,14 @@
   ("q" rigpa-application-return-to-original-transparency  "return to original transparency" :exit t)
   ("<escape>" ignore "quit" :exit t))
 
+(fset (intern "rigpa-application-load-theme")
+      (symbol-function
+       (cond ((require 'counsel nil t)
+              'counsel-load-theme)
+             ((require 'consult nil t)
+              'consult-theme)
+             (t 'load-theme))))
+
 (defhydra hydra-application (:columns 2
                              :exit t
                              :body-pre (chimera-hydra-signal-entry chimera-application-mode)
@@ -141,7 +148,7 @@
   ("B" beacon-mode "toggle beacon")
   ("s" scroll-bar-mode "toggle scroll bar")
   ("l" hl-line-mode "toggle highlight line")
-  ("c" counsel-load-theme "change color scheme")
+  ("c" rigpa-application-load-theme "change color scheme")
   ("f" set-frame-font "change font")
   ("H-m" rigpa-toggle-menu "show/hide this menu" :exit nil)
   ("<return>" rigpa-enter-lower-level "enter lower level")
