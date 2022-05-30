@@ -64,7 +64,7 @@
 (require 'rigpa-history-mode)
 (require 'rigpa-tower-mode)
 
-;; define face for use in meta modes (make-face 'rigpa-face)
+;; define face for use in meta modes
 (make-face 'rigpa-face)
 (set-face-font 'rigpa-face
                (or (find-font (font-spec :name "Consolas"))
