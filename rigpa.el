@@ -67,14 +67,9 @@
 ;; define face for use in meta modes
 (make-face 'rigpa-face)
 (set-face-font 'rigpa-face
-               (cond ((find-font (font-spec :name "Consolas"))
-                      "Consolas")
-                     ((find-font (font-spec :name "Courier New"))
-                      "Courier New")
-                     (t (let ((font (face-attribute 'default :font)))
-                          (if (eq font 'unspecified)
-                              'unspecified
-                            (font-get font :name))))))
+               (or (find-font (font-spec :name "Consolas"))
+                   (find-font (font-spec :name "Courier New"))
+                   (face-attribute 'default :font)))
 
 (set-face-foreground 'rigpa-face "tomato")
 
