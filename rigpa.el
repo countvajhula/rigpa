@@ -234,6 +234,8 @@ and simply toggles whether the menu is visible or not."
              (xref-goto-xref))
             ((eq major-mode 'ibuffer-mode)
              (ibuffer-visit-buffer))
+            ((eq major-mode 'rst-toc-mode)
+             (rst-toc-mode-follow-link-kill))
             ((eq major-mode 'sr-mode)
              (sr-advertised-find-file))
             (t (rigpa-enter-lower-level)))
