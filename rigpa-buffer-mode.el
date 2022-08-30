@@ -184,7 +184,9 @@ re-insert (i.e. \"break insert\") the exit buffer at that position."
   ;; e.g. "I/O buffers" - it's fine for now though since there
   ;; are only two categories
   (let ((buffer (buffer-ring--parse-buffer buffer)))
-    (string-match-p "^\*" (buffer-name buffer))))
+    (or (string-match-p "^\*" (buffer-name buffer))
+        (with-current-buffer buffer
+          buffer-read-only))))
 
 (defun rigpa-buffer--refresh-ring (ring-name
                                    ring-membership-criterion-p
@@ -240,7 +242,11 @@ re-insert (i.e. \"break insert\") the exit buffer at that position."
   ;; created since the last entry into buffer mode). If this is
   ;; the first entry into buffer mode, create the buffer ring
   ;; from scratch with all of the currently active buffers
-  (let ((active-buffers (rigpa-buffer--active-buffers)))
+  (let* ((active-buffers (rigpa-buffer--active-buffers))
+         (rings (list (list "typical" (lambda (buf)
+                                        (not
+                                         (rigpa-buffer--special-p buf))))
+                      (list "special" #'rigpa-buffer--special-p))))
     ;; we could just add all the buffers to the ring naively,
     ;; and that would be fine since buffer-ring takes no action
     ;; if the buffer happens to already be a member. But we don't
@@ -249,11 +255,7 @@ re-insert (i.e. \"break insert\") the exit buffer at that position."
     ;; possibly hundreds of buffer additions could add a perceptible
     ;; lag in buffer mode entry. So we efficiently compute the
     ;; difference and just add those buffers
-    (dolist (ring-config
-             (list (list "typical" (lambda (buf)
-                                     (not
-                                      (rigpa-buffer--special-p buf))))
-                   (list "special" #'rigpa-buffer--special-p)))
+    (dolist (ring-config rings)
       (rigpa-buffer--refresh-ring (nth 0 ring-config)
                                   (nth 1 ring-config)
                                   active-buffers))))
