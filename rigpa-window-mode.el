@@ -253,6 +253,10 @@ window mode."
 window mode."
   (interactive)
   (let ((window (rigpa-window-original-window)))
+    ;; TODO: it seems that when a window (e.g. REPL) is closed
+    ;; it shows Normal mode in the other (only remaining) window
+    ;; but it doesn't allow you to move, suggesting the hydra is
+    ;; still invisibly active.
     (when (window-live-p window)
       (select-window window))))
 

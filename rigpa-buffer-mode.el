@@ -295,6 +295,7 @@ current ('original') buffer."
 (defun rigpa-buffer-alternate ()
   "Switch to most recent buffer."
   (interactive)
+  ;; TODO: should ignore ring and just do MRU in current window?
   (let* ((ring (buffer-ring-ring-ring (buffer-ring-current-ring)))
          (other-buffer (dynaring-segment-value
                         (dynaring-segment-next (dynaring-head ring)))))

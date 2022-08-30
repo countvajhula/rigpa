@@ -212,6 +212,9 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
   "Enter higher level."
   (interactive)
   (let ((mode-name (symbol-name evil-state)))
+    ;; TODO: using evil-state doesn't work in buffer mode
+    ;; since the other buffer is in a local (e.g. Insert) state
+    ;; rather than buffer state
     (if (rigpa-ensemble-member-position-by-name (rigpa--local-tower)
                                                 mode-name)
         (when (< rigpa--current-level
@@ -297,7 +300,7 @@ is precisely the thing to be done."
       ;; only set recall here if it is currently in the tower AND
       ;; going to a state outside the tower
       (when (and (rigpa-ensemble-member-position-by-name (rigpa--local-tower)
-                                                       mode-name)
+                                                         mode-name)
                  (not (rigpa-ensemble-member-position-by-name
                        (rigpa--local-tower)
                        (symbol-name evil-next-state))))
