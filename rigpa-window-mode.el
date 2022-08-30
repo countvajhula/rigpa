@@ -252,7 +252,9 @@ window mode."
   "Return to the window we were in at the time of entering
 window mode."
   (interactive)
-  (select-window (rigpa-window-original-window)))
+  (let ((window (rigpa-window-original-window)))
+    (when (window-live-p window)
+      (select-window window))))
 
 (defun rigpa-window-flash-to-original ()
   "Go momentarily to original window and return.
