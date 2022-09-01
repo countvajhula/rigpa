@@ -166,27 +166,46 @@ re-insert (i.e. \"break insert\") the exit buffer at that position."
 
 (defun rigpa-buffer--active-buffers ()
   "Get active buffers."
-  (seq-reverse ; for consistency with next-buffer / prev-buffer directions
-   (if (eq rigpa--complex rigpa-meta-tower-complex)
-       (seq-filter (lambda (buf)
-                     (s-starts-with-p rigpa-buffer-prefix (buffer-name buf)))
-                   (buffer-list))
-     (seq-filter (lambda (buf)
-                   ;; names of "invisible" buffers start with a space
-                   ;; https://www.emacswiki.org/emacs/InvisibleBuffers
-                   (and (not (s-starts-with-p " " (buffer-name buf)))
-                        (not (member (buffer-name buf) rigpa-buffer-ignore-buffers))))
-                 (buffer-list)))))
+  (let ((buffers (seq-reverse (buffer-list))))
+    ;; reversed for consistency with next-buffer / prev-buffer directions
+    (if (eq rigpa--complex rigpa-meta-tower-complex)
+        (seq-filter (lambda (buf)
+                      (s-starts-with-p rigpa-buffer-prefix (buffer-name buf)))
+                    buffers)
+      (seq-filter (lambda (buf)
+                    ;; names of "invisible" buffers start with a space
+                    ;; https://www.emacswiki.org/emacs/InvisibleBuffers
+                    (and (not (s-starts-with-p " " (buffer-name buf)))
+                         (not (member (buffer-name buf) rigpa-buffer-ignore-buffers))))
+                  buffers))))
 
-(defun rigpa-buffer--special-p (&optional buffer)
-  "Predicate to check if BUFFER is special rather than typical, e.g. a REPL."
-  ;; TODO: better to be explicit about what this category is,
-  ;; e.g. "I/O buffers" - it's fine for now though since there
-  ;; are only two categories
+(defun rigpa-buffer--non-file-buffer-p (&optional buffer)
+  "Predicate to check if BUFFER is one that isn't associated with a file.
+
+This includes e.g. REPLs, the Messages buffer."
+  ;; TODO: maybe a "process" category would make sense, i.e. a buffer
+  ;; that has an associated process?
   (let ((buffer (buffer-ring--parse-buffer buffer)))
-    (or (string-match-p "^\*" (buffer-name buffer))
-        (with-current-buffer buffer
-          buffer-read-only))))
+    (and (not (rigpa-buffer--read-only-buffer-p buffer))
+         (string-match-p "^\*" (buffer-name buffer)))))
+
+(defun rigpa-buffer--read-only-buffer-p (&optional buffer)
+  "Predicate to check if BUFFER is read-only.
+
+This includes e.g. the Messages buffer, the Magit status buffer,
+but not REPLs and Scratch buffers."
+  (let ((buffer (buffer-ring--parse-buffer buffer)))
+    (with-current-buffer buffer
+      buffer-read-only)))
+
+(defun rigpa-buffer--typical-buffer-p (&optional buffer)
+  "Predicate to check if BUFFER is \"typical.\"
+
+This simply is the complement of read-only or non-file buffer
+(see the other buffer predicates)."
+  (let ((buffer (buffer-ring--parse-buffer buffer)))
+    (and (not (rigpa-buffer--non-file-buffer-p buffer))
+         (not (rigpa-buffer--read-only-buffer-p buffer)))))
 
 (defun rigpa-buffer--refresh-ring (ring-name
                                    ring-membership-criterion-p
@@ -243,10 +262,15 @@ re-insert (i.e. \"break insert\") the exit buffer at that position."
   ;; the first entry into buffer mode, create the buffer ring
   ;; from scratch with all of the currently active buffers
   (let* ((active-buffers (rigpa-buffer--active-buffers))
-         (rings (list (list "typical" (lambda (buf)
-                                        (not
-                                         (rigpa-buffer--special-p buf))))
-                      (list "special" #'rigpa-buffer--special-p))))
+         ;; TODO: would be better to do it as an assembly line
+         ;; where buffers matching a predicate are removed from
+         ;; the line so that there's no chance they'd be added
+         ;; to a subsequent ring. At the moment each predicate
+         ;; explicity checks that buffers also _don't_ match
+         ;; preceding predicates.
+         (rings (list (list "readonly" #'rigpa-buffer--read-only-buffer-p)
+                      (list "special" #'rigpa-buffer--non-file-buffer-p)
+                      (list "typical" #'rigpa-buffer--typical-buffer-p))))
     ;; we could just add all the buffers to the ring naively,
     ;; and that would be fine since buffer-ring takes no action
     ;; if the buffer happens to already be a member. But we don't
@@ -354,9 +378,9 @@ current ('original') buffer."
            (buffer-ring-name (concat rigpa-buffer-ring-name-prefix
                                      "-"
                                      ring-name
-                                     (if (rigpa-buffer--special-p)
-                                         "-special"
-                                       "-typical"))))
+                                     (cond ((rigpa-buffer--read-only-buffer-p) "-readonly")
+                                           ((rigpa-buffer--non-file-buffer-p) "-special")
+                                           (t "-typical")))))
       ;; TODO: the appropriate ring is a function of both the current
       ;; meta level but also the current buffer.  we could probably
       ;; make this selection of appropriate ring more robust by using
