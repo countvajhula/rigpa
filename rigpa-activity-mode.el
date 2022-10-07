@@ -64,6 +64,13 @@
   (insert-buffer rigpa-activity-accumulate-buffer-name)
   (kill-buffer rigpa-activity-accumulate-buffer-name))
 
+;; TODO: only stop at points that change the buffer location
+;; in a "significant" way. either by number of lines, or
+;; by whether it's a different top-level definition, or whether
+;; there are blank lines between original/current point and
+;; the change location. That way, navigating will always be
+;; useful and we don't need to move multiple times before
+;; there is a useful change.
 (defun rigpa-activity-previous ()
   "docstring"
   (interactive)
