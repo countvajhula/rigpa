@@ -216,6 +216,18 @@
                      :entry-hook 'evil-view-state-entry-hook
                      :exit-hook 'evil-view-state-exit-hook))
 
+;; mark view navigations as not repeatable from the perspective
+;; of Evil's dot operator - i.e. I believe these won't get added
+;; to the repeat stack.
+;; TODO: make this part of a generic "mode setup"
+;; but is there a better way than manually registering all
+;; interactive commands this way?
+(mapc #'evil-declare-abort-repeat
+      '(rigpa-view-scroll-up
+        rigpa-view-scroll-down
+        rigpa-view-scroll-skip-up
+        rigpa-view-scroll-skip-down))
+
 
 (provide 'rigpa-view-mode)
 ;;; rigpa-view-mode.el ends here
