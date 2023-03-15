@@ -329,6 +329,7 @@
 
 ;; TODO: review these:
 ;; exiting keys: c, a, i, A, I, s-r (delete), s-o (delete others), ?, Esc, Ret
+;; TODO: add a spell-correct verb, which magically fixes a word according to whatever suggestion.
 
 (rigpa--define-evil-keys-from-spec rigpa--word-mode-keyspec
                                    rigpa-word-mode-map
