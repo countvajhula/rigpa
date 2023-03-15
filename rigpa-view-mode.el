@@ -37,9 +37,9 @@
 (require 'chimera-hydra)
 
 (defvar-local rigpa-view--original-position nil)
-;; ideally replace with "fit to width"
-;; as well as, in addition, mark and recall
-(defvar rigpa-view-preferred-zoom-level 2)
+;; TODO: support mark and recall
+(defvar rigpa-view-preferred-zoom-level-min 35)
+(defvar rigpa-view-preferred-zoom-level-max 45)
 
 (evil-define-state view
   "View state."
@@ -84,7 +84,19 @@
 (defun rigpa-view-reset-preferred-zoom ()
   "Reset zoom level to preferred"
   (interactive)
-  (text-scale-set rigpa-view-preferred-zoom-level)
+  ;; TODO: potential for infinite loop if zooming in/out takes leaps
+  ;; that are too large. looks like text-scale can be changed by
+  ;; non-integer values
+  (cond ((< (window-screen-lines)
+            rigpa-view-preferred-zoom-level-min)
+         (while (< (window-screen-lines) rigpa-view-preferred-zoom-level-min)
+           (text-scale-decrease 1)))
+        ((> (window-screen-lines)
+            rigpa-view-preferred-zoom-level-max)
+         (while (> (window-screen-lines) rigpa-view-preferred-zoom-level-max)
+           (text-scale-increase 1)))
+        ;; otherwise do nothing
+        (t nil))
   (recenter))
 
 (defun rigpa-view-scroll-left (&optional superlative)
