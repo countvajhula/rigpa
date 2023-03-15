@@ -142,6 +142,11 @@
                    (quote exclusive)
                    nil))
 
+(defun rigpa-char-toggle-case ()
+  "Toggle case."
+  (interactive)
+  (evil-invert-char (point) (1+ (point))))
+
 (evil-define-operator rigpa-char-yank (beg end type register yank-handler)
   "Yank (copy) character"
   :motion evil-forward-char
@@ -154,6 +159,7 @@
         ("l" . evil-forward-char)
         ("c" . evil-substitute)
         ("y" . rigpa-char-yank)
+        ("~" . rigpa-char-toggle-case)
         ("g" . goto-char) ; improve these to have beginning/end
         ("G" . goto-char) ; default behavior
         ("C-h" . (lambda ()
