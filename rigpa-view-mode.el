@@ -87,19 +87,18 @@
   ;; TODO: potential for infinite loop if zooming in/out takes leaps
   ;; that are too large. looks like text-scale can be changed by
   ;; non-integer values
-  (let ((rigpa-view-preferred-zoom-level-min
-         (- rigpa-view-preferred-zoom-level
-            rigpa-view-preferred-zoom-level-tolerance))
-        (rigpa-view-preferred-zoom-level-min
-         (+ rigpa-view-preferred-zoom-level
-            rigpa-view-preferred-zoom-level-tolerance)))
-    (cond ((< (window-screen-lines)
-              rigpa-view-preferred-zoom-level-min)
-           (while (< (window-screen-lines) rigpa-view-preferred-zoom-level-min)
+  ;; TODO: don't zoom in if > N% of lines overflow -- use the logic
+  ;; from Window mode
+  ;; TODO: zoom should be stable
+  (let ((min-zoom (- rigpa-view-preferred-zoom-level
+                     rigpa-view-preferred-zoom-level-tolerance))
+        (max-zoom (+ rigpa-view-preferred-zoom-level
+                     rigpa-view-preferred-zoom-level-tolerance)))
+    (cond ((< (window-screen-lines) min-zoom)
+           (while (< (window-screen-lines) min-zoom)
              (text-scale-decrease 1)))
-          ((> (window-screen-lines)
-              rigpa-view-preferred-zoom-level-max)
-           (while (> (window-screen-lines) rigpa-view-preferred-zoom-level-max)
+          ((> (window-screen-lines) max-zoom)
+           (while (> (window-screen-lines) max-zoom)
              (text-scale-increase 1)))
           ;; otherwise do nothing
           (t nil)))
