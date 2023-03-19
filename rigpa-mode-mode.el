@@ -160,6 +160,10 @@ to ensure, upon state transitions, that:
                             0)))
     (let ((mode-name (rigpa-editing-entity-name
                       (rigpa-ensemble-member-at-position tower level-number))))
+      ;; so, we're expecting the tower to be a list containing
+      ;; _modes_. Instead, we want to change it to contain
+      ;; _mode rings_. Let's first convert it into a mode ring
+      ;; containing a single element.
       (rigpa-enter-mode mode-name)
       (setq rigpa--current-level level-number))))
 
