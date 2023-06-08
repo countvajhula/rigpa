@@ -275,7 +275,11 @@ happen quickly enough not to be noticeable."
 
 (defhydra hydra-window (:columns 4
                         :body-pre (progn (rigpa-window-setup-marks-table)
-                                         (chimera-hydra-signal-entry chimera-window-mode))
+                                         (chimera-hydra-signal-entry chimera-window-mode)
+                                         ;; TODO: this should happen via proper entry hook.
+                                         ;; Also, if it is already active, then make a note
+                                         ;; of it and don't disable it upon exit
+                                         (auto-dim-other-buffers-mode 1))
                         :post (progn (chimera-hydra-portend-exit chimera-window-mode t))
                         :after-exit (chimera-hydra-signal-exit chimera-window-mode
                                                                #'chimera-handle-hydra-exit))
@@ -344,7 +348,8 @@ happen quickly enough not to be noticeable."
 
 (defun rigpa--on-window-mode-post-exit ()
   "Actions to take upon exit from window mode."
-  (rigpa-window-flash-to-original))
+  (rigpa-window-flash-to-original)
+  (auto-dim-other-buffers-mode -1))
 
 (defvar chimera-window-mode-entry-hook nil
   "Entry hook for rigpa window mode.")
