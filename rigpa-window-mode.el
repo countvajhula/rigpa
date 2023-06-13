@@ -31,6 +31,7 @@
 (require 'ace-window)
 (require 'transpose-frame)
 (require 'winner)
+(require 'windmove)
 (require 'chimera)
 (require 'chimera-hydra)
 (require 'dash)
