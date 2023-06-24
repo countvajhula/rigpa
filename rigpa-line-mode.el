@@ -212,10 +212,10 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   "Insert newline and reindent."
   (interactive "p")
   (if (bolp)
-      (newline-and-indent count)
+      (newline count)
     (save-excursion
       (beginning-of-line)
-      (newline-and-indent count))))
+      (newline count))))
 
 (evil-define-command rigpa-line-append-newline (count)
   "Append newline and reindent."
