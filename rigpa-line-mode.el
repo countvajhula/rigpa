@@ -139,6 +139,13 @@
   :motion evil-line
   (evil-delete beg end type register yank-handler))
 
+(evil-define-command rigpa-line-delete-backwards (count)
+  "Delete previous line."
+  (interactive "p")
+  (save-excursion
+    (forward-line -1)
+    (kill-whole-line)))
+
 (defun rigpa-line-flashback ()
   "Flashback to prev line"
   (interactive)
@@ -289,6 +296,7 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
     ("M-K" . rigpa-line-move-very-top)
     ("M-L" . rigpa-line-move-far-right)
     ("x" . rigpa-line-delete)
+    ("X" . rigpa-line-delete-backwards)
     ("c" . rigpa-line-change)
     ("y" . rigpa-line-yank)
     ("p" . evil-paste-after)
