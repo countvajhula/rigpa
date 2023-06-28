@@ -143,8 +143,10 @@
   "Delete previous line."
   (interactive "p")
   (save-excursion
-    (forward-line -1)
-    (kill-whole-line)))
+    (let ((result (forward-line (- count))))
+      (if (= 0 result)
+          (kill-whole-line count)
+        (error "beginning of buffer")))))
 
 (defun rigpa-line-flashback ()
   "Flashback to prev line"
