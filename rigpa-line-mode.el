@@ -259,11 +259,11 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   (interactive)
   (evil-yank (line-beginning-position) (point-max) 'line))
 
-(defun rigpa-line-top ()
+(defun rigpa-line-bottom ()
   (interactive)
   (evil-goto-line))
 
-(defun rigpa-line-bottom ()
+(defun rigpa-line-top ()
   (interactive)
   (evil-goto-line 1))
 
@@ -282,8 +282,12 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
     ("l" . evil-next-line)
     ("C-j" . rigpa-line-jump-down)
     ("C-k" . rigpa-line-jump-up)
-    ("M-j" . rigpa-line-top)
-    ("M-k" . rigpa-line-bottom)
+    ("M-h" . rigpa-line-top)
+    ("M-k" . rigpa-line-top)
+    ("0" . rigpa-line-top)
+    ("M-l" . rigpa-line-bottom)
+    ("M-j" . rigpa-line-bottom)
+    ("$" . rigpa-line-bottom)
     ("H" . rigpa-line-move-left)
     ("J" . rigpa-line-move-down)
     ("K" . rigpa-line-move-up)
