@@ -31,6 +31,7 @@
 (require 'chimera)
 (require 'rigpa-text-parsers)
 (require 'rigpa-meta)
+(require 'dynaring)
 
 (evil-define-state mode
   "Mode state."
@@ -151,15 +152,44 @@ to ensure, upon state transitions, that:
   "Enter mode MODE-NAME."
   (chimera-enter-mode (ht-get rigpa-modes mode-name)))
 
+(defun rigpa--rotate-mode-ring (direction)
+  "Rotate the current mode ring in DIRECTION."
+  (interactive)
+  (let* ((tower (rigpa--local-tower))
+         (tower-height (rigpa-ensemble-size tower))
+         (level-number (max (min rigpa--current-level
+                                 (1- tower-height))
+                            0))
+         (ring (rigpa-ensemble-member-at-position tower
+                                                  level-number)))
+    (funcall direction ring)
+    (rigpa-enter-mode
+     (rigpa-editing-entity-name
+      (dynaring-value ring)))))
+
+(defun rigpa-rotate-mode-ring-left ()
+  "Rotate the current mode ring to the left."
+  (interactive)
+  (rigpa--rotate-mode-ring #'dynaring-rotate-left))
+
+(defun rigpa-rotate-mode-ring-right ()
+  "Rotate the current mode ring to the right."
+  (interactive)
+  (rigpa--rotate-mode-ring #'dynaring-rotate-right))
+
 (defun rigpa--enter-level (level-number)
   "Enter level LEVEL-NUMBER"
   (let* ((tower (rigpa--local-tower))
          (tower-height (rigpa-ensemble-size tower))
          (level-number (max (min level-number
                                  (1- tower-height))
-                            0)))
-    (let ((mode-name (rigpa-editing-entity-name
-                      (rigpa-ensemble-member-at-position tower level-number))))
+                            0))
+         (level (rigpa-ensemble-member-at-position tower
+                                                   level-number))
+         (mode (if (dynaringp level)
+                   (dynaring-value level)
+                 level)))
+    (let ((mode-name (rigpa-editing-entity-name mode)))
       ;; so, we're expecting the tower to be a list containing
       ;; _modes_. Instead, we want to change it to contain
       ;; _mode rings_. Let's first convert it into a mode ring
@@ -317,7 +347,7 @@ is precisely the thing to be done."
 
 (defun rigpa-serialize-mode (mode tower level-number)
   "A string representation of a mode."
-  (let ((name (rigpa-editing-entity-name mode)))
+  (let ((name (rigpa-editing-entity-name (if (dynaringp mode) (dynaring-value mode) mode))))
     (concat "|―――"
             (number-to-string level-number)
             "―――|"

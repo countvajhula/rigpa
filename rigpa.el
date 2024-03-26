@@ -333,8 +333,7 @@ and simply toggles whether the menu is visible or not."
         (make-editing-ensemble :name "lisp"
                                :default "symex"
                                :members (list chimera-insert-mode
-                                              chimera-symex-mode
-                                              chimera-normal-mode)))
+                                              (dynaring chimera-normal-mode chimera-symex-mode))))
 
   ;; complexes for base editing levels
   (setq rigpa-general-complex
