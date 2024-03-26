@@ -28,6 +28,7 @@
 
 (require 'cl-lib)
 (require 'chimera)
+(require 'dynaring)
 
 (cl-defstruct editing-ensemble
   "Specification for an editing ensemble."
@@ -48,7 +49,7 @@ entity, such as modes, towers or complexes.")
 
 (defun rigpa-ensemble-member-position-by-name (ensemble name)
   "The position of a member in an ensemble, by name."
-  (seq-position (seq-map #'rigpa-editing-entity-name
+  (seq-position (seq-map (lambda (m) (rigpa-editing-entity-name (if (dynaringp m) (dynaring-value m) m)))
                          (editing-ensemble-members ensemble))
                 name))
 
