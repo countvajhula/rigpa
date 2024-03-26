@@ -53,6 +53,13 @@ entity, such as modes, towers or complexes.")
                          (editing-ensemble-members ensemble))
                 name))
 
+(defun rigpa--member-of-ensemble-p (ensemble entity-name)
+  "A predicate asserting whether ENTITY-NAME is a member of ENSEMBLE."
+  (not
+   (not
+    (rigpa-ensemble-member-position-by-name ensemble
+                                            entity-name))))
+
 (defun rigpa-ensemble-size (ensemble)
   "Size of ensemble (e.g. height of a tower)."
   (length (editing-ensemble-members ensemble)))
@@ -60,10 +67,6 @@ entity, such as modes, towers or complexes.")
 (defun rigpa-ensemble-member-at-position (tower position)
   "Mode at LEVEL in the TOWER."
   (nth position (editing-ensemble-members tower)))
-
-(defun rigpa--member-of-ensemble-p (entity ensemble)
-  "A predicate asserting whether ENTITY is a member of ENSEMBLE."
-  (memq entity (editing-ensemble-members ensemble)))
 
 
 (provide 'rigpa-types)

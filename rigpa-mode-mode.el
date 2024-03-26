@@ -308,11 +308,11 @@ is precisely the thing to be done."
           (recall rigpa-recall))
       ;; only set recall here if it is currently in the tower AND
       ;; going to a state outside the tower
-      (when (and (rigpa-ensemble-member-position-by-name (rigpa--local-tower)
-                                                         mode-name)
-                 (not (rigpa-ensemble-member-position-by-name
-                       (rigpa--local-tower)
-                       (symbol-name evil-next-state))))
+      (when (and (rigpa--member-of-ensemble-p (rigpa--local-tower)
+                                              mode-name)
+                 (not
+                  (rigpa--member-of-ensemble-p (rigpa--local-tower)
+                                               (symbol-name evil-next-state))))
         (rigpa-set-mode-recall mode-name)))))
 
 (defun rigpa-set-mode-recall (mode-name)
