@@ -201,8 +201,8 @@ to ensure, upon state transitions, that:
   "Enter lower level."
   (interactive)
   (let ((mode-name (symbol-name evil-state)))
-    (if (rigpa-ensemble-member-position-by-name (rigpa--local-tower)
-                                                mode-name)
+    (if (rigpa--member-of-ensemble-p (rigpa--local-tower)
+                                     mode-name)
         (when (> rigpa--current-level 0)
           (rigpa--enter-level (1- rigpa--current-level)))
       ;; "not my tower, not my problem"
@@ -230,8 +230,8 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
            (current-mode-name (chimera-mode-name current-mode))
            (recall-mode-name (rigpa--local-recall-mode))
            (default-mode-name (editing-ensemble-default (rigpa--local-tower))))
-      (cond ((rigpa--member-of-ensemble-p current-mode
-                                          (rigpa--local-tower))
+      (cond ((rigpa--member-of-ensemble-p (rigpa--local-tower)
+                                          current-mode-name)
              ;; we don't want to do anything in this case,
              ;; but re-enter the current mode to ensure
              ;; that it reconciles state with the new tower
@@ -250,8 +250,8 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
     ;; TODO: using evil-state doesn't work in buffer mode
     ;; since the other buffer is in a local (e.g. Insert) state
     ;; rather than buffer state
-    (if (rigpa-ensemble-member-position-by-name (rigpa--local-tower)
-                                                mode-name)
+    (if (rigpa--member-of-ensemble-p (rigpa--local-tower)
+                                     mode-name)
         (when (< rigpa--current-level
                  (1- (rigpa-ensemble-size (rigpa--local-tower))))
           (rigpa--enter-level (1+ rigpa--current-level)))
@@ -334,11 +334,11 @@ is precisely the thing to be done."
           (recall rigpa-recall))
       ;; only set recall here if it is currently in the tower AND
       ;; going to a state outside the tower
-      (when (and (rigpa-ensemble-member-position-by-name (rigpa--local-tower)
-                                                         mode-name)
-                 (not (rigpa-ensemble-member-position-by-name
-                       (rigpa--local-tower)
-                       (symbol-name evil-next-state))))
+      (when (and (rigpa--member-of-ensemble-p (rigpa--local-tower)
+                                              mode-name)
+                 (not
+                  (rigpa--member-of-ensemble-p (rigpa--local-tower)
+                                               (symbol-name evil-next-state))))
         (rigpa-set-mode-recall mode-name)))))
 
 (defun rigpa-set-mode-recall (mode-name)

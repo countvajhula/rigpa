@@ -74,10 +74,10 @@
          (ground-recall (with-current-buffer ground-buffer
                           rigpa-recall))
          (level (or (rigpa-ensemble-member-position-by-name tower
-                                                          ground-mode-name)
+                                                            ground-mode-name)
                     (and ground-recall
                          (rigpa-ensemble-member-position-by-name tower
-                                                               ground-recall))
+                                                                 ground-recall))
                     0))
          (tower-height (rigpa-ensemble-size tower)))
     (evil-goto-line (- tower-height level))))
