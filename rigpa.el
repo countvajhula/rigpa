@@ -224,8 +224,9 @@
     (let ((keymap (symbol-value
                    (intern
                     (concat "evil-" state "-state-map")))))
-      (define-key keymap [escape] #'rigpa-enter-higher-level)
-      (unless (member state chimera-insertion-states)
+      (if (member state chimera-insertion-states)
+          (define-key keymap [escape] #'rigpa-enter-higher-level)
+        (define-key keymap [escape] #'rigpa-rotate-mode-ring-left)
         (define-key keymap [return] #'rigpa--enter-lower-or-pass-through))))
   ;; exit visual state gracefully
   (define-key evil-visual-state-map [escape] (lambda ()
