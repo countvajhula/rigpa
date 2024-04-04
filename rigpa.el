@@ -226,7 +226,13 @@
                     (concat "evil-" state "-state-map")))))
       (if (member state chimera-insertion-states)
           (define-key keymap [escape] #'rigpa-enter-higher-level)
-        (define-key keymap [escape] #'rigpa-rotate-mode-ring-left)
+        (define-key keymap [escape] (lambda ()
+                                      (interactive)
+                                      (if (equal "lisp"
+                                                 (rigpa-editing-entity-name
+                                                  (rigpa--local-tower)))
+                                          (rigpa-rotate-mode-ring-left)
+                                        (rigpa-enter-higher-level))))
         (define-key keymap [return] #'rigpa--enter-lower-or-pass-through))))
   ;; exit visual state gracefully
   (define-key evil-visual-state-map [escape] (lambda ()
