@@ -302,7 +302,7 @@ happen quickly enough not to be noticeable."
   ("M-K" evil-window-move-very-top "move to top")
   ("M-L" evil-window-move-far-right "move to far right")
   ("x" evil-window-delete "delete")
-  ("c" evil-window-delete)
+  ("d" evil-window-delete :exit t)
   ("X" transpose-frame "transpose") ; there are more in transpose-frame that may be useful
   ("Q" rigpa-window-quit-other "quit other window" :exit t)
   ("o" rigpa-window-mru "Jump to most recent (like Alt-Tab)" :exit t)
