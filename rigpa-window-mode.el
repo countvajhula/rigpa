@@ -269,6 +269,8 @@ encountered while navigating to the present one, to be treated as the
 last window for 'flashback' ('Alt-tab') purposes. The flash should
 happen quickly enough not to be noticeable."
   (interactive)
+  ;; TODO: in some cases when a REPL window (maybe large > 2500 lines) is open
+  ;; this doesn't seem to restore the target window after the "excursion"
   (unless (eq (selected-window) (rigpa-window-original-window))
     (let ((inhibit-redisplay t)) ;; not sure if this is doing anything but FWIW
       (save-window-excursion

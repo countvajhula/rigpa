@@ -30,6 +30,9 @@
 ;; a mode for navigating pages
 ;; TODO: region does not persist on entering mode, e.g. for
 ;;       use in "narrow" functionality
+;; TODO: once inside view mode, shifting and then zooming
+;;       should zoom into the new center of the screen, not
+;;       the original cursor location (see below for more)
 
 (require 'evil)
 (require 'hydra)
@@ -214,6 +217,14 @@
 (defun rigpa--on-view-mode-entry ()
   "Actions to take upon entry into view mode."
   (setq rigpa-view--original-position (point))
+  ;; TODO: retain original point position but for the purposes of the view
+  ;; consider the midpoint of the current view as the reference point
+  ;; then, upon exit, if the original location is still visible, preserve it
+  ;; otherwise select the center (this logic is already implemented for "quit"
+  ;; and should be reused)
+  ;; (move-to-window-line nil)
+  ;; currently, zooming past a certain level causes original point to
+  ;; "drag" view there
   (blink-cursor-mode -1)
   (internal-show-cursor nil nil))
 
