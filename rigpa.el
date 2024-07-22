@@ -47,7 +47,6 @@
 (require 'chimera)
 (require 'ht)
 (require 'rigpa-custom)
-(require 'rigpa-local)
 (require 'rigpa-char-mode)
 (require 'rigpa-word-mode)
 (require 'rigpa-line-mode)
@@ -368,7 +367,11 @@ and simply toggles whether the menu is visible or not."
          :default "meta-tower"
          :members (list rigpa-meta-tower-mode-tower)))
 
-  (defvar-local rigpa--complex rigpa-general-complex))
+  ;; the editing complex to use in a buffer
+  ;; by default this is general complex unless a more tailored one
+  ;; has been set (e.g. via major mode hook)
+  (setq rigpa--complex rigpa-general-complex)
+  (make-variable-buffer-local 'rigpa--complex))
 
 (defun rigpa--provide-editing-structures ()
   "Register editing structures so they're used in relevant major modes."

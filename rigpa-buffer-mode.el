@@ -36,7 +36,6 @@
 (require 's)
 (require 'dynaring)
 (require 'buffer-ring)
-(require 'rigpa-local)
 
 (defconst rigpa-buffer-ring-name-prefix "rigpa-buffer-ring")
 
