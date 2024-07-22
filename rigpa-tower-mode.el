@@ -30,6 +30,7 @@
 (require 'hydra)
 (require 'rigpa-mode-mode)
 (require 'rigpa-types)
+(require 'rigpa-local)
 
 ;; make these buffer-local first before abstracting "state"
 (defvar rigpa--current-tower-index 0)

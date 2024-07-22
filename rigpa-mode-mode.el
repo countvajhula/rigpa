@@ -31,6 +31,7 @@
 (require 'chimera)
 (require 'rigpa-text-parsers)
 (require 'rigpa-meta)
+(require 'rigpa-local)
 
 (evil-define-state mode
   "Mode state."
