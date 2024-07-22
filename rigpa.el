@@ -429,8 +429,5 @@ and simply toggles whether the menu is visible or not."
   nil)
 
 
-(rigpa-initialize)
-
-
 (provide 'rigpa)
 ;;; rigpa.el ends here
