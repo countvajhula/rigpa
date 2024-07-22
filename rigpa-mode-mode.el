@@ -28,6 +28,7 @@
 
 (require 'ht)
 (require 'evil)
+(require 'chimera)
 (require 'rigpa-text-parsers)
 (require 'rigpa-meta)
 

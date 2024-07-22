@@ -28,6 +28,7 @@
 
 (require 'evil)
 (require 'hydra)
+(require 'chimera)
 (require 'chimera-hydra)
 (require 'centaur-tabs)
 (require 'beacon)

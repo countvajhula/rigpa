@@ -28,6 +28,7 @@
 
 (require 'evil)
 (require 'hydra)
+(require 'chimera)
 
 (defun chimera--hydra-for-state (mode-name)
   (intern (concat "hydra-" mode-name)))
