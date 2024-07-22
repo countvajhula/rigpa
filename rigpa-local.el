@@ -29,7 +29,7 @@
 ;; the editing complex to use in a buffer
 ;; by default this is general complex unless a more tailored one
 ;; has been set (e.g. via major mode hook)
-(defvar-local rigpa--complex rigpa-general-complex)
+(defvar-local rigpa--complex nil)
 
 
 (provide 'rigpa-local)

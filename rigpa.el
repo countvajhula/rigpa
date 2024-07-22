@@ -366,7 +366,9 @@ and simply toggles whether the menu is visible or not."
         (make-editing-ensemble
          :name "meta-tower"
          :default "meta-tower"
-         :members (list rigpa-meta-tower-mode-tower))))
+         :members (list rigpa-meta-tower-mode-tower)))
+
+  (defvar-local rigpa--complex rigpa-general-complex))
 
 (defun rigpa--provide-editing-structures ()
   "Register editing structures so they're used in relevant major modes."
