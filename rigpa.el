@@ -379,7 +379,7 @@ and simply toggles whether the menu is visible or not."
   ;; and eventually make these "coordinates" generic
   (when (boundp 'symex-mode)
     (dolist (mode-name (and (boundp 'symex-get-lisp-modes)
-                            (symex-get-lisp-modes))
+                            (symex-get-lisp-modes)))
       (let ((mode-hook (intern (concat (symbol-name mode-name)
                                        "-hook"))))
         (add-hook mode-hook (lambda ()
