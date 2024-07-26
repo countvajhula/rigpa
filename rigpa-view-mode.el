@@ -38,6 +38,7 @@
 (require 'hydra)
 (require 'chimera)
 (require 'chimera-hydra)
+(require 'lithium)
 
 (defvar-local rigpa-view--original-position nil)
 ;; TODO: support mark and recall
@@ -154,59 +155,77 @@
     (goto-char rigpa-view--original-position)
     (recenter)))
 
-
-(defhydra hydra-view (:columns 5
-                      :body-pre (chimera-hydra-signal-entry chimera-view-mode)
-                      :post (chimera-hydra-portend-exit chimera-view-mode t)
-                      :after-exit (chimera-hydra-signal-exit chimera-view-mode
-                                                             #'chimera-handle-hydra-exit))
+(lithium-define-mode rigpa-view-mode
   "View mode"
-  ("j" rigpa-view-scroll-down "down")
-  ("k" rigpa-view-scroll-up "up")
-  ("C-S-j" evil-scroll-line-down "down fine")
-  ("C-S-k" evil-scroll-line-up "up fine")
-  ("b" evil-scroll-page-up "page up")
-  ("f" evil-scroll-page-down "page down")
-  ("h" rigpa-view-scroll-left "scroll left")
-  ("l" rigpa-view-scroll-right "scroll right")
-  ("C-h" (lambda ()
-           (interactive)
-           (rigpa-view-scroll-left 'more)) "scroll left more")
-  ("C-l" (lambda ()
-           (interactive)
-           (rigpa-view-scroll-right 'more)) "scroll right more")
-  ("C-S-h" (lambda ()
-             (interactive)
-             (rigpa-view-scroll-left 'less)) "scroll left less")
-  ("C-S-l" (lambda ()
-             (interactive)
-             (rigpa-view-scroll-right 'less)) "scroll right less")
-  ("g" evil-goto-first-line "beginning")
-  ("0" evil-goto-first-line "beginning")
-  ("M-k" evil-goto-first-line "beginning")
-  ("G" evil-goto-line "end")
-  ("$" evil-goto-line "end")
-  ("M-j" evil-goto-line "end")
-  ("s-v" recenter "recenter" :exit t)
-  ("v" recenter "recenter")
-  ("C-k" rigpa-view-scroll-skip-up "skip up")
-  ("C-j" rigpa-view-scroll-skip-down "skip down")
-  ("H" rigpa-view-recenter-at-top "recenter at top")
-  ("L" rigpa-view-recenter-at-bottom "recenter at bottom")
-  ("<backspace>" rigpa-view-reset-zoom "reset zoom")
-  ("=" rigpa-view-reset-preferred-zoom "reset to preferred")
-  ("<tab>" rigpa-view-reset-preferred-zoom "reset to preferred")
-  ("K" rigpa-view-zoom-in "zoom in")
-  ("J" rigpa-view-zoom-out "zoom out")
-  ("u" evil-scroll-up "leap up")
-  ("d" evil-scroll-down "leap down")
-  ("n" rigpa-view-narrow "narrow context")
-  ("w" widen "widen to full view")
-  ("H-m" rigpa-toggle-menu "show/hide this menu")
-  ("i" nil "exit" :exit t)
-  ("q" rigpa-view-return-to-original-position "exit" :exit t)
-  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
+  (("j" rigpa-view-scroll-down)
+   ("k" rigpa-view-scroll-up)
+   ("C-S-j" evil-scroll-line-down)
+   ("C-S-k" evil-scroll-line-up)
+   ("b" evil-scroll-page-up)
+   ("f" evil-scroll-page-down)
+   ("h" rigpa-view-scroll-left)
+   ("l" rigpa-view-scroll-right)
+   ("C-h" (lambda ()
+            (interactive)
+            (rigpa-view-scroll-left 'more)))
+   ("C-l" (lambda ()
+            (interactive)
+            (rigpa-view-scroll-right 'more)))
+   ("C-S-h" (lambda ()
+              (interactive)
+              (rigpa-view-scroll-left 'less)))
+   ("C-S-l" (lambda ()
+              (interactive)
+              (rigpa-view-scroll-right 'less)))
+   ("g" evil-goto-first-line)
+   ("0" evil-goto-first-line)
+   ("M-k" evil-goto-first-line)
+   ("G" evil-goto-line)
+   ("$" evil-goto-line)
+   ("M-j" evil-goto-line)
+   ("v" recenter)
+   ("C-k" rigpa-view-scroll-skip-up)
+   ("C-j" rigpa-view-scroll-skip-down)
+   ("H" rigpa-view-recenter-at-top)
+   ("L" rigpa-view-recenter-at-bottom)
+   ("<backspace>" rigpa-view-reset-zoom)
+   ("=" rigpa-view-reset-preferred-zoom)
+   ("<tab>" rigpa-view-reset-preferred-zoom)
+   ("K" rigpa-view-zoom-in)
+   ("J" rigpa-view-zoom-out)
+   ("u" evil-scroll-up)
+   ("d" evil-scroll-down)
+   ("n" rigpa-view-narrow)
+   ("w" widen)
+   ("s-v" recenter t)
+   ("i" nil t)
+   ("q" rigpa-view-return-to-original-position t)
+   ("<return>" rigpa-enter-lower-level t)
+   ("<escape>" rigpa-enter-higher-level t))
+  :lighter " view"
+  :group 'rigpa)
+
+(defun rigpa-enter-view-mode ()
+  "Enter view mode.
+
+We would prefer to have a thunk here so it's more easily usable with
+hooks than anonymous lambdas. The minor mode function called without
+arguments toggles rather than enters or exits, so this is more
+explicit.
+
+TODO: generate this and `exit' in the lithium mode-defining macro."
+  (rigpa-view-mode 1))
+
+(defun rigpa-exit-view-mode ()
+  "Exit view mode.
+
+We would prefer to have a thunk here so it's more easily usable with
+hooks than anonymous lambdas. The minor mode function called without
+arguments toggles rather than enters or exits, so this is more
+explicit.
+
+TODO: generate this and `enter' in the lithium mode-defining macro."
+  (rigpa-view-mode 1))
 
 (defvar chimera-view-mode-entry-hook nil
   "Entry hook for rigpa view mode.")
@@ -228,7 +247,7 @@
   (blink-cursor-mode -1)
   (internal-show-cursor nil nil))
 
-(defun rigpa--on-view-mode-post-exit ()
+(defun rigpa--on-view-mode-exit ()
   "Actions to take upon exit from view mode."
   (blink-cursor-mode 1) ; TODO: depend on user config instead
   (internal-show-cursor nil t)
@@ -238,11 +257,12 @@
 
 (defvar chimera-view-mode
   (make-chimera-mode :name "view"
-                     :enter #'hydra-view/body
+                     :enter #'rigpa-enter-view-mode
+                     :exit #'rigpa-exit-view-mode
                      :pre-entry-hook 'chimera-view-mode-entry-hook
                      :post-exit-hook 'chimera-view-mode-exit-hook
-                     :entry-hook 'evil-view-state-entry-hook
-                     :exit-hook 'evil-view-state-exit-hook))
+                     :entry-hook 'rigpa-view-mode-entry-hook
+                     :exit-hook 'rigpa-view-mode-exit-hook))
 
 ;; mark view navigations as not repeatable from the perspective
 ;; of Evil's dot operator - i.e. I believe these won't get added
