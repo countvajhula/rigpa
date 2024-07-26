@@ -35,9 +35,16 @@ This package isn't on `MELPA <https://melpa.org/>`_ yet, but you can install a p
 
 .. code-block:: elisp
 
+  (use-package lithium
+    :straight
+    (lithium
+     :type git
+     :host github
+     :repo "countvajhula/lithium"))
+
   (use-package rigpa
 
-    :after (evil symex)
+    :after (evil symex buffer-ring lithium)
 
     :straight
     (rigpa
@@ -147,6 +154,8 @@ This package isn't on `MELPA <https://melpa.org/>`_ yet, but you can install a p
                     (lambda ()
                       (interactive)
                       (rigpa-enter-mode "word"))))
+
+Note that the above config also installs `Lithium <https://github.com/countvajhula/lithium>`_, a dependency of Rigpa that also isn't yet on MELPA (if it were, we could just declare it as a dependency within Rigpa and we wouldn't need a separate `use-package` declaration).
 
 Usage
 =====

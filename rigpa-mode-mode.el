@@ -143,10 +143,6 @@ to ensure, upon state transitions, that:
     (remove-hook pre-entry-hook #'rigpa--disable-other-minor-modes)
     (remove-hook exit-hook #'rigpa-remember-for-recall)))
 
-(defun rigpa-current-mode ()
-  "Current rigpa mode."
-  (chimera--mode-for-state (symbol-name evil-state)))
-
 (defun rigpa-enter-mode (mode-name)
   "Enter mode MODE-NAME."
   (chimera-enter-mode (ht-get rigpa-modes mode-name)))
