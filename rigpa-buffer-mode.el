@@ -29,13 +29,12 @@
 
 (require 'cl-lib)
 (require 'evil)
-(require 'hydra)
 (require 'ivy)
 (require 'chimera)
-(require 'chimera-hydra)
 (require 's)
 (require 'dynaring)
 (require 'buffer-ring)
+(require 'lithium)
 
 (defconst rigpa-buffer-ring-name-prefix "rigpa-buffer-ring")
 
@@ -329,49 +328,35 @@ current ('original') buffer."
     ;; it so that recency ordering reflects correctly
     (buffer-ring-switch-to-buffer other-buffer)))
 
-(defhydra hydra-buffer (:columns 3
-                        :body-pre (chimera-hydra-signal-entry chimera-buffer-mode)
-                        :post (chimera-hydra-portend-exit chimera-buffer-mode t)
-                        :after-exit (chimera-hydra-signal-exit chimera-buffer-mode
-                                                               #'chimera-handle-hydra-exit))
+(lithium-define-mode rigpa-buffer-mode
   "Buffer mode"
-  ("s-b" rigpa-buffer-alternate "switch to last" :exit t)
-  ("b" rigpa-buffer-alternate "switch to last" :exit t)
-  ("h" buffer-ring-next-buffer "previous")
-  ("j" ignore nil)
-  ("k" ignore nil)
-  ("l" buffer-ring-prev-buffer "next")
-  ("y" rigpa-buffer-yank "yank")
-  ("p" rigpa-buffer-paste "paste")
-  ("n" (lambda ()
-         (interactive)
-         (rigpa-buffer-create nil nil :switch-p t))
-   "new" :exit t)
-  ("m" rigpa-buffer-set-mark "set mark")
-  ("'" rigpa-buffer-return-to-mark "return to mark" :exit t)
-  ("`" rigpa-buffer-return-to-mark "return to mark" :exit t)
-  ("s" rigpa-buffer-search "search" :exit t)
-  ("/" rigpa-buffer-search "search" :exit t)
-  ("i" ibuffer "list (ibuffer)" :exit t)
-  ("x" kill-buffer "delete" :exit t)
-  ("?" rigpa-buffer-info "info" :exit t)
-  ("q" rigpa-buffer-return-to-original "return to original" :exit t)
-  ("H-m" rigpa-toggle-menu "show/hide this menu")
-  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
+  (("s-b" rigpa-buffer-alternate t)
+   ("b" rigpa-buffer-alternate t)
+   ("h" buffer-ring-next-buffer)
+   ("j" ignore)
+   ("k" ignore)
+   ("l" buffer-ring-prev-buffer)
+   ("y" rigpa-buffer-yank)
+   ("p" rigpa-buffer-paste)
+   ("n" (lambda ()
+          (interactive)
+          (rigpa-buffer-create nil nil :switch-p t))
+    t)
+   ("m" rigpa-buffer-set-mark)
+   ("'" rigpa-buffer-return-to-mark t)
+   ("`" rigpa-buffer-return-to-mark t)
+   ("s" rigpa-buffer-search t)
+   ("/" rigpa-buffer-search t)
+   ("i" ibuffer t)
+   ("x" kill-buffer t)
+   ("?" rigpa-buffer-info t)
+   ("q" rigpa-buffer-return-to-original t)
+   ("<return>" rigpa-enter-lower-level t)
+   ("<escape>" rigpa-enter-higher-level t))
 
-(defvar chimera-buffer-mode-entry-hook nil
-  "Entry hook for rigpa buffer mode.")
-
-(defvar chimera-buffer-mode-exit-hook nil
-  "Exit hook for rigpa buffer mode.")
-
-(defun rigpa-buffer-enter-mode ()
-  "Enter buffer mode (idempotent)."
-  (interactive)
-  (rigpa-buffer--setup-buffer-marks-table)
-  (rigpa-buffer-refresh-ring)
-  (unless (chimera-hydra-is-active-p "buffer")
+  (when rigpa-buffer-mode
+    (rigpa-buffer--setup-buffer-marks-table)
+    (rigpa-buffer-refresh-ring)
     (let* ((ring-name (if (eq rigpa--complex rigpa-meta-tower-complex)
                           "2"
                         "0"))    ; TODO: derive from coordinates later
@@ -387,20 +372,48 @@ current ('original') buffer."
       ;; something like bufler, whose categories could correspond to
       ;; distinct rings, and maybe meta level could simply be another
       ;; category here.
-      (buffer-ring-torus-switch-to-ring buffer-ring-name))
-    (hydra-buffer/body)))
+      (buffer-ring-torus-switch-to-ring buffer-ring-name))))
 
-(defun rigpa--on-buffer-mode-post-exit ()
+(defun rigpa-enter-buffer-mode ()
+  "Enter buffer mode.
+
+We would prefer to have a thunk here so it's more easily usable with
+hooks than anonymous lambdas. The minor mode function called without
+arguments toggles rather than enters or exits, so this is more
+explicit.
+
+TODO: generate this and `exit' in the lithium mode-defining macro."
+  (rigpa-buffer-mode 1))
+
+(defun rigpa-exit-buffer-mode ()
+  "Exit buffer mode.
+
+We would prefer to have a thunk here so it's more easily usable with
+hooks than anonymous lambdas. The minor mode function called without
+arguments toggles rather than enters or exits, so this is more
+explicit.
+
+TODO: generate this and `enter' in the lithium mode-defining macro."
+  (rigpa-buffer-mode -1))
+
+(defvar chimera-buffer-mode-entry-hook nil
+  "Entry hook for rigpa buffer mode.")
+
+(defvar chimera-buffer-mode-exit-hook nil
+  "Exit hook for rigpa buffer mode.")
+
+(defun rigpa--on-buffer-mode-exit ()
   "Actions to take upon exit from buffer mode."
   (rigpa-buffer-link-to-original))
 
 (defvar chimera-buffer-mode
   (make-chimera-mode :name "buffer"
-                     :enter #'rigpa-buffer-enter-mode
+                     :enter #'rigpa-enter-buffer-mode
+                     :exit #'rigpa-exit-buffer-mode
                      :pre-entry-hook 'chimera-buffer-mode-entry-hook
                      :post-exit-hook 'chimera-buffer-mode-exit-hook
-                     :entry-hook 'evil-buffer-state-entry-hook
-                     :exit-hook 'evil-buffer-state-exit-hook))
+                     :entry-hook 'rigpa-buffer-mode-entry-hook
+                     :exit-hook 'rigpa-buffer-mode-exit-hook))
 
 
 (provide 'rigpa-buffer-mode)
