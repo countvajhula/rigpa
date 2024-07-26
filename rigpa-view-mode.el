@@ -224,7 +224,7 @@ arguments toggles rather than enters or exits, so this is more
 explicit.
 
 TODO: generate this and `enter' in the lithium mode-defining macro."
-  (rigpa-view-mode 1))
+  (rigpa-view-mode -1))
 
 (defvar chimera-view-mode-entry-hook nil
   "Entry hook for rigpa view mode.")
