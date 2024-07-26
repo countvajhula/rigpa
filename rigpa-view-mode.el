@@ -37,7 +37,6 @@
 (require 'evil)
 (require 'hydra)
 (require 'chimera)
-(require 'chimera-hydra)
 (require 'lithium)
 
 (defvar-local rigpa-view--original-position nil)
