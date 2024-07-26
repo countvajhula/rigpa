@@ -156,6 +156,14 @@ The most useful towers at the moment are Vim tower, Lisp tower (containing Symex
 
 See the `Keybinding Model <https://github.com/countvajhula/rigpa/blob/master/Keybinding_Model.rst>`_ for keys that work in every mode, including navigations for getting around, and transformations for moving things around, or deleting, transforming them in some way.
 
+Tips
+====
+
+Mode Line Feedback
+------------------
+
+Rigpa comes with many modes -- View mode, Window mode, Buffer mode, Line mode, and more. To keep track of which mode you're in at any time, it's useful to have visual feedback in the form of a color-coded mode indicator in your mode line, with colors that are different enough to give you a clue at a glance whether you're in the right mode. Rigpa currently defines and maintains Evil states corresponding to every Rigpa mode in order to benefit from existing Emacs tools that have already been written to track your Evil state. So you can use any of these existing plugins for this purpose, including powerline and `telephone-line <https://github.com/dbordak/telephone-line>`_. For example, you could use `this config for telephone-line <https://github.com/countvajhula/.emacs.d/blob/95b43a92cabf7719875f1f937b4c3de093d32a24/my-init/application-environment.el#L437-L522`__ to ensure the different modes have distinct and useful colors.
+
 "License"
 ==========
 This work is "part of the world." You are free to do whatever you like with it and it isn't owned by anybody, not even the creators. Attribution would be appreciated and would help, but it is not strictly necessary nor required. If you'd like to learn more about this way of doing things and how it could lead to a peaceful, efficient, and creative world, and how you can help, visit `drym.org <https://drym.org>`_.
