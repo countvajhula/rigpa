@@ -37,7 +37,7 @@ This package isn't on `MELPA <https://melpa.org/>`_ yet, but you can install a p
 
   (use-package rigpa
 
-    :after (evil symex)
+    :after (evil symex buffer-ring)
 
     :straight
     (rigpa
