@@ -36,6 +36,8 @@
 ;; - copy line
 ;; similarly for "region-mode", possibly by invoking multiple cursors
 
+;; TODO: disable cursor in line mode
+
 (require 'evil)
 (require 'chimera)
 (require 'rigpa-evil-support)
