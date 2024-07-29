@@ -35,7 +35,6 @@
 ;;       the original cursor location (see below for more)
 
 (require 'evil)
-(require 'hydra)
 (require 'chimera)
 (require 'lithium)
 
