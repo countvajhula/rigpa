@@ -352,27 +352,7 @@ current ('original') buffer."
    ("?" rigpa-buffer-info t)
    ("q" rigpa-buffer-return-to-original t)
    ("<return>" rigpa-enter-lower-level t)
-   ("<escape>" rigpa-enter-higher-level t))
-
-  (when rigpa-buffer-mode
-    (rigpa-buffer--setup-buffer-marks-table)
-    (rigpa-buffer-refresh-ring)
-    (let* ((ring-name (if (eq rigpa--complex rigpa-meta-tower-complex)
-                          "2"
-                        "0"))    ; TODO: derive from coordinates later
-           (buffer-ring-name (concat rigpa-buffer-ring-name-prefix
-                                     "-"
-                                     ring-name
-                                     (cond ((rigpa-buffer--read-only-buffer-p) "-readonly")
-                                           ((rigpa-buffer--non-file-buffer-p) "-special")
-                                           (t "-typical")))))
-      ;; TODO: the appropriate ring is a function of both the current
-      ;; meta level but also the current buffer.  we could probably
-      ;; make this selection of appropriate ring more robust by using
-      ;; something like bufler, whose categories could correspond to
-      ;; distinct rings, and maybe meta level could simply be another
-      ;; category here.
-      (buffer-ring-torus-switch-to-ring buffer-ring-name))))
+   ("<escape>" rigpa-enter-higher-level t)))
 
 (defun rigpa-enter-buffer-mode ()
   "Enter buffer mode.
@@ -401,6 +381,27 @@ TODO: generate this and `enter' in the lithium mode-defining macro."
 
 (defvar chimera-buffer-mode-exit-hook nil
   "Exit hook for rigpa buffer mode.")
+
+(defun rigpa--on-buffer-mode-entry ()
+  "Actions to take upon entry into buffer mode."
+  (rigpa-buffer--setup-buffer-marks-table)
+  (rigpa-buffer-refresh-ring)
+  (let* ((ring-name (if (eq rigpa--complex rigpa-meta-tower-complex)
+                        "2"
+                      "0"))    ; TODO: derive from coordinates later
+         (buffer-ring-name (concat rigpa-buffer-ring-name-prefix
+                                   "-"
+                                   ring-name
+                                   (cond ((rigpa-buffer--read-only-buffer-p) "-readonly")
+                                         ((rigpa-buffer--non-file-buffer-p) "-special")
+                                         (t "-typical")))))
+    ;; TODO: the appropriate ring is a function of both the current
+    ;; meta level but also the current buffer.  we could probably
+    ;; make this selection of appropriate ring more robust by using
+    ;; something like bufler, whose categories could correspond to
+    ;; distinct rings, and maybe meta level could simply be another
+    ;; category here.
+    (buffer-ring-torus-switch-to-ring buffer-ring-name)))
 
 (defun rigpa--on-buffer-mode-exit ()
   "Actions to take upon exit from buffer mode."
