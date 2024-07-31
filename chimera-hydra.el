@@ -91,8 +91,8 @@ If no VALUE is provided, this clears the flag."
       ;; already in the tower?
       ;; [doing this for now to fix symex margins issue, but
       ;; not sure exactly what is happening there]
-      (unless (rigpa-ensemble-member-position-by-name (rigpa--local-tower)
-                                                      (symbol-name evil-state))
+      (unless (rigpa--member-of-ensemble-p (rigpa--local-tower)
+                                           (symbol-name evil-state))
         (rigpa--enter-appropriate-mode)))
     (let* ((hydra (chimera--hydra-for-state mode-name))
            (entry-buffer (hydra-get-property hydra :entry-buffer)))

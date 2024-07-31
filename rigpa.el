@@ -254,8 +254,15 @@ and simply toggles whether the menu is visible or not."
     (let ((keymap (symbol-value
                    (intern
                     (concat "evil-" state "-state-map")))))
-      (define-key keymap [escape] #'rigpa-enter-higher-level)
-      (unless (member state chimera-insertion-states)
+      (if (member state chimera-insertion-states)
+          (define-key keymap [escape] #'rigpa-enter-higher-level)
+        (define-key keymap [escape] (lambda ()
+                                      (interactive)
+                                      (if (equal "lisp"
+                                                 (rigpa-editing-entity-name
+                                                  (rigpa--local-tower)))
+                                          (rigpa-rotate-mode-ring-left)
+                                        (rigpa-enter-higher-level))))
         (define-key keymap [return] #'rigpa--enter-lower-or-pass-through))))
   ;; exit visual state gracefully
   (define-key evil-visual-state-map [escape] (lambda ()
@@ -333,8 +340,7 @@ and simply toggles whether the menu is visible or not."
         (make-editing-ensemble :name "lisp"
                                :default "symex"
                                :members (list chimera-insert-mode
-                                              chimera-symex-mode
-                                              chimera-normal-mode)))
+                                              (dynaring chimera-normal-mode chimera-symex-mode))))
 
   ;; complexes for base editing levels
   (setq rigpa-general-complex

@@ -28,6 +28,7 @@
 
 (require 'cl-lib)
 (require 'chimera)
+(require 'dynaring)
 
 (cl-defstruct editing-ensemble
   "Specification for an editing ensemble."
@@ -48,9 +49,16 @@ entity, such as modes, towers or complexes.")
 
 (defun rigpa-ensemble-member-position-by-name (ensemble name)
   "The position of a member in an ensemble, by name."
-  (seq-position (seq-map #'rigpa-editing-entity-name
+  (seq-position (seq-map (lambda (m) (rigpa-editing-entity-name (if (dynaringp m) (dynaring-value m) m)))
                          (editing-ensemble-members ensemble))
                 name))
+
+(defun rigpa--member-of-ensemble-p (ensemble entity-name)
+  "A predicate asserting whether ENTITY-NAME is a member of ENSEMBLE."
+  (not
+   (not
+    (rigpa-ensemble-member-position-by-name ensemble
+                                            entity-name))))
 
 (defun rigpa-ensemble-size (ensemble)
   "Size of ensemble (e.g. height of a tower)."
@@ -59,10 +67,6 @@ entity, such as modes, towers or complexes.")
 (defun rigpa-ensemble-member-at-position (tower position)
   "Mode at LEVEL in the TOWER."
   (nth position (editing-ensemble-members tower)))
-
-(defun rigpa--member-of-ensemble-p (entity ensemble)
-  "A predicate asserting whether ENTITY is a member of ENSEMBLE."
-  (memq entity (editing-ensemble-members ensemble)))
 
 
 (provide 'rigpa-types)
