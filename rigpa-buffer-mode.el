@@ -352,7 +352,9 @@ current ('original') buffer."
    ("?" rigpa-buffer-info t)
    ("q" rigpa-buffer-return-to-original t)
    ("<return>" rigpa-enter-lower-level t)
-   ("<escape>" rigpa-enter-higher-level t)))
+   ("<escape>" rigpa-enter-higher-level t))
+  :lighter " buffer"
+  :group 'rigpa)
 
 (defun rigpa-enter-buffer-mode ()
   "Enter buffer mode.
