@@ -38,11 +38,10 @@
   (entry-hook nil)
   (exit-hook nil)
   (post-exit-hook nil)
-  (manage-hooks nil
-                :documentation "Whether within-mode hooks should be managed internally. \
-If not, they are expected to be run by the underlying mode provider \
-(e.g. evil or hydra). Wrapping hooks (pre-entry and post-exit) are \
-always managed by chimera."))
+  (manage-hooks t
+                :documentation "Whether wrapping (pre-entry and post-exit) hooks should be managed by chimera. \
+If not, they are expected to be run by the underlying mode provider. Internal hooks are always expected \
+to be run by the mode provider."))
 
 (defvar chimera-evil-states
   (list "normal"
@@ -64,24 +63,35 @@ always managed by chimera."))
   "Current rigpa mode."
   (chimera--mode-for-state (symbol-name evil-state)))
 
-(defun chimera-enter-mode (mode)
-  "Enter MODE."
+(defun chimera-switch-mode (to-mode)
+  "Switch to TO-MODE.
+
+This first exits the current mode via its primitive mode exit
+function, and then enters MODE via its primitive mode entry. It's
+essential to use only primitive mode entry and exit here to avoid
+unwittingly entering an infinite loop where modes attempt to enter by
+exiting by entering."
   (interactive)
-  (let ((current-mode (rigpa-current-mode))
-        (name (chimera-mode-name mode)))
-    (chimera--exit-mode current-mode)
+  (let* ((from-mode (rigpa-current-mode))
+         (from-mode-name (chimera-mode-name from-mode))
+         (to-mode-name (chimera-mode-name to-mode)))
+    (chimera--exit-mode from-mode)
+    (when (chimera-mode-manage-hooks from-mode)
+      (run-hooks (chimera-mode-post-exit-hook from-mode)))
     ;; This is used for enabling evil-specific minor modes
     ;; that need to be enabled _before_ mode entry.
     ;; See docs for `rigpa--minor-mode-enabler'
     ;; Would be great if we could avoid the need for this.
-    (run-hooks (chimera-mode-pre-entry-hook mode))
-    (chimera--enter-mode mode)
+    (when (chimera-mode-manage-hooks to-mode)
+      (run-hooks (chimera-mode-pre-entry-hook to-mode)))
+    (chimera--enter-mode to-mode)
     ;; we're using evil state variables to keep track of state (even
     ;; for non-evil backed modes), so ensure that the evil state is
     ;; entered here
-    (unless (member name chimera-evil-states)
-      (let ((evil-state-entry (intern (concat "evil-" name "-state"))))
-        (funcall evil-state-entry)))))
+    (when (chimera-mode-manage-hooks to-mode)
+      (unless (member to-mode-name chimera-evil-states)
+        (let ((evil-state-entry (intern (concat "evil-" to-mode-name "-state"))))
+          (funcall evil-state-entry))))))
 
 (defun chimera--enter-mode (mode)
   "Enter MODE."
