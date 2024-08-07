@@ -343,7 +343,7 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   (beginning-of-line)
   (hl-line-mode 1))
 
-(defun rigpa--on-line-mode-post-exit ()
+(defun rigpa--on-line-mode-exit ()
   "Disable line minor mode."
   (rigpa-line-mode -1)
   (hl-line-mode -1)

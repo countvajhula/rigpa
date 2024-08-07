@@ -39,7 +39,7 @@
   "Enable symex minor mode."
   (symex-enable-editing-minor-mode))
 
-(defun rigpa--on-symex-mode-post-exit ()
+(defun rigpa--on-symex-mode-exit ()
   "Disable symex minor mode."
   (symex-disable-editing-minor-mode))
 
