@@ -252,6 +252,8 @@ TODO: generate this and `enter' in the lithium mode-defining macro."
 
 (defun rigpa--on-view-mode-post-exit ()
   "Actions to take upon exit from view mode."
+  ;; TODO: probably do this via a standard internal
+  ;; rigpa hook in mode registration
   (rigpa--enter-appropriate-mode))
 
 (defvar chimera-view-mode
