@@ -27,9 +27,8 @@
 ;;; Code:
 
 (require 'evil)
-(require 'hydra)
+(require 'lithium)
 (require 'chimera)
-(require 'chimera-hydra)
 
 (evil-define-state file
   "File state."
@@ -68,40 +67,63 @@ Version 2016-04-04"
   (interactive)
   (insert-register ?f))
 
-(defhydra hydra-file (:columns 2
-                      :body-pre (chimera-hydra-signal-entry chimera-file-mode)
-                      :post (chimera-hydra-portend-exit chimera-file-mode t)
-                      :after-exit (chimera-hydra-signal-exit chimera-file-mode
-                                                             #'chimera-handle-hydra-exit))
+(lithium-define-mode rigpa-file-mode
   "File mode"
-  ("h" evil-backward-char "backward")
-  ("j" evil-next-line "down")
-  ("k" evil-previous-line "up")
-  ("l" evil-forward-char "forward")
-  ("M-h" evil-goto-first-line "beginning")
-  ("M-l" evil-goto-line "end")
-  ("C-h" xah-pop-local-mark-ring "previous mark")
-  ("C-l" unpop-to-mark-command "next mark")
-  ("y" rigpa-file-yank "yank")
-  ("p" rigpa-file-paste "paste")
-  ("i" nil "exit" :exit t)
-  ("H-m" rigpa-toggle-menu "show/hide this menu")
-  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
+  (("h" evil-backward-char)
+   ("j" evil-next-line)
+   ("k" evil-previous-line)
+   ("l" evil-forward-char)
+   ("M-h" evil-goto-first-line)
+   ("M-l" evil-goto-line)
+   ("C-h" xah-pop-local-mark-ring)
+   ("C-l" unpop-to-mark-command)
+   ("y" rigpa-file-yank)
+   ("p" rigpa-file-paste)
+   ("i" nil t)
+   ("<return>" rigpa-enter-lower-level t)
+   ("<escape>" rigpa-enter-higher-level t))
+  :lighter " file"
+  :group 'rigpa)
 
-(defvar chimera-file-mode-entry-hook nil
-  "Entry hook for rigpa file mode.")
+(defun rigpa--on-file-mode-entry ()
+  "Actions to take upon entering file mode."
+  (evil-file-state))
 
-(defvar chimera-file-mode-exit-hook nil
-  "Exit hook for rigpa file mode.")
+(defun rigpa--on-file-mode-post-exit ()
+  "Actions to take upon exiting file mode."
+  (rigpa--enter-appropriate-mode))
+
+(defun rigpa-enter-file-mode ()
+  "Enter file mode.
+
+We would prefer to have a thunk here so it's more easily usable with
+hooks than anonymous lambdas. The minor mode function called without
+arguments toggles rather than enters or exits, so this is more
+explicit.
+
+TODO: generate this and `exit' in the lithium mode-defining macro."
+  (lithium-enter-mode 'rigpa-file-mode))
+
+(defun rigpa-exit-file-mode ()
+  "Exit file mode.
+
+We would prefer to have a thunk here so it's more easily usable with
+hooks than anonymous lambdas. The minor mode function called without
+arguments toggles rather than enters or exits, so this is more
+explicit.
+
+TODO: generate this and `enter' in the lithium mode-defining macro."
+  (lithium-exit-mode 'rigpa-file-mode))
 
 (defvar chimera-file-mode
   (make-chimera-mode :name "file"
-                     :enter #'hydra-file/body
-                     :pre-entry-hook 'chimera-file-mode-entry-hook
-                     :post-exit-hook 'chimera-file-mode-exit-hook
-                     :entry-hook 'evil-file-state-entry-hook
-                     :exit-hook 'evil-file-state-exit-hook))
+                     :enter #'rigpa-enter-file-mode
+                     :exit #'rigpa-exit-file-mode
+                     :pre-entry-hook 'rigpa-file-mode-pre-entry-hook
+                     :post-exit-hook 'rigpa-file-mode-post-exit-hook
+                     :entry-hook 'rigpa-file-mode-post-entry-hook
+                     :exit-hook 'rigpa-file-mode-pre-exit-hook
+                     :manage-hooks nil))
 
 
 (provide 'rigpa-file-mode)
