@@ -43,7 +43,6 @@
 ;;; Code:
 
 (require 'evil)
-(require 'hydra)
 (require 'chimera)
 (require 'ht)
 (require 'rigpa-custom)
@@ -76,34 +75,6 @@
 ;; the prefix that will be used in naming all buffers used
 ;; in meta mode representations
 (defvar rigpa-buffer-prefix "*RIGPA-META*")
-
-(defun rigpa-hide-menu (mode-name)
-  "Hide current mode menu."
-  (unless (member mode-name chimera-evil-states)
-    ;; only supported for hydra
-    (let ((mode-hydra (intern (concat "hydra-" mode-name))))
-      (hydra-set-property mode-hydra :verbosity 0))))
-
-(defun rigpa-show-menu (mode-name)
-  "Show current mode menu."
-  (unless (member mode-name chimera-evil-states)
-    ;; only supported for hydra
-    (let ((mode-hydra (intern (concat "hydra-" mode-name))))
-      (hydra-set-property mode-hydra :verbosity 2))))
-
-(defun rigpa-toggle-menu ()
-  "Show/hide the current mode menu.
-
-Note that hiding the menu still retains the current editing mode,
-and simply toggles whether the menu is visible or not."
-  (interactive)
-  (let* ((mode-name (symbol-name evil-state))
-         (mode-hydra (intern (concat "hydra-" mode-name))))
-    (let ((visibility (hydra-get-property mode-hydra :verbosity)))
-      (if (or (eq nil visibility)
-              (> visibility 0))
-          (rigpa-hide-menu mode-name)
-        (rigpa-show-menu mode-name)))))
 
 (define-derived-mode rigpa-meta-mode
   text-mode "Meta"
@@ -412,12 +383,7 @@ and simply toggles whether the menu is visible or not."
   (when (boundp 'evil-mode)
     (rigpa--integrate-evil-states))
   (rigpa--create-editing-structures)
-  (rigpa--provide-editing-structures)
-  (if (and (boundp 'rigpa-show-menus) rigpa-show-menus)
-      (dolist (mode (ht-values rigpa-modes))
-        (rigpa-show-menu (chimera-mode-name mode)))
-    (dolist (mode (ht-values rigpa-modes))
-      (rigpa-hide-menu (chimera-mode-name mode)))))
+  (rigpa--provide-editing-structures))
 
 (defun rigpa-disable ()
   "Disable rigpa."

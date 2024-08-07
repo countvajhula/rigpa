@@ -27,7 +27,6 @@
 ;;; Code:
 
 (require 'evil)
-(require 'hydra)
 (require 'rigpa-mode-mode)
 (require 'rigpa-types)
 

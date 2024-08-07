@@ -41,7 +41,6 @@
   (("z" evil-fill-and-move t)
    ("s-z" evil-fill-and-move t)
    ("i" nil t)
-   ("H-m" rigpa-toggle-menu)
    ("<return>" rigpa-enter-lower-level t)
    ("<escape>" rigpa-enter-higher-level t))
   :lighter " text"
