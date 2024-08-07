@@ -363,7 +363,7 @@ arguments toggles rather than enters or exits, so this is more
 explicit.
 
 TODO: generate this and `exit' in the lithium mode-defining macro."
-  (rigpa-buffer-mode 1))
+  (lithium-enter-mode 'rigpa-buffer-mode))
 
 (defun rigpa-exit-buffer-mode ()
   "Exit buffer mode.
@@ -374,7 +374,7 @@ arguments toggles rather than enters or exits, so this is more
 explicit.
 
 TODO: generate this and `enter' in the lithium mode-defining macro."
-  (rigpa-buffer-mode -1))
+  (lithium-exit-mode 'rigpa-buffer-mode))
 
 (defvar chimera-buffer-mode-entry-hook nil
   "Entry hook for rigpa buffer mode.")
@@ -401,20 +401,32 @@ TODO: generate this and `enter' in the lithium mode-defining macro."
     ;; something like bufler, whose categories could correspond to
     ;; distinct rings, and maybe meta level could simply be another
     ;; category here.
-    (buffer-ring-torus-switch-to-ring buffer-ring-name)))
+    (buffer-ring-torus-switch-to-ring buffer-ring-name))
+  ;; TODO: probably do this via a standard internal
+  ;; rigpa hook in mode registration
+  (evil-buffer-state))
 
 (defun rigpa--on-buffer-mode-exit ()
   "Actions to take upon exit from buffer mode."
   (rigpa-buffer-link-to-original))
 
+(defun rigpa--on-buffer-mode-post-exit ()
+  "Actions to take upon exit from buffer mode."
+  (rigpa--enter-appropriate-mode)
+  (let ((entry-buffer (rigpa-buffer-original-buffer)))
+    (when (and entry-buffer (buffer-live-p entry-buffer))
+      ;; ensure the entry buffer reverts to a sane state
+      (rigpa--enter-appropriate-mode entry-buffer))))
+
 (defvar chimera-buffer-mode
   (make-chimera-mode :name "buffer"
                      :enter #'rigpa-enter-buffer-mode
                      :exit #'rigpa-exit-buffer-mode
-                     :pre-entry-hook 'chimera-buffer-mode-entry-hook
-                     :post-exit-hook 'chimera-buffer-mode-exit-hook
-                     :entry-hook 'rigpa-buffer-mode-entry-hook
-                     :exit-hook 'rigpa-buffer-mode-exit-hook))
+                     :pre-entry-hook 'rigpa-buffer-mode-pre-entry-hook
+                     :post-exit-hook 'rigpa-buffer-mode-post-exit-hook
+                     :entry-hook 'rigpa-buffer-mode-post-entry-hook
+                     :exit-hook 'rigpa-buffer-mode-pre-exit-hook
+                     :manage-hooks nil))
 
 
 (provide 'rigpa-buffer-mode)

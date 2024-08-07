@@ -212,7 +212,7 @@ arguments toggles rather than enters or exits, so this is more
 explicit.
 
 TODO: generate this and `exit' in the lithium mode-defining macro."
-  (rigpa-view-mode 1))
+  (lithium-enter-mode 'rigpa-view-mode))
 
 (defun rigpa-exit-view-mode ()
   "Exit view mode.
@@ -223,13 +223,7 @@ arguments toggles rather than enters or exits, so this is more
 explicit.
 
 TODO: generate this and `enter' in the lithium mode-defining macro."
-  (rigpa-view-mode -1))
-
-(defvar chimera-view-mode-entry-hook nil
-  "Entry hook for rigpa view mode.")
-
-(defvar chimera-view-mode-exit-hook nil
-  "Exit hook for rigpa view mode.")
+  (lithium-exit-mode 'rigpa-view-mode))
 
 (defun rigpa--on-view-mode-entry ()
   "Actions to take upon entry into view mode."
@@ -243,7 +237,10 @@ TODO: generate this and `enter' in the lithium mode-defining macro."
   ;; currently, zooming past a certain level causes original point to
   ;; "drag" view there
   (blink-cursor-mode -1)
-  (internal-show-cursor nil nil))
+  (internal-show-cursor nil nil)
+  ;; TODO: probably do this via a standard internal
+  ;; rigpa hook in mode registration
+  (evil-view-state))
 
 (defun rigpa--on-view-mode-exit ()
   "Actions to take upon exit from view mode."
@@ -253,14 +250,19 @@ TODO: generate this and `enter' in the lithium mode-defining macro."
       (goto-char rigpa-view--original-position)
     (evil-window-middle)))
 
+(defun rigpa--on-view-mode-post-exit ()
+  "Actions to take upon exit from view mode."
+  (rigpa--enter-appropriate-mode))
+
 (defvar chimera-view-mode
   (make-chimera-mode :name "view"
                      :enter #'rigpa-enter-view-mode
                      :exit #'rigpa-exit-view-mode
-                     :pre-entry-hook 'chimera-view-mode-entry-hook
-                     :post-exit-hook 'chimera-view-mode-exit-hook
-                     :entry-hook 'rigpa-view-mode-entry-hook
-                     :exit-hook 'rigpa-view-mode-exit-hook))
+                     :pre-entry-hook 'rigpa-view-mode-pre-entry-hook
+                     :post-exit-hook 'rigpa-view-mode-post-exit-hook
+                     :entry-hook 'rigpa-view-mode-post-entry-hook
+                     :exit-hook 'rigpa-view-mode-pre-exit-hook
+                     :manage-hooks nil))
 
 ;; mark view navigations as not repeatable from the perspective
 ;; of Evil's dot operator - i.e. I believe these won't get added
