@@ -197,13 +197,13 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
              ;; we don't want to do anything in this case,
              ;; but re-enter the current mode to ensure
              ;; that it reconciles state with the new tower
-             (rigpa-enter-mode current-mode-name))
+             (chimera--enter-mode (ht-get rigpa-modes current-mode-name)))
             (recall-mode-name
              ;; recall if available
              (rigpa--clear-local-recall)
-             (rigpa-enter-mode recall-mode-name))
+             (chimera--enter-mode (ht-get rigpa-modes recall-mode-name)))
             ;; otherwise default for tower
-            (t (rigpa-enter-mode default-mode-name))))))
+            (t (chimera--enter-mode (ht-get rigpa-modes default-mode-name)))))))
 
 (defun rigpa-enter-higher-level ()
   "Enter higher level."
