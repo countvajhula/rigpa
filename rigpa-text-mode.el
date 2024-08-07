@@ -27,9 +27,8 @@
 ;;; Code:
 
 (require 'evil)
-(require 'hydra)
+(require 'lithium)
 (require 'chimera)
-(require 'chimera-hydra)
 
 (evil-define-state text
   "Text state."
@@ -37,33 +36,56 @@
   :message "-- TEXT --"
   :enable (normal))
 
-
-(defhydra hydra-text (:columns 2
-                      :body-pre (chimera-hydra-signal-entry chimera-text-mode)
-                      :post (chimera-hydra-portend-exit chimera-text-mode t)
-                      :after-exit (chimera-hydra-signal-exit chimera-text-mode
-                                                             #'chimera-handle-hydra-exit))
+(lithium-define-mode rigpa-text-mode
   "Text mode"
-  ("z" evil-fill-and-move "justify" :exit t)
-  ("s-z" evil-fill-and-move "justify" :exit t)
-  ("i" nil "exit" :exit t)
-  ("H-m" rigpa-toggle-menu "show/hide this menu")
-  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
+  (("z" evil-fill-and-move t)
+   ("s-z" evil-fill-and-move t)
+   ("i" nil t)
+   ("H-m" rigpa-toggle-menu)
+   ("<return>" rigpa-enter-lower-level t)
+   ("<escape>" rigpa-enter-higher-level t))
+  :lighter " text"
+  :group 'rigpa)
 
-(defvar chimera-text-mode-entry-hook nil
-  "Entry hook for rigpa text mode.")
+(defun rigpa--on-text-mode-entry ()
+  "Actions to take upon entering text mode."
+  (evil-text-state))
 
-(defvar chimera-text-mode-exit-hook nil
-  "Exit hook for rigpa text mode.")
+(defun rigpa--on-text-mode-post-exit ()
+  "Actions to take upon exiting text mode."
+  (rigpa--enter-appropriate-mode))
+
+(defun rigpa-enter-text-mode ()
+  "Enter text mode.
+
+We would prefer to have a thunk here so it's more easily usable with
+hooks than anonymous lambdas. The minor mode function called without
+arguments toggles rather than enters or exits, so this is more
+explicit.
+
+TODO: generate this and `exit' in the lithium mode-defining macro."
+  (lithium-enter-mode 'rigpa-text-mode))
+
+(defun rigpa-exit-text-mode ()
+  "Exit text mode.
+
+We would prefer to have a thunk here so it's more easily usable with
+hooks than anonymous lambdas. The minor mode function called without
+arguments toggles rather than enters or exits, so this is more
+explicit.
+
+TODO: generate this and `enter' in the lithium mode-defining macro."
+  (lithium-exit-mode 'rigpa-text-mode))
 
 (defvar chimera-text-mode
   (make-chimera-mode :name "text"
-                     :enter #'hydra-text/body
-                     :pre-entry-hook 'chimera-text-mode-entry-hook
-                     :post-exit-hook 'chimera-text-mode-exit-hook
-                     :entry-hook 'evil-text-state-entry-hook
-                     :exit-hook 'evil-text-state-exit-hook))
+                     :enter #'rigpa-enter-text-mode
+                     :exit #'rigpa-exit-text-mode
+                     :pre-entry-hook 'rigpa-text-mode-pre-entry-hook
+                     :post-exit-hook 'rigpa-text-mode-post-exit-hook
+                     :entry-hook 'rigpa-text-mode-post-entry-hook
+                     :exit-hook 'rigpa-text-mode-pre-exit-hook
+                     :manage-hooks nil))
 
 
 (provide 'rigpa-text-mode)
