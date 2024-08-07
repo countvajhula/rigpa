@@ -27,9 +27,8 @@
 ;;; Code:
 
 (require 'evil)
-(require 'hydra)
 (require 'chimera)
-(require 'chimera-hydra)
+(require 'lithium)
 (require 'centaur-tabs)
 
 (evil-define-state tab
@@ -91,54 +90,79 @@ buffer mode."
   (puthash 'previous (gethash 'temp-previous rigpa-tab-marks-hash)
            rigpa-tab-marks-hash))
 
-(defhydra hydra-tab (:columns 2
-                     :body-pre (progn (rigpa-tab-setup-marks-table) ; maybe put in ad-hoc entry function
-                                      (chimera-hydra-signal-entry chimera-tab-mode))
-                     :post (progn (rigpa-tab-flash-to-original)
-                                  (chimera-hydra-portend-exit chimera-tab-mode t))
-                     :after-exit (chimera-hydra-signal-exit chimera-tab-mode
-                                                            #'chimera-handle-hydra-exit))
+(lithium-define-mode rigpa-tab-mode
   "Tab mode"
-  ("/" centaur-tabs-counsel-switch-group "search" :exit t)
-  ("h" centaur-tabs-backward "previous")
-  ("s-{" centaur-tabs-backward "previous") ; to "take over" from the global binding
-  ("l" centaur-tabs-forward "next")
-  ("s-}" centaur-tabs-forward "next") ; to "take over" from the global binding
-  ("k" (lambda ()
-         (interactive)
-         (centaur-tabs-backward-group))
-   "previous group")
-  ("j" (lambda ()
-         (interactive)
-         (centaur-tabs-forward-group)) "next group")
-  ("H" centaur-tabs-move-current-tab-to-left "move left")
-  ("L" centaur-tabs-move-current-tab-to-right "move right")
-  ("s-t" rigpa-tab-switch-to-last "switch to last" :exit t)
-  ("t" rigpa-tab-switch-to-last "switch to last" :exit t)
-  ("n" (lambda ()
-         (interactive)
-         (rigpa-buffer-create nil nil :switch-p t))
-   "new" :exit t)
-  ("x" kill-buffer "delete")
-  ("?" rigpa-buffer-info "info" :exit t)
-  ("q" rigpa-tab-return-to-original "return to original" :exit t)
-  ("H-m" rigpa-toggle-menu "show/hide this menu")
-  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
+  (("/" centaur-tabs-counsel-switch-group t)
+   ("h" centaur-tabs-backward)
+   ("s-{" centaur-tabs-backward) ; to "take over" from the global binding
+   ("l" centaur-tabs-forward)
+   ("s-}" centaur-tabs-forward) ; to "take over" from the global binding
+   ("k" (lambda ()
+          (interactive)
+          (centaur-tabs-backward-group)))
+   ("j" (lambda ()
+          (interactive)
+          (centaur-tabs-forward-group)))
+   ("H" centaur-tabs-move-current-tab-to-left)
+   ("L" centaur-tabs-move-current-tab-to-right)
+   ("s-t" rigpa-tab-switch-to-last t)
+   ("t" rigpa-tab-switch-to-last t)
+   ("n" (lambda ()
+          (interactive)
+          (rigpa-buffer-create nil nil :switch-p t))
+    t)
+   ("x" kill-buffer)
+   ("?" rigpa-buffer-info t)
+   ("q" rigpa-tab-return-to-original t)
+   ("H-m" rigpa-toggle-menu)
+   ("<return>" rigpa-enter-lower-level t)
+   ("<escape>" rigpa-enter-higher-level t))
+  :lighter " tab"
+  :group 'rigpa)
 
-(defvar chimera-tab-mode-entry-hook nil
-  "Entry hook for rigpa tab mode.")
+(defun rigpa--on-tab-mode-entry ()
+  "Actions to take upon entry into tab mode."
+  (rigpa-tab-setup-marks-table)
+  (chimera-hydra-signal-entry chimera-tab-mode)
+  (evil-tab-state))
 
-(defvar chimera-tab-mode-exit-hook nil
-  "Exit hook for rigpa tab mode.")
+(defun rigpa--on-tab-mode-post-exit ()
+  "Actions to take upon exiting tab mode."
+  (rigpa-tab-flash-to-original)
+  (rigpa--enter-appropriate-mode))
+
+(defun rigpa-enter-tab-mode ()
+  "Enter tab mode.
+
+We would prefer to have a thunk here so it's more easily usable with
+hooks than anonymous lambdas. The minor mode function called without
+arguments toggles rather than enters or exits, so this is more
+explicit.
+
+TODO: generate this and `exit' in the lithium mode-defining macro."
+  (lithium-enter-mode 'rigpa-tab-mode))
+
+(defun rigpa-exit-tab-mode ()
+  "Exit tab mode.
+
+We would prefer to have a thunk here so it's more easily usable with
+hooks than anonymous lambdas. The minor mode function called without
+arguments toggles rather than enters or exits, so this is more
+explicit.
+
+TODO: generate this and `enter' in the lithium mode-defining macro."
+  (lithium-exit-mode 'rigpa-tab-mode))
+
 
 (defvar chimera-tab-mode
   (make-chimera-mode :name "tab"
-                     :enter #'hydra-tab/body
-                     :pre-entry-hook 'chimera-tab-mode-entry-hook
-                     :post-exit-hook 'chimera-tab-mode-exit-hook
-                     :entry-hook 'evil-tab-state-entry-hook
-                     :exit-hook 'evil-tab-state-exit-hook))
+                     :enter #'rigpa-enter-tab-mode
+                     :exit #'rigpa-exit-tab-mode
+                     :pre-entry-hook 'rigpa-tab-mode-pre-entry-hook
+                     :post-exit-hook 'rigpa-tab-mode-post-exit-hook
+                     :entry-hook 'rigpa-tab-mode-post-entry-hook
+                     :exit-hook 'rigpa-tab-mode-pre-exit-hook
+                     :manage-hooks nil))
 
 
 (provide 'rigpa-tab-mode)
