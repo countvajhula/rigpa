@@ -341,11 +341,11 @@
 (defvar chimera-word-mode-exit-hook nil
   "Exit hook for rigpa word mode.")
 
-(defun rigpa--enable-word-minor-mode ()
+(defun rigpa--on-word-mode-pre-entry ()
   "Enable word minor mode."
   (rigpa-word-mode 1))
 
-(defun rigpa--disable-word-minor-mode ()
+(defun rigpa--on-word-mode-post-exit ()
   "Disable word minor mode."
   (rigpa-word-mode -1))
 
