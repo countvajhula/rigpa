@@ -59,9 +59,6 @@ This package isn't on `MELPA <https://melpa.org/>`_ yet, but you can install a p
     ;; temporary workaround for https://github.com/countvajhula/rigpa/issues/9
     (remove-hook 'evil-symex-state-exit-hook #'symex-disable-editing-minor-mode)
 
-    ;; custom config
-    (setq rigpa-show-menus nil)
-
     ;; navigating meta modes
     (global-unset-key (kbd "s-m"))
     (global-set-key (kbd "s-m s-m") 'rigpa-flashback-to-last-tower)

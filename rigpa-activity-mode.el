@@ -101,7 +101,6 @@
    ("a" rigpa-activity-previous t)
    ("s-a" rigpa-activity-previous t)
    ("i" ignore t)
-   ("H-m" rigpa-toggle-menu)
    ("<return>" rigpa-enter-lower-level t)
    ("<escape>" rigpa-enter-higher-level t))
   :lighter " activity"

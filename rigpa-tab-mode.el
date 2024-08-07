@@ -114,7 +114,6 @@ buffer mode."
    ("x" kill-buffer)
    ("?" rigpa-buffer-info t)
    ("q" rigpa-tab-return-to-original t)
-   ("H-m" rigpa-toggle-menu)
    ("<return>" rigpa-enter-lower-level t)
    ("<escape>" rigpa-enter-higher-level t))
   :lighter " tab"
@@ -123,7 +122,6 @@ buffer mode."
 (defun rigpa--on-tab-mode-entry ()
   "Actions to take upon entry into tab mode."
   (rigpa-tab-setup-marks-table)
-  (chimera-hydra-signal-entry chimera-tab-mode)
   (evil-tab-state))
 
 (defun rigpa--on-tab-mode-post-exit ()

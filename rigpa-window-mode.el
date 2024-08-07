@@ -338,7 +338,6 @@ happen quickly enough not to be noticeable."
    ("R" evil-window-rotate-upwards)
    ("f" ffap-other-window t)
    ("i" nil t)
-   ("H-m" rigpa-toggle-menu)
    ("<return>" rigpa-enter-lower-level t)
    ("<escape>" rigpa-enter-higher-level t))
   :lighter " window"
