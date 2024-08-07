@@ -145,7 +145,7 @@ to ensure, upon state transitions, that:
 
 (defun rigpa-enter-mode (mode-name)
   "Enter mode MODE-NAME."
-  (chimera-enter-mode (ht-get rigpa-modes mode-name)))
+  (chimera-switch-mode (ht-get rigpa-modes mode-name)))
 
 (defun rigpa--enter-level (level-number)
   "Enter level LEVEL-NUMBER"
