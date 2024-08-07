@@ -27,9 +27,8 @@
 ;;; Code:
 
 (require 'evil)
-(require 'hydra)
+(require 'lithium)
 (require 'chimera)
-(require 'chimera-hydra)
 
 (evil-define-state system
   "System state."
@@ -43,31 +42,54 @@
   (interactive)
   (display-message-or-buffer (shell-command-to-string "pmset -g batt")))
 
-(defhydra hydra-system (:exit t
-                        :body-pre (chimera-hydra-signal-entry chimera-system-mode)
-                        :post (chimera-hydra-portend-exit chimera-system-mode t)
-                        :after-exit (chimera-hydra-signal-exit chimera-system-mode
-                                                               #'chimera-handle-hydra-exit))
-  "System information"
-  ("b" rigpa-system-battery-life "show power info including battery life")
-  ("s-i" rigpa-system-battery-life "show power info including battery life")
-  ("H-m" rigpa-toggle-menu "show/hide this menu" :exit nil)
-  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
+(lithium-define-mode rigpa-system-mode
+  "System mode"
+  (("b" rigpa-system-battery-life t)
+   ("s-i" rigpa-system-battery-life t)
+   ("<return>" rigpa-enter-lower-level t)
+   ("<escape>" rigpa-enter-higher-level t))
+  :lighter " system"
+  :group 'rigpa)
 
-(defvar chimera-system-mode-entry-hook nil
-  "Entry hook for rigpa system mode.")
+(defun rigpa--on-system-mode-entry ()
+  "Actions to take upon entering system mode."
+  (evil-system-state))
 
-(defvar chimera-system-mode-exit-hook nil
-  "Exit hook for rigpa system mode.")
+(defun rigpa--on-system-mode-post-exit ()
+  "Actions to take upon exiting system mode."
+  (rigpa--enter-appropriate-mode))
+
+(defun rigpa-enter-system-mode ()
+  "Enter system mode.
+
+We would prefer to have a thunk here so it's more easily usable with
+hooks than anonymous lambdas. The minor mode function called without
+arguments toggles rather than enters or exits, so this is more
+explicit.
+
+TODO: generate this and `exit' in the lithium mode-defining macro."
+  (lithium-enter-mode 'rigpa-system-mode))
+
+(defun rigpa-exit-system-mode ()
+  "Exit system mode.
+
+We would prefer to have a thunk here so it's more easily usable with
+hooks than anonymous lambdas. The minor mode function called without
+arguments toggles rather than enters or exits, so this is more
+explicit.
+
+TODO: generate this and `enter' in the lithium mode-defining macro."
+  (lithium-exit-mode 'rigpa-system-mode))
 
 (defvar chimera-system-mode
   (make-chimera-mode :name "system"
-                     :enter #'hydra-system/body
-                     :pre-entry-hook 'chimera-system-mode-entry-hook
-                     :post-exit-hook 'chimera-system-mode-exit-hook
-                     :entry-hook 'evil-system-state-entry-hook
-                     :exit-hook 'evil-system-state-exit-hook))
+                     :enter #'rigpa-enter-system-mode
+                     :exit #'rigpa-exit-system-mode
+                     :pre-entry-hook 'rigpa-system-mode-pre-entry-hook
+                     :post-exit-hook 'rigpa-system-mode-post-exit-hook
+                     :entry-hook 'rigpa-system-mode-post-entry-hook
+                     :exit-hook 'rigpa-system-mode-pre-exit-hook
+                     :manage-hooks nil))
 
 
 (provide 'rigpa-system-mode)
