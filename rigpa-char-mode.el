@@ -217,7 +217,7 @@
   "Enable char minor mode."
   (rigpa-char-mode 1))
 
-(defun rigpa--on-char-mode-post-exit ()
+(defun rigpa--on-char-mode-exit ()
   "Disable char minor mode."
   (rigpa-char-mode -1))
 

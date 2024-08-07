@@ -345,7 +345,7 @@
   "Enable word minor mode."
   (rigpa-word-mode 1))
 
-(defun rigpa--on-word-mode-post-exit ()
+(defun rigpa--on-word-mode-exit ()
   "Disable word minor mode."
   (rigpa-word-mode -1))
 
