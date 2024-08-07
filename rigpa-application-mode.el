@@ -28,8 +28,8 @@
 
 (require 'evil)
 (require 'hydra)
+(require 'lithium)
 (require 'chimera)
-(require 'chimera-hydra)
 (require 'centaur-tabs)
 (require 'beacon)
 
@@ -135,39 +135,61 @@
               'consult-theme)
              (t 'load-theme))))
 
-(defhydra hydra-application (:columns 2
-                             :exit t
-                             :body-pre (chimera-hydra-signal-entry chimera-application-mode)
-                             :post (chimera-hydra-portend-exit chimera-application-mode t)
-                             :after-exit (chimera-hydra-signal-exit chimera-application-mode
-                                                                    #'chimera-handle-hydra-exit))
-  "Control application environment"
-  ("y" hydra-transparency/body "transparency")
-  ("t" centaur-tabs-mode "toggle tabs")
-  ("n" display-line-numbers-mode "toggle line numbers")
-  ("b" rigpa-application-toggle-alarm-bell "toggle alarm bell")
-  ("B" beacon-mode "toggle beacon")
-  ("s" scroll-bar-mode "toggle scroll bar")
-  ("l" hl-line-mode "toggle highlight line")
-  ("c" rigpa-application-load-theme "change color scheme")
-  ("f" set-frame-font "change font")
-  ("H-m" rigpa-toggle-menu "show/hide this menu" :exit nil)
-  ("<return>" rigpa-enter-lower-level "enter lower level")
-  ("<escape>" rigpa-enter-higher-level "escape to higher level"))
+(lithium-define-mode rigpa-application-mode
+  "Application mode"
+  (("y" hydra-transparency/body t)
+   ("t" centaur-tabs-mode t)
+   ("n" display-line-numbers-mode t)
+   ("b" rigpa-application-toggle-alarm-bell t)
+   ("B" beacon-mode t)
+   ("s" scroll-bar-mode t)
+   ("l" hl-line-mode t)
+   ("c" rigpa-application-load-theme t)
+   ("f" set-frame-font t)
+   ("<return>" rigpa-enter-lower-level t)
+   ("<escape>" rigpa-enter-higher-level t))
+  :lighter " application"
+  :group 'rigpa)
 
-(defvar chimera-application-mode-entry-hook nil
-  "Entry hook for rigpa application mode.")
+(defun rigpa--on-application-mode-entry ()
+  "Actions to take upon entering application mode."
+  (evil-application-state))
 
-(defvar chimera-application-mode-exit-hook nil
-  "Exit hook for rigpa application mode.")
+(defun rigpa--on-application-mode-post-exit ()
+  "Actions to take upon exiting application mode."
+  (rigpa--enter-appropriate-mode))
+
+(defun rigpa-enter-application-mode ()
+  "Enter application mode.
+
+We would prefer to have a thunk here so it's more easily usable with
+hooks than anonymous lambdas. The minor mode function called without
+arguments toggles rather than enters or exits, so this is more
+explicit.
+
+TODO: generate this and `exit' in the lithium mode-defining macro."
+  (lithium-enter-mode 'rigpa-application-mode))
+
+(defun rigpa-exit-application-mode ()
+  "Exit application mode.
+
+We would prefer to have a thunk here so it's more easily usable with
+hooks than anonymous lambdas. The minor mode function called without
+arguments toggles rather than enters or exits, so this is more
+explicit.
+
+TODO: generate this and `enter' in the lithium mode-defining macro."
+  (lithium-exit-mode 'rigpa-application-mode))
 
 (defvar chimera-application-mode
   (make-chimera-mode :name "application"
-                     :enter #'hydra-application/body
-                     :pre-entry-hook 'chimera-application-mode-entry-hook
-                     :post-exit-hook 'chimera-application-mode-exit-hook
-                     :entry-hook 'evil-application-state-entry-hook
-                     :exit-hook 'evil-application-state-exit-hook))
+                     :enter #'rigpa-enter-application-mode
+                     :exit #'rigpa-exit-application-mode
+                     :pre-entry-hook 'rigpa-application-mode-pre-entry-hook
+                     :post-exit-hook 'rigpa-application-mode-post-exit-hook
+                     :entry-hook 'rigpa-application-mode-post-entry-hook
+                     :exit-hook 'rigpa-application-mode-pre-exit-hook
+                     :manage-hooks nil))
 
 
 (provide 'rigpa-application-mode)
