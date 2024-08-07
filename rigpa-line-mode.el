@@ -336,21 +336,18 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
 (defvar chimera-line-mode-exit-hook nil
   "Exit hook for rigpa line mode.")
 
-(defun rigpa--enable-line-minor-mode ()
+(defun rigpa--on-line-mode-pre-entry ()
   "Enable line minor mode."
-  ;; probably want to rename this function to reflect
-  ;; its broader scope of line mode entry actions
   (rigpa-line-mode 1)
   (setq rigpa-line--column (current-column))
   (beginning-of-line)
   (hl-line-mode 1))
 
-(defun rigpa--disable-line-minor-mode ()
+(defun rigpa--on-line-mode-post-exit ()
   "Disable line minor mode."
-  (when rigpa-line-mode
-    (rigpa-line-mode -1)
-    (hl-line-mode -1)
-    (evil-goto-column rigpa-line--column)))
+  (rigpa-line-mode -1)
+  (hl-line-mode -1)
+  (evil-goto-column rigpa-line--column))
 
 (defvar chimera-line-mode
   (make-chimera-mode :name "line"

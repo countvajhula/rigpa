@@ -213,11 +213,11 @@
 (defvar chimera-char-mode-exit-hook nil
   "Exit hook for rigpa char mode.")
 
-(defun rigpa--enable-char-minor-mode ()
+(defun rigpa--on-char-mode-pre-entry ()
   "Enable char minor mode."
   (rigpa-char-mode 1))
 
-(defun rigpa--disable-char-minor-mode ()
+(defun rigpa--on-char-mode-post-exit ()
   "Disable char minor mode."
   (rigpa-char-mode -1))
 

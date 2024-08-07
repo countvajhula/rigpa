@@ -62,6 +62,11 @@ to parametrize the hook function but still be able to remove it."
           (concat "rigpa--enable-" name "-minor-mode"))))
     enable-mode))
 
+(defun rigpa--on-mode-pre-entry (name)
+  "Return the function that takes actions upon mode pre-entry."
+  (intern
+   (concat "rigpa--on-" name "-mode-pre-entry")))
+
 (defun rigpa--on-mode-entry (name)
   "Return the function that takes actions upon mode entry."
   (intern
@@ -77,18 +82,6 @@ to parametrize the hook function but still be able to remove it."
   (intern
    (concat "rigpa--on-" name "-mode-post-exit")))
 
-(defun rigpa--disable-other-minor-modes ()
-  "Disable all rigpa mode minor modes.
-
-This is called on state transitions to ensure that all minor modes are
-first disabled prior to the minor mode for new state being enabled."
-  (dolist (name (ht-keys rigpa-modes))
-    (let ((disable-mode
-           (intern
-            (concat "rigpa--disable-" name "-minor-mode"))))
-      (when (fboundp disable-mode)
-        (funcall disable-mode)))))
-
 (defun rigpa-register-mode (mode)
   "Register MODE for use with rigpa.
 
@@ -103,12 +96,12 @@ to ensure, upon state transitions, that:
         (exit-hook (chimera-mode-exit-hook mode))
         (post-exit-hook (chimera-mode-post-exit-hook mode)))
     (ht-set! rigpa-modes name mode)
-    (let ((minor-mode-entry (rigpa--minor-mode-enabler name)))
-      (when (fboundp minor-mode-entry)
-        (add-hook pre-entry-hook minor-mode-entry)))
-    (let ((fn (rigpa--on-mode-entry name)))
+    (let ((fn (rigpa--on-mode-pre-entry name)))
       (when (fboundp fn)
         (add-hook pre-entry-hook fn)))
+    (let ((fn (rigpa--on-mode-entry name)))
+      (when (fboundp fn)
+        (add-hook entry-hook fn)))
     (let ((fn (rigpa--on-mode-exit name)))
       (when (fboundp fn)
         (add-hook exit-hook fn)))
@@ -116,7 +109,6 @@ to ensure, upon state transitions, that:
       (when (fboundp fn)
         (add-hook post-exit-hook fn)))
     (add-hook entry-hook #'rigpa-reconcile-level)
-    (add-hook pre-entry-hook #'rigpa--disable-other-minor-modes)
     (add-hook exit-hook #'rigpa-remember-for-recall)))
 
 (defun rigpa-unregister-mode (mode)
@@ -140,7 +132,6 @@ to ensure, upon state transitions, that:
       (when (fboundp fn)
         (remove-hook post-exit-hook fn)))
     (remove-hook entry-hook #'rigpa-reconcile-level)
-    (remove-hook pre-entry-hook #'rigpa--disable-other-minor-modes)
     (remove-hook exit-hook #'rigpa-remember-for-recall)))
 
 (defun rigpa-enter-mode (mode-name)
