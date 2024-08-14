@@ -34,8 +34,7 @@
 (evil-define-state tab
   "Tab state."
   :tag " <T> "
-  :message "-- TAB --"
-  :enable (normal))
+  :message "-- TAB --")
 
 (defun rigpa-tab-setup-marks-table ()
   "Initialize the tab marks hashtable and add an entry for the
@@ -90,7 +89,7 @@ buffer mode."
   (puthash 'previous (gethash 'temp-previous rigpa-tab-marks-hash)
            rigpa-tab-marks-hash))
 
-(lithium-define-mode rigpa-tab-mode
+(lithium-define-global-mode rigpa-tab-mode
   "Tab mode"
   (("/" centaur-tabs-counsel-switch-group t)
    ("h" centaur-tabs-backward)

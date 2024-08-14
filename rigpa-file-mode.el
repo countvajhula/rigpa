@@ -33,8 +33,7 @@
 (evil-define-state file
   "File state."
   :tag " <F> "
-  :message "-- FILE --"
-  :enable (normal))
+  :message "-- FILE --")
 
 ;; From: https://www.emacswiki.org/emacs/MarkCommands#toc4
 (defun unpop-to-mark-command ()
@@ -67,7 +66,7 @@ Version 2016-04-04"
   (interactive)
   (insert-register ?f))
 
-(lithium-define-mode rigpa-file-mode
+(lithium-define-global-mode rigpa-file-mode
   "File mode"
   (("h" evil-backward-char)
    ("j" evil-next-line)

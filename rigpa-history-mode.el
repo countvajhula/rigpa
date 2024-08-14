@@ -34,10 +34,9 @@
 (evil-define-state history
   "History state."
   :tag " <C> "
-  :message "-- x→o --"
-  :enable (normal))
+  :message "-- x→o --")
 
-(lithium-define-mode rigpa-history-mode
+(lithium-define-global-mode rigpa-history-mode
   "History mode"
   (("h" git-timemachine-show-previous-revision)
    ("l" git-timemachine-show-next-revision)
