@@ -350,7 +350,7 @@ happen quickly enough not to be noticeable."
   (auto-dim-other-buffers-mode 1)
   ;; TODO: probably do this via a standard internal
   ;; rigpa hook in mode registration
-  (evil-window-state))
+  (rigpa--for-all-buffers #'evil-window-state))
 
 (defun rigpa--on-window-mode-post-exit ()
   "Actions to take upon exit from window mode."
@@ -358,7 +358,7 @@ happen quickly enough not to be noticeable."
   (auto-dim-other-buffers-mode -1)
   ;; TODO: probably do this via a standard internal
   ;; rigpa hook in mode registration
-  (rigpa--enter-appropriate-mode))
+  (rigpa--for-all-buffers #'rigpa--enter-appropriate-mode))
 
 (defun rigpa-enter-window-mode ()
   "Enter window mode.

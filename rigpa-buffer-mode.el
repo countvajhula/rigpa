@@ -405,7 +405,7 @@ TODO: generate this and `enter' in the lithium mode-defining macro."
     (buffer-ring-torus-switch-to-ring buffer-ring-name))
   ;; TODO: probably do this via a standard internal
   ;; rigpa hook in mode registration
-  (evil-buffer-state))
+  (rigpa--for-all-buffers #'evil-buffer-state))
 
 (defun rigpa--on-buffer-mode-exit ()
   "Actions to take upon exit from buffer mode."
@@ -416,11 +416,7 @@ TODO: generate this and `enter' in the lithium mode-defining macro."
   ;; TODO: probably do this (entering appropriate mode in current and original buffer)
   ;; via a standard internal rigpa hook in mode registration.
   ;; we can enter appropriate in original if different from current buffer
-  (rigpa--enter-appropriate-mode)
-  (let ((entry-buffer (rigpa-buffer-original-buffer)))
-    (when (and entry-buffer (buffer-live-p entry-buffer))
-      ;; ensure the entry buffer reverts to a sane state
-      (rigpa--enter-appropriate-mode entry-buffer))))
+  (rigpa--for-all-buffers #'rigpa--enter-appropriate-mode))
 
 (defvar chimera-buffer-mode
   (make-chimera-mode :name "buffer"
