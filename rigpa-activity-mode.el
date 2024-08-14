@@ -33,8 +33,7 @@
 (evil-define-state activity
   "Activity state."
   :tag " <A> "
-  :message "-- ACTIVITY --"
-  :enable (normal))
+  :message "-- ACTIVITY --")
 
 (setq rigpa-activity-accumulate-buffer-name "MY-CLIPBOARD")
 
@@ -88,7 +87,7 @@
     (setq last-command 'goto-last-change))
   (call-interactively 'goto-last-change-reverse))
 
-(lithium-define-mode rigpa-activity-mode
+(lithium-define-global-mode rigpa-activity-mode
   "Activity mode"
   (("h" rigpa-activity-previous)
    ("C-j" evil-jump-backward)

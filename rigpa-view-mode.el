@@ -46,8 +46,7 @@
 (evil-define-state view
   "View state."
   :tag " <V> "
-  :message "-- VIEW --"
-  :enable (normal))
+  :message "-- VIEW --")
 
 (defun rigpa-view-scroll-down ()
   (interactive)
@@ -153,7 +152,7 @@
     (goto-char rigpa-view--original-position)
     (recenter)))
 
-(lithium-define-mode rigpa-view-mode
+(lithium-define-global-mode rigpa-view-mode
   "View mode"
   (("j" rigpa-view-scroll-down)
    ("k" rigpa-view-scroll-up)

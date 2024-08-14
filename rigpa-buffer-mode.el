@@ -50,8 +50,7 @@
 (evil-define-state buffer
   "Buffer state."
   :tag " <B> "
-  :message "-- BUFFER --"
-  :enable (normal))
+  :message "-- BUFFER --")
 
 (cl-defun rigpa-buffer-create (&optional
                                buffer-name
@@ -328,7 +327,7 @@ current ('original') buffer."
     ;; it so that recency ordering reflects correctly
     (buffer-ring-switch-to-buffer other-buffer)))
 
-(lithium-define-mode rigpa-buffer-mode
+(lithium-define-global-mode rigpa-buffer-mode
   "Buffer mode"
   (("s-b" rigpa-buffer-alternate t)
    ("b" rigpa-buffer-alternate t)

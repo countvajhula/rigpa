@@ -33,8 +33,7 @@
 (evil-define-state system
   "System state."
   :tag " <S> "
-  :message "-- SYSTEM --"
-  :enable (normal))
+  :message "-- SYSTEM --")
 
 (defun rigpa-system-battery-life ()
   "Show power info including battery life
@@ -42,7 +41,7 @@
   (interactive)
   (display-message-or-buffer (shell-command-to-string "pmset -g batt")))
 
-(lithium-define-mode rigpa-system-mode
+(lithium-define-global-mode rigpa-system-mode
   "System mode"
   (("b" rigpa-system-battery-life t)
    ("s-i" rigpa-system-battery-life t)

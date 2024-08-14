@@ -38,8 +38,7 @@
 (evil-define-state window
   "Window state."
   :tag " <W> "
-  :message "-- WINDOW --"
-  :enable (normal))
+  :message "-- WINDOW --")
 
 ;; configure home-row hotkeys to index windows in ace-window,
 ;; used as "search" feature in window mode
@@ -278,7 +277,7 @@ happen quickly enough not to be noticeable."
       (save-window-excursion
         (rigpa-window-return-to-original-window)))))
 
-(lithium-define-mode rigpa-window-mode
+(lithium-define-global-mode rigpa-window-mode
   "Window mode"
   (("h" rigpa-window-left)
    ("j" rigpa-window-down)

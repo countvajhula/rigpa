@@ -38,8 +38,7 @@
 (evil-define-state application
   "Application state."
   :tag " <A> "
-  :message "-- APPLICATION --"
-  :enable (normal))
+  :message "-- APPLICATION --")
 
 (defun rigpa-application-toggle-alarm-bell ()
   "Toggle whether the alarm bell sounds."
@@ -135,7 +134,7 @@
               'consult-theme)
              (t 'load-theme))))
 
-(lithium-define-mode rigpa-application-mode
+(lithium-define-global-mode rigpa-application-mode
   "Application mode"
   (("y" hydra-transparency/body t)
    ("t" centaur-tabs-mode t)

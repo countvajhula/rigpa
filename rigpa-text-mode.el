@@ -33,10 +33,9 @@
 (evil-define-state text
   "Text state."
   :tag " <A> "
-  :message "-- TEXT --"
-  :enable (normal))
+  :message "-- TEXT --")
 
-(lithium-define-mode rigpa-text-mode
+(lithium-define-global-mode rigpa-text-mode
   "Text mode"
   (("z" evil-fill-and-move t)
    ("s-z" evil-fill-and-move t)
