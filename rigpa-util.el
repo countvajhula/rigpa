@@ -43,7 +43,8 @@ and mutate that variable in ACTION."
   (let ((blist (buffer-list)))
     (while blist
       (with-current-buffer (car blist)
-        (funcall action))
+        (unless (minibufferp)
+          (funcall action)))
       (setq blist (cdr blist)))))
 
 (provide 'rigpa-util)
