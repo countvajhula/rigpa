@@ -35,6 +35,7 @@
 (require 'dynaring)
 (require 'buffer-ring)
 (require 'lithium)
+(require 'rigpa-util)
 
 (defconst rigpa-buffer-ring-name-prefix "rigpa-buffer-ring")
 
