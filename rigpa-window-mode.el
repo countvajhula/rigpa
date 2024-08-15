@@ -33,6 +33,7 @@
 (require 'windmove)
 (require 'chimera)
 (require 'lithium)
+(require 'rigpa-util)
 (require 'dash)
 
 (evil-define-state window
