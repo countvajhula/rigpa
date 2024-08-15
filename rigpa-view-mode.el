@@ -152,7 +152,7 @@
     (goto-char rigpa-view--original-position)
     (recenter)))
 
-(lithium-define-global-mode rigpa-view-mode
+(lithium-define-local-mode rigpa-view-mode
   "View mode"
   (("j" rigpa-view-scroll-down)
    ("k" rigpa-view-scroll-up)
