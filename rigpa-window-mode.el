@@ -300,6 +300,7 @@ happen quickly enough not to be noticeable."
    ("d" evil-window-delete t)
    ("X" transpose-frame) ; there are more in transpose-frame that may be useful
    ("Q" rigpa-window-quit-other t)
+   ;; maybe one for "select mru and close others"?
    ("o" rigpa-window-mru t)
    ("s-w" rigpa-window-mru t)
    ("n" other-window)
