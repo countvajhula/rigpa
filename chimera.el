@@ -76,14 +76,6 @@ exiting by entering."
          (from-mode-name (chimera-mode-name from-mode))
          (to-mode-name (chimera-mode-name to-mode)))
     (chimera--exit-mode from-mode)
-    (when (chimera-mode-manage-hooks from-mode)
-      (run-hooks (chimera-mode-post-exit-hook from-mode)))
-    ;; This is used for enabling evil-specific minor modes
-    ;; that need to be enabled _before_ mode entry.
-    ;; See docs for `rigpa--minor-mode-enabler'
-    ;; Would be great if we could avoid the need for this.
-    (when (chimera-mode-manage-hooks to-mode)
-      (run-hooks (chimera-mode-pre-entry-hook to-mode)))
     (chimera--enter-mode to-mode)
     ;; we're using evil state variables to keep track of state (even
     ;; for non-evil backed modes), so ensure that the evil state is
@@ -95,6 +87,12 @@ exiting by entering."
 
 (defun chimera--enter-mode (mode)
   "Enter MODE."
+  ;; This is used for enabling evil-specific minor modes
+  ;; that need to be enabled _before_ mode entry.
+  ;; See docs for `rigpa--minor-mode-enabler'
+  ;; Would be great if we could avoid the need for this.
+  (when (chimera-mode-manage-hooks mode)
+    (run-hooks (chimera-mode-pre-entry-hook mode)))
   (let ((enter-mode (chimera-mode-enter mode)))
     (funcall enter-mode)))
 
@@ -102,7 +100,9 @@ exiting by entering."
   "Exit (interrupt) MODE."
   (let ((exit-mode (chimera-mode-exit mode)))
     (when exit-mode
-      (funcall exit-mode))))
+      (funcall exit-mode)))
+  (when (chimera-mode-manage-hooks mode)
+    (run-hooks (chimera-mode-post-exit-hook mode))))
 
 (defun chimera--mode-for-state (mode-name)
   (symbol-value (intern (concat "chimera-" mode-name "-mode"))))

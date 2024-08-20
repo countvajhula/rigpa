@@ -158,6 +158,8 @@ to ensure, upon state transitions, that:
                                                 mode-name)
         (when (> rigpa--current-level 0)
           (rigpa--enter-level (1- rigpa--current-level)))
+      ;; first (low-level) exit the current mode
+      (chimera--exit-mode (ht-get rigpa-modes mode-name))
       ;; "not my tower, not my problem"
       ;; if we exited a buffer via a state that isn't in its tower, then
       ;; returning to it "out of band" would find it still that way,
@@ -208,6 +210,8 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
         (when (< rigpa--current-level
                  (1- (rigpa-ensemble-size (rigpa--local-tower))))
           (rigpa--enter-level (1+ rigpa--current-level)))
+      ;; first (low-level) exit the current mode
+      (chimera--exit-mode (ht-get rigpa-modes mode-name))
       ;; see note for rigpa-enter-lower-level
       (rigpa--enter-appropriate-mode))))
 
