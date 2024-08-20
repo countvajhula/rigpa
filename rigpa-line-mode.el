@@ -40,21 +40,13 @@
 
 (require 'evil)
 (require 'chimera)
-(require 'rigpa-evil-support)
 
-(defvar rigpa-line-mode-map (make-sparse-keymap))
 (defvar rigpa-line--column 1)
-
-(define-minor-mode rigpa-line-mode
-  "Minor mode to modulate keybindings in rigpa line mode."
-  :lighter "line"
-  :keymap rigpa-line-mode-map)
 
 (evil-define-state line
   "Line state."
   :tag " <L> "
-  :message "-- LINE --"
-  :enable (normal))
+  :message "-- LINE --")
 
 (evil-define-command rigpa-line-move-down (count)
   "Move line down"
@@ -277,86 +269,114 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   (interactive)
   (evil-previous-line 9))
 
-(defvar rigpa--line-mode-keyspec
-  '(("h" . evil-previous-line)
-    ("j" . evil-next-line)
-    ("k" . evil-previous-line)
-    ("l" . evil-next-line)
-    ("C-j" . rigpa-line-jump-down)
-    ("C-k" . rigpa-line-jump-up)
-    ("M-h" . rigpa-line-top)
-    ("M-k" . rigpa-line-top)
-    ("0" . rigpa-line-top)
-    ("M-l" . rigpa-line-bottom)
-    ("M-j" . rigpa-line-bottom)
-    ("$" . rigpa-line-bottom)
-    ("H" . rigpa-line-move-left)
-    ("J" . rigpa-line-move-down)
-    ("K" . rigpa-line-move-up)
-    ("L" . rigpa-line-move-right)
-    ("<tab>" . rigpa-line-indent)
-    ("<backspace>" . rigpa-line-clear)
-    ("s-l" . rigpa-line-indent)
-    (">" . evil-shift-right-line)
-    ("<" . evil-shift-left-line)
-    ("M-H" . rigpa-line-move-far-left)
-    ("M-J" . rigpa-line-move-very-bottom)
-    ("M-K" . rigpa-line-move-very-top)
-    ("M-L" . rigpa-line-move-far-right)
-    ("x" . rigpa-line-delete)
-    ("X" . rigpa-line-delete-backwards)
-    ("c" . rigpa-line-change)
-    ("y" . rigpa-line-yank)
-    ("p" . evil-paste-after)
-    ("D" . rigpa-line-delete-remaining)
-    ("C" . rigpa-line-change-remaining)
-    ("Y" . rigpa-line-yank-remaining)
-    ("P" . evil-paste-before)
-    ("'" . rigpa-line-flashback)
-    ("s" . rigpa-line-split)
-    ("v" . rigpa-line-pulverize)
-    ("+" . evil-open-above)
-    ("i" . evil-open-above)
-    ("a" . evil-open-below)
-    ("n" . rigpa-line-insert-newline)
-    ("C-S-o" . rigpa-line-append-newline)
-    ("o" . evil-join)
-    ("O" . rigpa-line-join-backwards)
-    (";" . rigpa-line-toggle-comment)
-    ("?" . rigpa-line-info))
-  "Key specification for rigpa line mode.")
-
-(rigpa--define-evil-keys-from-spec rigpa--line-mode-keyspec
-                                   rigpa-line-mode-map
-                                   'line)
-
-(defvar chimera-line-mode-entry-hook nil
-  "Entry hook for rigpa line mode.")
-
-(defvar chimera-line-mode-exit-hook nil
-  "Exit hook for rigpa line mode.")
+(lithium-define-local-mode rigpa-line-mode
+  "Line mode."
+  (("h" evil-previous-line)
+   ("j" evil-next-line)
+   ("k" evil-previous-line)
+   ("l" evil-next-line)
+   ("C-j" rigpa-line-jump-down)
+   ("C-k" rigpa-line-jump-up)
+   ("M-h" rigpa-line-top)
+   ("M-k" rigpa-line-top)
+   ("0" rigpa-line-top)
+   ("M-l" rigpa-line-bottom)
+   ("M-j" rigpa-line-bottom)
+   ("$" rigpa-line-bottom)
+   ("H" rigpa-line-move-left)
+   ("J" rigpa-line-move-down)
+   ("K" rigpa-line-move-up)
+   ("L" rigpa-line-move-right)
+   ("<tab>" rigpa-line-indent)
+   ("<backspace>" rigpa-line-clear)
+   ("s-l" rigpa-line-indent)
+   (">" evil-shift-right-line)
+   ("<" evil-shift-left-line)
+   ("M-H" rigpa-line-move-far-left)
+   ("M-J" rigpa-line-move-very-bottom)
+   ("M-K" rigpa-line-move-very-top)
+   ("M-L" rigpa-line-move-far-right)
+   ("x" rigpa-line-delete)
+   ("X" rigpa-line-delete-backwards)
+   ("c" rigpa-line-change)
+   ("y" rigpa-line-yank)
+   ("p" evil-paste-after)
+   ("D" rigpa-line-delete-remaining)
+   ("C" rigpa-line-change-remaining)
+   ("Y" rigpa-line-yank-remaining)
+   ("P" evil-paste-before)
+   ("'" rigpa-line-flashback)
+   ("s" rigpa-line-split)
+   ("v" rigpa-line-pulverize)
+   ("+" evil-open-above)
+   ("i" evil-open-above)
+   ("a" evil-open-below)
+   ("n" rigpa-line-insert-newline)
+   ("C-S-o" rigpa-line-append-newline)
+   ("o" evil-join)
+   ("O" rigpa-line-join-backwards)
+   (";" rigpa-line-toggle-comment)
+   ("u" undo-tree-undo) ; undo-only
+   ("C-r" undo-tree-redo) ; undo-redo
+   ("?" rigpa-line-info)
+   ("<return>" rigpa-enter-lower-level)
+   ("<escape>" rigpa-enter-higher-level))
+  :lighter " line"
+  :group 'rigpa)
 
 (defun rigpa--on-line-mode-pre-entry ()
   "Enable line minor mode."
-  (rigpa-line-mode 1)
   (setq rigpa-line--column (current-column))
   (beginning-of-line)
   (hl-line-mode 1))
 
+;; entry and post-exit state transitions
+;; enter and exit functions
 (defun rigpa--on-line-mode-exit ()
   "Disable line minor mode."
-  (rigpa-line-mode -1)
   (hl-line-mode -1)
   (evil-goto-column rigpa-line--column))
 
+(defun rigpa--on-line-mode-entry ()
+  "Actions to take upon entering line mode."
+  (evil-line-state))
+
+(defun rigpa--on-line-mode-post-exit ()
+  "Actions to take upon exiting line mode."
+  (rigpa--enter-appropriate-mode))
+
+;; TODO: generate enter and exit as part of rigpa mode definition macros?
+(defun rigpa-enter-line-mode ()
+  "Enter line mode.
+
+We would prefer to have a thunk here so it's more easily usable with
+hooks than anonymous lambdas. The minor mode function called without
+arguments toggles rather than enters or exits, so this is more
+explicit.
+
+TODO: generate this and `exit' in the lithium mode-defining macro."
+  (lithium-enter-mode 'rigpa-line-mode))
+
+(defun rigpa-exit-line-mode ()
+  "Exit line mode.
+
+We would prefer to have a thunk here so it's more easily usable with
+hooks than anonymous lambdas. The minor mode function called without
+arguments toggles rather than enters or exits, so this is more
+explicit.
+
+TODO: generate this and `enter' in the lithium mode-defining macro."
+  (lithium-exit-mode 'rigpa-line-mode))
+
 (defvar chimera-line-mode
   (make-chimera-mode :name "line"
-                     :enter #'evil-line-state
-                     :pre-entry-hook 'chimera-line-mode-entry-hook
-                     :post-exit-hook 'chimera-line-mode-exit-hook
-                     :entry-hook 'evil-line-state-entry-hook
-                     :exit-hook 'evil-line-state-exit-hook))
-
+                     :enter #'rigpa-enter-line-mode
+                     :exit #'rigpa-exit-line-mode
+                     :pre-entry-hook 'rigpa-line-mode-pre-entry-hook
+                     :post-exit-hook 'rigpa-line-mode-post-exit-hook
+                     :entry-hook 'rigpa-line-mode-post-entry-hook
+                     :exit-hook 'rigpa-line-mode-pre-exit-hook
+                     :manage-hooks nil))
 
 (provide 'rigpa-line-mode)
 ;;; rigpa-line-mode.el ends here

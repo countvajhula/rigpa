@@ -51,7 +51,6 @@ to be run by the mode provider."))
         "replace"
         "operator"
         "word"
-        "line"
         "char"
         "symex"))
 
