@@ -245,7 +245,8 @@ TODO: generate this and `enter' in the lithium mode-defining macro."
   "Actions to take upon exit from view mode."
   (blink-cursor-mode 1) ; TODO: depend on user config instead
   (internal-show-cursor nil t)
-  (if (pos-visible-in-window-p rigpa-view--original-position)
+  (if (and rigpa-view--original-position
+           (pos-visible-in-window-p rigpa-view--original-position))
       (goto-char rigpa-view--original-position)
     (evil-window-middle)))
 
