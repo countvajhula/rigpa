@@ -45,8 +45,8 @@
   "System mode"
   (("b" rigpa-system-battery-life t)
    ("s-i" rigpa-system-battery-life t)
-   ("<return>" rigpa-enter-lower-level t)
-   ("<escape>" rigpa-enter-higher-level t))
+   ("<return>" rigpa-enter-lower-level)
+   ("<escape>" rigpa-enter-higher-level))
   :lighter " system"
   :group 'rigpa)
 

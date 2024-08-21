@@ -40,8 +40,8 @@
   (("z" evil-fill-and-move t)
    ("s-z" evil-fill-and-move t)
    ("i" nil t)
-   ("<return>" rigpa-enter-lower-level t)
-   ("<escape>" rigpa-enter-higher-level t))
+   ("<return>" rigpa-enter-lower-level)
+   ("<escape>" rigpa-enter-higher-level))
   :lighter " text"
   :group 'rigpa)
 

@@ -351,8 +351,8 @@ current ('original') buffer."
    ("x" kill-buffer t)
    ("?" rigpa-buffer-info t)
    ("q" rigpa-buffer-return-to-original t)
-   ("<return>" rigpa-enter-lower-level t)
-   ("<escape>" rigpa-enter-higher-level t))
+   ("<return>" rigpa-enter-lower-level)
+   ("<escape>" rigpa-enter-higher-level))
   :lighter " buffer"
   :group 'rigpa)
 

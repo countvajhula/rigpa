@@ -100,8 +100,8 @@
    ("a" rigpa-activity-previous t)
    ("s-a" rigpa-activity-previous t)
    ("i" ignore t)
-   ("<return>" rigpa-enter-lower-level t)
-   ("<escape>" rigpa-enter-higher-level t))
+   ("<return>" rigpa-enter-lower-level)
+   ("<escape>" rigpa-enter-higher-level))
   :lighter " activity"
   :group 'rigpa)
 
