@@ -45,8 +45,8 @@
    ("/" git-timemachine-show-revision-fuzzy)
    ("?" git-timemachine-show-commit)
    ("q" git-timemachine-quit t)
-   ("<return>" rigpa-enter-lower-level t)
-   ("<escape>" rigpa-enter-higher-level t))
+   ("<return>" rigpa-enter-lower-level)
+   ("<escape>" rigpa-enter-higher-level))
   :lighter " history"
   :group 'rigpa)
 

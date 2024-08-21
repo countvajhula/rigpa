@@ -145,8 +145,8 @@
    ("l" hl-line-mode t)
    ("c" rigpa-application-load-theme t)
    ("f" set-frame-font t)
-   ("<return>" rigpa-enter-lower-level t)
-   ("<escape>" rigpa-enter-higher-level t))
+   ("<return>" rigpa-enter-lower-level)
+   ("<escape>" rigpa-enter-higher-level))
   :lighter " application"
   :group 'rigpa)
 

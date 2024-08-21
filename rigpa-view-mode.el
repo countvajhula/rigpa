@@ -197,8 +197,8 @@
    ("s-v" recenter t)
    ("i" nil t)
    ("q" rigpa-view-return-to-original-position t)
-   ("<return>" rigpa-enter-lower-level t)
-   ("<escape>" rigpa-enter-higher-level t))
+   ("<return>" rigpa-enter-lower-level)
+   ("<escape>" rigpa-enter-higher-level))
   :lighter " view"
   :group 'rigpa)
 

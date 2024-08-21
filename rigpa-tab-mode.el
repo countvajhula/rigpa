@@ -113,8 +113,8 @@ buffer mode."
    ("x" kill-buffer)
    ("?" rigpa-buffer-info t)
    ("q" rigpa-tab-return-to-original t)
-   ("<return>" rigpa-enter-lower-level t)
-   ("<escape>" rigpa-enter-higher-level t))
+   ("<return>" rigpa-enter-lower-level)
+   ("<escape>" rigpa-enter-higher-level))
   :lighter " tab"
   :group 'rigpa)
 
