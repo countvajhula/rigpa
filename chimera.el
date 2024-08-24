@@ -50,7 +50,6 @@ to be run by the mode provider."))
         "visual"
         "replace"
         "operator"
-        "word"
         "char"
         "symex"))
 

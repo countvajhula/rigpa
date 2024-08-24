@@ -28,20 +28,11 @@
 
 (require 'evil)
 (require 'chimera)
-(require 'rigpa-evil-support)
-
-(defvar rigpa-word-mode-map (make-sparse-keymap))
-
-(define-minor-mode rigpa-word-mode
-  "Minor mode to modulate keybindings in rigpa word mode."
-  :lighter "word"
-  :keymap rigpa-word-mode-map)
 
 (evil-define-state word
   "Word state."
   :tag " <W> "
-  :message "-- WORD --"
-  :enable (normal))
+  :message "-- WORD --")
 
 (evil-define-motion rigpa-word-backward (count)
   "Motion for moving backward by a word."
@@ -290,73 +281,100 @@
   (forward-char)
   (evil-paste-after count register yank-handler))
 
-(defvar rigpa--word-mode-keyspec
-  '(("h" . rigpa-word-backward)
-    ("j" . rigpa-word-down)
-    ("k" . rigpa-word-up)
-    ("l" . rigpa-word-forward)
-    ("H" . rigpa-word-move-backward)
-    ("J" . rigpa-word-move-down)
-    ("K" . rigpa-word-move-up)
-    ("L" . rigpa-word-move-forward)
-    ("x" . rigpa-word-delete)
-    ("c" . rigpa-word-change)
-    ("~" . rigpa-word-toggle-case)
-    ("gU" . rigpa-word-upper-case)
-    ("gu" . rigpa-word-lower-case)
-    ("gt" . rigpa-word-title-case)
-    ("s" . rigpa-word-split)
-    ("s-o" . rigpa-word-delete-others)
-    ("C-S-k" . rigpa-word-join-forwards)
-    ("C-S-j" . rigpa-word-join-backwards)
-    ("C-S-h" . rigpa-word-rotate-chars-left)
-    ("C-S-l" . rigpa-word-rotate-chars-right)
-    ("C-h" . rigpa-word-scroll-jump-backward)
-    ("C-k" . rigpa-word-scroll-jump-backward)
-    ("C-j" . rigpa-word-scroll-jump-forward)
-    ("C-l" . rigpa-word-scroll-jump-forward)
-    ("M-h" . rigpa-word-first-word)
-    ("0" . rigpa-word-first-word)
-    ("M-l" . rigpa-word-last-word)
-    ("$" . rigpa-word-last-word)
-    ("a" . rigpa-word-add-to-end)
-    ("i" . rigpa-word-add-to-beginning)
-    ("A" . rigpa-word-add-after)
-    ("I" . rigpa-word-add-before)
-    ("p" . rigpa-word-paste-after)
-    ("?" . dictionary-lookup-definition))
-  "Key specification for rigpa word mode.")
+(lithium-define-local-mode rigpa-word-mode
+  "Word mode."
+  (("h" rigpa-word-backward)
+   ("j" rigpa-word-down)
+   ("k" rigpa-word-up)
+   ("l" rigpa-word-forward)
+   ("H" rigpa-word-move-backward)
+   ("J" rigpa-word-move-down)
+   ("K" rigpa-word-move-up)
+   ("L" rigpa-word-move-forward)
+   ("x" rigpa-word-delete)
+   ("c" rigpa-word-change)
+   ("~" rigpa-word-toggle-case)
+   ("gU" rigpa-word-upper-case)
+   ("gu" rigpa-word-lower-case)
+   ("gt" rigpa-word-title-case)
+   ("s" rigpa-word-split)
+   ("s-o" rigpa-word-delete-others)
+   ("C-S-k" rigpa-word-join-forwards)
+   ("C-S-j" rigpa-word-join-backwards)
+   ("C-S-h" rigpa-word-rotate-chars-left)
+   ("C-S-l" rigpa-word-rotate-chars-right)
+   ("C-h" rigpa-word-scroll-jump-backward)
+   ("C-k" rigpa-word-scroll-jump-backward)
+   ("C-j" rigpa-word-scroll-jump-forward)
+   ("C-l" rigpa-word-scroll-jump-forward)
+   ("M-h" rigpa-word-first-word)
+   ("0" rigpa-word-first-word)
+   ("M-l" rigpa-word-last-word)
+   ("$" rigpa-word-last-word)
+   ("a" rigpa-word-add-to-end)
+   ("i" rigpa-word-add-to-beginning)
+   ("A" rigpa-word-add-after)
+   ("I" rigpa-word-add-before)
+   ("p" rigpa-word-paste-after)
+   ("?" dictionary-lookup-definition)
+   ("<return>" rigpa-enter-lower-level)
+   ("<escape>" rigpa-enter-higher-level))
+  :lighter " word"
+  :group 'rigpa)
 
 ;; TODO: review these:
 ;; exiting keys: c, a, i, A, I, s-r (delete), s-o (delete others), ?, Esc, Ret
 ;; TODO: add a spell-correct verb, which magically fixes a word according to whatever suggestion.
 
-(rigpa--define-evil-keys-from-spec rigpa--word-mode-keyspec
-                                   rigpa-word-mode-map
-                                   'word)
-
-(defvar chimera-word-mode-entry-hook nil
-  "Entry hook for rigpa word mode.")
-
-(defvar chimera-word-mode-exit-hook nil
-  "Exit hook for rigpa word mode.")
-
 (defun rigpa--on-word-mode-pre-entry ()
   "Enable word minor mode."
-  (rigpa-word-mode 1))
+  nil)
 
 (defun rigpa--on-word-mode-exit ()
   "Disable word minor mode."
-  (rigpa-word-mode -1))
+  nil)
+
+(defun rigpa--on-word-mode-entry ()
+  "Enable word minor mode."
+  (evil-word-state))
+
+(defun rigpa--on-word-mode-post-exit ()
+  "Enable word minor mode."
+  (rigpa--enter-appropriate-mode))
+
+;; TODO: generate enter and exit as part of rigpa mode definition macros?
+(defun rigpa-enter-word-mode ()
+  "Enter word mode.
+
+We would prefer to have a thunk here so it's more easily usable with
+hooks than anonymous lambdas. The minor mode function called without
+arguments toggles rather than enters or exits, so this is more
+explicit.
+
+TODO: generate this and `exit' in the lithium mode-defining macro."
+  (lithium-enter-mode 'rigpa-word-mode))
+
+(defun rigpa-exit-word-mode ()
+  "Exit word mode.
+
+We would prefer to have a thunk here so it's more easily usable with
+hooks than anonymous lambdas. The minor mode function called without
+arguments toggles rather than enters or exits, so this is more
+explicit.
+
+TODO: generate this and `enter' in the lithium mode-defining macro."
+  (lithium-exit-mode 'rigpa-word-mode))
 
 
 (defvar chimera-word-mode
   (make-chimera-mode :name "word"
-                     :enter #'evil-word-state
-                     :pre-entry-hook 'chimera-word-mode-entry-hook
-                     :post-exit-hook 'chimera-word-mode-exit-hook
-                     :entry-hook 'evil-word-state-entry-hook
-                     :exit-hook 'evil-word-state-exit-hook))
+                     :enter #'rigpa-enter-word-mode
+                     :exit #'rigpa-exit-word-mode
+                     :pre-entry-hook 'rigpa-word-mode-pre-entry-hook
+                     :post-exit-hook 'rigpa-word-mode-post-exit-hook
+                     :entry-hook 'rigpa-word-mode-post-entry-hook
+                     :exit-hook 'rigpa-word-mode-pre-exit-hook
+                     :manage-hooks nil))
 
 
 (provide 'rigpa-word-mode)
