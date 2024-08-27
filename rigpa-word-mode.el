@@ -27,6 +27,7 @@
 ;;; Code:
 
 (require 'evil)
+(require 'lithium)
 (require 'chimera)
 
 (evil-define-state word

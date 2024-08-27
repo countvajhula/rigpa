@@ -39,6 +39,7 @@
 ;; TODO: disable cursor in line mode
 
 (require 'evil)
+(require 'lithium)
 (require 'chimera)
 
 (defvar rigpa-line--column 1)
