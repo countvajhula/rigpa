@@ -324,12 +324,6 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   :lighter " line"
   :group 'rigpa)
 
-(defun rigpa--on-line-mode-pre-entry ()
-  "Enable line minor mode."
-  (setq rigpa-line--column (current-column))
-  (beginning-of-line)
-  (hl-line-mode 1))
-
 ;; entry and post-exit state transitions
 ;; enter and exit functions
 (defun rigpa--on-line-mode-exit ()
@@ -339,6 +333,9 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
 
 (defun rigpa--on-line-mode-entry ()
   "Actions to take upon entering line mode."
+  (setq rigpa-line--column (current-column))
+  (beginning-of-line)
+  (hl-line-mode 1)
   (evil-line-state))
 
 (defun rigpa--on-line-mode-post-exit ()
