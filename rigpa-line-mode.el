@@ -328,11 +328,15 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
 ;; enter and exit functions
 (defun rigpa--on-line-mode-exit ()
   "Disable line minor mode."
+  (blink-cursor-mode 1) ; TODO: depend on user config instead
+  (internal-show-cursor nil t)
   (hl-line-mode -1)
   (evil-goto-column rigpa-line--column))
 
 (defun rigpa--on-line-mode-entry ()
   "Actions to take upon entering line mode."
+  (blink-cursor-mode -1)
+  (internal-show-cursor nil nil)
   (setq rigpa-line--column (current-column))
   (beginning-of-line)
   (hl-line-mode 1)
