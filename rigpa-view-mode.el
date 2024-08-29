@@ -30,9 +30,6 @@
 ;; a mode for navigating pages
 ;; TODO: region does not persist on entering mode, e.g. for
 ;;       use in "narrow" functionality
-;; TODO: once inside view mode, shifting and then zooming
-;;       should zoom into the new center of the screen, not
-;;       the original cursor location (see below for more)
 
 (require 'evil)
 (require 'chimera)
@@ -64,21 +61,36 @@
   (interactive)
   (evil-scroll-line-down 9))
 
+(defun rigpa-view--set-zoom-context ()
+  "Set virtual point location for zoom purposes.
+
+Point is reset upon View mode exit, so this is 'virtual' in the sense
+that it is only in effect within View mode to indicate the position in
+reference to which we are zooming."
+  (cond ((pos-visible-in-window-p (point-min))
+         (move-to-window-line 0))
+        ((pos-visible-in-window-p (point-max))
+         (move-to-window-line -1))
+        (t (move-to-window-line nil))))
+
 (defun rigpa-view-zoom-in ()
   "Zoom in"
   (interactive)
+  (rigpa-view--set-zoom-context)
   (text-scale-increase 1)
   (recenter))
 
 (defun rigpa-view-zoom-out ()
   "Zoom out"
   (interactive)
+  (rigpa-view--set-zoom-context)
   (text-scale-decrease 1)
   (recenter))
 
 (defun rigpa-view-reset-zoom ()
   "Reset zoom level to default"
   (interactive)
+  (rigpa-view--set-zoom-context)
   (text-scale-adjust 0)
   (recenter))
 
@@ -91,6 +103,7 @@
   ;; TODO: don't zoom in if > N% of lines overflow -- use the logic
   ;; from Window mode
   ;; TODO: zoom should be stable
+  (rigpa-view--set-zoom-context)
   (let ((min-zoom (- rigpa-view-preferred-zoom-level
                      rigpa-view-preferred-zoom-level-tolerance))
         (max-zoom (+ rigpa-view-preferred-zoom-level
@@ -226,15 +239,13 @@ TODO: generate this and `enter' in the lithium mode-defining macro."
 
 (defun rigpa--on-view-mode-entry ()
   "Actions to take upon entry into view mode."
+  ;; remember original point position, but for the purposes of the
+  ;; view we'll usually consider the midpoint of the current view as
+  ;; the reference point.
+  ;; later, upon exit, if the original location is still visible,
+  ;; we'll preserve it otherwise we'll position point in the middle of
+  ;; the view
   (setq rigpa-view--original-position (point))
-  ;; TODO: retain original point position but for the purposes of the view
-  ;; consider the midpoint of the current view as the reference point
-  ;; then, upon exit, if the original location is still visible, preserve it
-  ;; otherwise select the center (this logic is already implemented for "quit"
-  ;; and should be reused)
-  ;; (move-to-window-line nil)
-  ;; currently, zooming past a certain level causes original point to
-  ;; "drag" view there
   (blink-cursor-mode -1)
   (internal-show-cursor nil nil)
   ;; TODO: probably do this via a standard internal
