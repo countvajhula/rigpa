@@ -67,11 +67,12 @@
 Point is reset upon View mode exit, so this is 'virtual' in the sense
 that it is only in effect within View mode to indicate the position in
 reference to which we are zooming."
-  (cond ((pos-visible-in-window-p (point-min))
-         (move-to-window-line 0))
-        ((pos-visible-in-window-p (point-max))
-         (move-to-window-line -1))
-        (t (move-to-window-line nil))))
+  (let ((bob-visible (pos-visible-in-window-p (point-min)))
+        (eob-visible (pos-visible-in-window-p (point-max))))
+    (cond ((and bob-visible eob-visible) (move-to-window-line nil))
+          (bob-visible (move-to-window-line 0))
+          (eob-visible (move-to-window-line -1))
+          (t (move-to-window-line nil)))))
 
 (defun rigpa-view-zoom-in ()
   "Zoom in"
