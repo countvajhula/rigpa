@@ -80,6 +80,7 @@ exiting by entering."
     ;; entered here
     (when (chimera-mode-manage-hooks to-mode)
       (unless (member to-mode-name chimera-evil-states)
+        ;; currently impossible to hit
         (let ((evil-state-entry (intern (concat "evil-" to-mode-name "-state"))))
           (funcall evil-state-entry))))))
 
