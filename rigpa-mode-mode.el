@@ -45,12 +45,12 @@
 (defvar rigpa-modes
   (ht))
 
-(defun rigpa-register-mode (mode
-                            &optional
-                            pre-entry-action
-                            post-entry-action
-                            pre-exit-action
-                            post-exit-action)
+(cl-defun rigpa-register-mode (mode
+                               &key
+                               pre-entry
+                               post-entry
+                               pre-exit
+                               post-exit)
   "Register MODE for use with rigpa.
 
 This registers callbacks with the hooks provided by the chimera MODE
@@ -59,9 +59,9 @@ to ensure, upon state transitions, that:
 (2) any lingering config from prior states is cleaned, and
 (3) the previous state is remembered for possible recall.
 
-PRE-ENTRY-ACTION, POST-ENTRY-ACTION, PRE-EXIT-ACTION, and
-POST-EXIT-ACTION are functions to be called at the appropriate point
-in a mode transition with respect to MODE."
+PRE-ENTRY, POST-ENTRY, PRE-EXIT, and POST-EXIT are functions to be
+called at the appropriate point in a mode transition with respect to
+MODE."
   (let ((name (chimera-mode-name mode))
         (pre-entry-hook (chimera-mode-pre-entry-hook mode))
         (post-entry-hook (chimera-mode-entry-hook mode))
@@ -73,14 +73,14 @@ in a mode transition with respect to MODE."
     (add-hook post-entry-hook #'rigpa-reconcile-level)
     (add-hook pre-exit-hook #'rigpa-remember-for-recall)
 
-    (when pre-entry-action
-      (add-hook pre-entry-hook pre-entry-action))
-    (when post-entry-action
-      (add-hook post-entry-hook post-entry-action))
-    (when pre-exit-action
-      (add-hook pre-exit-hook pre-exit-action))
-    (when post-exit-action
-      (add-hook post-exit-hook post-exit-action))))
+    (when pre-entry
+      (add-hook pre-entry-hook pre-entry))
+    (when post-entry
+      (add-hook post-entry-hook post-entry))
+    (when pre-exit
+      (add-hook pre-exit-hook pre-exit))
+    (when post-exit
+      (add-hook post-exit-hook post-exit))))
 
 (defun rigpa-enter-mode (mode-name)
   "Enter mode MODE-NAME."

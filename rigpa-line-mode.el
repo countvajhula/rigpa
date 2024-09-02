@@ -327,13 +327,6 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
 
 ;; entry and post-exit state transitions
 ;; enter and exit functions
-(defun rigpa--on-line-mode-exit ()
-  "Disable line minor mode."
-  (blink-cursor-mode 1) ; TODO: depend on user config instead
-  (internal-show-cursor nil t)
-  (hl-line-mode -1)
-  (evil-goto-column rigpa-line--column))
-
 (defun rigpa--on-line-mode-entry ()
   "Actions to take upon entering line mode."
   (blink-cursor-mode -1)
@@ -345,6 +338,10 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
 
 (defun rigpa--on-line-mode-post-exit ()
   "Actions to take upon exiting line mode."
+  (blink-cursor-mode 1) ; TODO: depend on user config instead
+  (internal-show-cursor nil t)
+  (hl-line-mode -1)
+  (evil-goto-column rigpa-line--column)
   (rigpa--enter-appropriate-mode))
 
 (defvar chimera-line-mode

@@ -259,76 +259,47 @@
   ;; register all the other modes
 
   (rigpa-register-mode chimera-line-mode
-                       nil
-                       #'rigpa--on-line-mode-entry
-                       nil
-                       #'rigpa--on-line-mode-exit)
-
+                       :post-entry #'rigpa--on-line-mode-entry
+                       :post-exit #'rigpa--on-line-mode-post-exit)
   (rigpa-register-mode chimera-application-mode
-                       nil
-                       #'rigpa--on-application-mode-entry
-                       nil
-                       #'rigpa--on-application-mode-post-exit)
+                       :post-entry #'rigpa--on-application-mode-entry
+                       :post-exit #'rigpa--on-application-mode-post-exit)
   (rigpa-register-mode chimera-view-mode
-                       nil
-                       #'rigpa--on-view-mode-entry
-                       nil
-                       #'rigpa--on-view-mode-post-exit)
+                       :post-entry #'rigpa--on-view-mode-entry
+                       :post-exit #'rigpa--on-view-mode-post-exit)
   (rigpa-register-mode chimera-activity-mode
-                       nil
-                       #'rigpa--on-activity-mode-entry
-                       nil
-                       #'rigpa--on-activity-mode-post-exit)
+                       :post-entry #'rigpa--on-activity-mode-entry
+                       :post-exit #'rigpa--on-activity-mode-post-exit)
   (rigpa-register-mode chimera-history-mode
-                       nil
-                       #'rigpa--on-history-mode-entry
-                       nil
-                       #'rigpa--on-history-mode-post-exit)
+                       :post-entry #'rigpa--on-history-mode-entry
+                       :post-exit #'rigpa--on-history-mode-post-exit)
   (rigpa-register-mode chimera-tab-mode
-                       nil
-                       #'rigpa--on-tab-mode-entry
-                       nil
-                       #'rigpa--on-tab-mode-post-exit)
+                       :post-entry #'rigpa--on-tab-mode-entry
+                       :post-exit #'rigpa--on-tab-mode-post-exit)
   (rigpa-register-mode chimera-word-mode
-                       nil
-                       #'rigpa--on-word-mode-entry
-                       nil
-                       #'rigpa--on-word-mode-post-exit)
+                       :post-entry #'rigpa--on-word-mode-entry
+                       :post-exit #'rigpa--on-word-mode-post-exit)
   (rigpa-register-mode chimera-window-mode
-                       nil
-                       #'rigpa--on-window-mode-entry
-                       nil
-                       #'rigpa--on-window-mode-post-exit)
+                       :post-entry #'rigpa--on-window-mode-entry
+                       :post-exit #'rigpa--on-window-mode-post-exit)
   (rigpa-register-mode chimera-char-mode
-                       nil
-                       #'rigpa--on-char-mode-entry
-                       nil
-                       #'rigpa--on-char-mode-post-exit)
+                       :post-entry #'rigpa--on-char-mode-entry
+                       :post-exit #'rigpa--on-char-mode-post-exit)
   (rigpa-register-mode chimera-system-mode
-                       nil
-                       #'rigpa--on-system-mode-entry
-                       nil
-                       #'rigpa--on-system-mode-post-exit)
+                       :post-entry #'rigpa--on-system-mode-entry
+                       :post-exit #'rigpa--on-system-mode-post-exit)
   (rigpa-register-mode chimera-buffer-mode
-                       nil
-                       #'rigpa--on-buffer-mode-entry
-                       nil
-                       #'rigpa--on-buffer-mode-post-exit)
+                       :post-entry #'rigpa--on-buffer-mode-entry
+                       :post-exit #'rigpa--on-buffer-mode-post-exit)
   (rigpa-register-mode chimera-file-mode
-                       nil
-                       #'rigpa--on-buffer-mode-entry
-                       nil
-                       #'rigpa--on-buffer-mode-post-exit)
+                       :post-entry #'rigpa--on-buffer-mode-entry
+                       :post-exit #'rigpa--on-buffer-mode-post-exit)
   (rigpa-register-mode chimera-text-mode
-                       nil
-                       #'rigpa--on-text-mode-entry
-                       nil
-                       #'rigpa--on-text-mode-post-exit)
+                       :post-entry #'rigpa--on-text-mode-entry
+                       :post-exit #'rigpa--on-text-mode-post-exit)
   (rigpa-register-mode chimera-symex-mode
-                       #'rigpa--on-symex-mode-pre-entry
-                       nil
-                       #'rigpa--on-symex-mode-exit
-                       nil))
+                       :pre-entry #'rigpa--on-symex-mode-pre-entry
+                       :pre-exit #'rigpa--on-symex-mode-exit))
 
 (defun rigpa--create-editing-structures ()
   "Create standard editing structures."
