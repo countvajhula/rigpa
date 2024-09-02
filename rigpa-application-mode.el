@@ -158,32 +158,10 @@
   "Actions to take upon exiting application mode."
   (rigpa--enter-appropriate-mode))
 
-(defun rigpa-enter-application-mode ()
-  "Enter application mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `exit' in the lithium mode-defining macro."
-  (lithium-enter-mode 'rigpa-application-mode))
-
-(defun rigpa-exit-application-mode ()
-  "Exit application mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `enter' in the lithium mode-defining macro."
-  (lithium-exit-mode 'rigpa-application-mode))
-
 (defvar chimera-application-mode
   (make-chimera-mode :name "application"
-                     :enter #'rigpa-enter-application-mode
-                     :exit #'rigpa-exit-application-mode
+                     :enter #'rigpa-application-mode-enter
+                     :exit #'rigpa-application-mode-exit
                      :pre-entry-hook 'rigpa-application-mode-pre-entry-hook
                      :post-exit-hook 'rigpa-application-mode-post-exit-hook
                      :entry-hook 'rigpa-application-mode-post-entry-hook

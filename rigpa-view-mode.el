@@ -216,28 +216,6 @@ reference to which we are zooming."
   :lighter " view"
   :group 'rigpa)
 
-(defun rigpa-enter-view-mode ()
-  "Enter view mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `exit' in the lithium mode-defining macro."
-  (lithium-enter-mode 'rigpa-view-mode))
-
-(defun rigpa-exit-view-mode ()
-  "Exit view mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `enter' in the lithium mode-defining macro."
-  (lithium-exit-mode 'rigpa-view-mode))
-
 (defun rigpa--on-view-mode-entry ()
   "Actions to take upon entry into view mode."
   ;; remember original point position, but for the purposes of the
@@ -270,8 +248,8 @@ TODO: generate this and `enter' in the lithium mode-defining macro."
 
 (defvar chimera-view-mode
   (make-chimera-mode :name "view"
-                     :enter #'rigpa-enter-view-mode
-                     :exit #'rigpa-exit-view-mode
+                     :enter #'rigpa-view-mode-enter
+                     :exit #'rigpa-view-mode-exit
                      :pre-entry-hook 'rigpa-view-mode-pre-entry-hook
                      :post-exit-hook 'rigpa-view-mode-post-exit-hook
                      :entry-hook 'rigpa-view-mode-post-entry-hook

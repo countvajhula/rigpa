@@ -92,32 +92,10 @@ Version 2016-04-04"
   "Actions to take upon exiting file mode."
   (rigpa--enter-appropriate-mode))
 
-(defun rigpa-enter-file-mode ()
-  "Enter file mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `exit' in the lithium mode-defining macro."
-  (lithium-enter-mode 'rigpa-file-mode))
-
-(defun rigpa-exit-file-mode ()
-  "Exit file mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `enter' in the lithium mode-defining macro."
-  (lithium-exit-mode 'rigpa-file-mode))
-
 (defvar chimera-file-mode
   (make-chimera-mode :name "file"
-                     :enter #'rigpa-enter-file-mode
-                     :exit #'rigpa-exit-file-mode
+                     :enter #'rigpa-file-mode-enter
+                     :exit #'rigpa-file-mode-exit
                      :pre-entry-hook 'rigpa-file-mode-pre-entry-hook
                      :post-exit-hook 'rigpa-file-mode-post-exit-hook
                      :entry-hook 'rigpa-file-mode-post-entry-hook

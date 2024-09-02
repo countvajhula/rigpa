@@ -113,32 +113,10 @@
   "Actions to take upon exiting activity mode."
   (rigpa--enter-appropriate-mode))
 
-(defun rigpa-enter-activity-mode ()
-  "Enter activity mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `exit' in the lithium mode-defining macro."
-  (lithium-enter-mode 'rigpa-activity-mode))
-
-(defun rigpa-exit-activity-mode ()
-  "Exit activity mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `enter' in the lithium mode-defining macro."
-  (lithium-exit-mode 'rigpa-activity-mode))
-
 (defvar chimera-activity-mode
   (make-chimera-mode :name "activity"
-                     :enter #'rigpa-enter-activity-mode
-                     :exit #'rigpa-exit-activity-mode
+                     :enter #'rigpa-activity-mode-enter
+                     :exit #'rigpa-activity-mode-exit
                      :pre-entry-hook 'rigpa-activity-mode-pre-entry-hook
                      :post-exit-hook 'rigpa-activity-mode-post-exit-hook
                      :entry-hook 'rigpa-activity-mode-post-entry-hook

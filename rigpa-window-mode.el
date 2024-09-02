@@ -362,32 +362,10 @@ happen quickly enough not to be noticeable."
   ;; rigpa hook in mode registration
   (rigpa--for-all-buffers #'rigpa--enter-appropriate-mode))
 
-(defun rigpa-enter-window-mode ()
-  "Enter window mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `exit' in the lithium mode-defining macro."
-  (lithium-enter-mode 'rigpa-window-mode))
-
-(defun rigpa-exit-window-mode ()
-  "Exit window mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `enter' in the lithium mode-defining macro."
-  (lithium-exit-mode 'rigpa-window-mode))
-
 (defvar chimera-window-mode
   (make-chimera-mode :name "window"
-                     :enter #'rigpa-enter-window-mode
-                     :exit #'rigpa-exit-window-mode
+                     :enter #'rigpa-window-mode-enter
+                     :exit #'rigpa-window-mode-exit
                      :pre-entry-hook 'rigpa-window-mode-pre-entry-hook
                      :post-exit-hook 'rigpa-window-mode-post-exit-hook
                      :entry-hook 'rigpa-window-mode-post-entry-hook
