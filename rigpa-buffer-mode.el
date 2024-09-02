@@ -386,12 +386,9 @@ current ('original') buffer."
   ;; rigpa hook in mode registration
   (rigpa--for-all-buffers #'evil-buffer-state))
 
-(defun rigpa--on-buffer-mode-exit ()
-  "Actions to take upon exit from buffer mode."
-  (rigpa-buffer-link-to-original))
-
 (defun rigpa--on-buffer-mode-post-exit ()
   "Actions to take upon exit from buffer mode."
+  (rigpa-buffer-link-to-original)
   ;; TODO: probably do this (entering appropriate mode in current and original buffer)
   ;; via a standard internal rigpa hook in mode registration.
   ;; we can enter appropriate in original if different from current buffer

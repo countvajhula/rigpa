@@ -197,10 +197,6 @@
   :lighter " char"
   :group 'rigpa)
 
-(defun rigpa--on-char-mode-exit ()
-  "Disable char minor mode."
-  (rigpa-char-mode -1))
-
 (defun rigpa--on-char-mode-entry ()
   "Enable char evil state."
   (evil-char-state))
