@@ -356,28 +356,6 @@ current ('original') buffer."
   :lighter " buffer"
   :group 'rigpa)
 
-(defun rigpa-enter-buffer-mode ()
-  "Enter buffer mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `exit' in the lithium mode-defining macro."
-  (lithium-enter-mode 'rigpa-buffer-mode))
-
-(defun rigpa-exit-buffer-mode ()
-  "Exit buffer mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `enter' in the lithium mode-defining macro."
-  (lithium-exit-mode 'rigpa-buffer-mode))
-
 (defvar chimera-buffer-mode-entry-hook nil
   "Entry hook for rigpa buffer mode.")
 
@@ -421,8 +399,8 @@ TODO: generate this and `enter' in the lithium mode-defining macro."
 
 (defvar chimera-buffer-mode
   (make-chimera-mode :name "buffer"
-                     :enter #'rigpa-enter-buffer-mode
-                     :exit #'rigpa-exit-buffer-mode
+                     :enter #'rigpa-buffer-mode-enter
+                     :exit #'rigpa-buffer-mode-exit
                      :pre-entry-hook 'rigpa-buffer-mode-pre-entry-hook
                      :post-exit-hook 'rigpa-buffer-mode-post-exit-hook
                      :entry-hook 'rigpa-buffer-mode-post-entry-hook

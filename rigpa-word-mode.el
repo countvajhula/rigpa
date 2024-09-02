@@ -343,34 +343,10 @@
   "Enable word minor mode."
   (rigpa--enter-appropriate-mode))
 
-;; TODO: generate enter and exit as part of rigpa mode definition macros?
-(defun rigpa-enter-word-mode ()
-  "Enter word mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `exit' in the lithium mode-defining macro."
-  (lithium-enter-mode 'rigpa-word-mode))
-
-(defun rigpa-exit-word-mode ()
-  "Exit word mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `enter' in the lithium mode-defining macro."
-  (lithium-exit-mode 'rigpa-word-mode))
-
-
 (defvar chimera-word-mode
   (make-chimera-mode :name "word"
-                     :enter #'rigpa-enter-word-mode
-                     :exit #'rigpa-exit-word-mode
+                     :enter #'rigpa-word-mode-enter
+                     :exit #'rigpa-word-mode-exit
                      :pre-entry-hook 'rigpa-word-mode-pre-entry-hook
                      :post-exit-hook 'rigpa-word-mode-post-exit-hook
                      :entry-hook 'rigpa-word-mode-post-entry-hook

@@ -64,32 +64,10 @@
   ;; rigpa hook in mode registration
   (rigpa--enter-appropriate-mode))
 
-(defun rigpa-enter-history-mode ()
-  "Enter history mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `exit' in the lithium mode-defining macro."
-  (lithium-enter-mode 'rigpa-history-mode))
-
-(defun rigpa-exit-history-mode ()
-  "Exit history mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `enter' in the lithium mode-defining macro."
-  (lithium-exit-mode 'rigpa-history-mode))
-
 (defvar chimera-history-mode
   (make-chimera-mode :name "history"
-                     :enter #'rigpa-enter-history-mode
-                     :exit #'rigpa-exit-history-mode
+                     :enter #'rigpa-history-mode-enter
+                     :exit #'rigpa-history-mode-exit
                      :pre-entry-hook 'rigpa-history-mode-pre-entry-hook
                      :post-exit-hook 'rigpa-history-mode-post-exit-hook
                      :entry-hook 'rigpa-history-mode-post-entry-hook

@@ -53,32 +53,10 @@
   "Actions to take upon exiting text mode."
   (rigpa--enter-appropriate-mode))
 
-(defun rigpa-enter-text-mode ()
-  "Enter text mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `exit' in the lithium mode-defining macro."
-  (lithium-enter-mode 'rigpa-text-mode))
-
-(defun rigpa-exit-text-mode ()
-  "Exit text mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `enter' in the lithium mode-defining macro."
-  (lithium-exit-mode 'rigpa-text-mode))
-
 (defvar chimera-text-mode
   (make-chimera-mode :name "text"
-                     :enter #'rigpa-enter-text-mode
-                     :exit #'rigpa-exit-text-mode
+                     :enter #'rigpa-text-mode-enter
+                     :exit #'rigpa-text-mode-exit
                      :pre-entry-hook 'rigpa-text-mode-pre-entry-hook
                      :post-exit-hook 'rigpa-text-mode-post-exit-hook
                      :entry-hook 'rigpa-text-mode-post-entry-hook

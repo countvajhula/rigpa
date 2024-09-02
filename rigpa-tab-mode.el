@@ -128,33 +128,10 @@ buffer mode."
   (rigpa-tab-flash-to-original)
   (rigpa--enter-appropriate-mode))
 
-(defun rigpa-enter-tab-mode ()
-  "Enter tab mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `exit' in the lithium mode-defining macro."
-  (lithium-enter-mode 'rigpa-tab-mode))
-
-(defun rigpa-exit-tab-mode ()
-  "Exit tab mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `enter' in the lithium mode-defining macro."
-  (lithium-exit-mode 'rigpa-tab-mode))
-
-
 (defvar chimera-tab-mode
   (make-chimera-mode :name "tab"
-                     :enter #'rigpa-enter-tab-mode
-                     :exit #'rigpa-exit-tab-mode
+                     :enter #'rigpa-tab-mode-enter
+                     :exit #'rigpa-tab-mode-exit
                      :pre-entry-hook 'rigpa-tab-mode-pre-entry-hook
                      :post-exit-hook 'rigpa-tab-mode-post-exit-hook
                      :entry-hook 'rigpa-tab-mode-post-entry-hook

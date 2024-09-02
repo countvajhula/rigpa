@@ -209,33 +209,10 @@
   "Enable word minor mode."
   (rigpa--enter-appropriate-mode))
 
-;; TODO: generate enter and exit as part of rigpa mode definition macros?
-(defun rigpa-enter-char-mode ()
-  "Enter char mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `exit' in the lithium mode-defining macro."
-  (lithium-enter-mode 'rigpa-char-mode))
-
-(defun rigpa-exit-char-mode ()
-  "Exit char mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `enter' in the lithium mode-defining macro."
-  (lithium-exit-mode 'rigpa-char-mode))
-
 (defvar chimera-char-mode
   (make-chimera-mode :name "char"
-                     :enter #'rigpa-enter-char-mode
-                     :exit #'rigpa-exit-char-mode
+                     :enter #'rigpa-char-mode-enter
+                     :exit #'rigpa-char-mode-exit
                      :pre-entry-hook 'rigpa-char-mode-pre-entry-hook
                      :post-exit-hook 'rigpa-char-mode-post-exit-hook
                      :entry-hook 'rigpa-char-mode-post-entry-hook

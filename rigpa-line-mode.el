@@ -347,33 +347,10 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   "Actions to take upon exiting line mode."
   (rigpa--enter-appropriate-mode))
 
-;; TODO: generate enter and exit as part of rigpa mode definition macros?
-(defun rigpa-enter-line-mode ()
-  "Enter line mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `exit' in the lithium mode-defining macro."
-  (lithium-enter-mode 'rigpa-line-mode))
-
-(defun rigpa-exit-line-mode ()
-  "Exit line mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `enter' in the lithium mode-defining macro."
-  (lithium-exit-mode 'rigpa-line-mode))
-
 (defvar chimera-line-mode
   (make-chimera-mode :name "line"
-                     :enter #'rigpa-enter-line-mode
-                     :exit #'rigpa-exit-line-mode
+                     :enter #'rigpa-line-mode-enter
+                     :exit #'rigpa-line-mode-exit
                      :pre-entry-hook 'rigpa-line-mode-pre-entry-hook
                      :post-exit-hook 'rigpa-line-mode-post-exit-hook
                      :entry-hook 'rigpa-line-mode-post-entry-hook

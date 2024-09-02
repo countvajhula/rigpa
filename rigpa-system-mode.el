@@ -58,32 +58,10 @@
   "Actions to take upon exiting system mode."
   (rigpa--enter-appropriate-mode))
 
-(defun rigpa-enter-system-mode ()
-  "Enter system mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `exit' in the lithium mode-defining macro."
-  (lithium-enter-mode 'rigpa-system-mode))
-
-(defun rigpa-exit-system-mode ()
-  "Exit system mode.
-
-We would prefer to have a thunk here so it's more easily usable with
-hooks than anonymous lambdas. The minor mode function called without
-arguments toggles rather than enters or exits, so this is more
-explicit.
-
-TODO: generate this and `enter' in the lithium mode-defining macro."
-  (lithium-exit-mode 'rigpa-system-mode))
-
 (defvar chimera-system-mode
   (make-chimera-mode :name "system"
-                     :enter #'rigpa-enter-system-mode
-                     :exit #'rigpa-exit-system-mode
+                     :enter #'rigpa-system-mode-enter
+                     :exit #'rigpa-system-mode-exit
                      :pre-entry-hook 'rigpa-system-mode-pre-entry-hook
                      :post-exit-hook 'rigpa-system-mode-post-exit-hook
                      :entry-hook 'rigpa-system-mode-post-entry-hook
