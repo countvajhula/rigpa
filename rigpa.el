@@ -272,7 +272,7 @@
   (rigpa-register-mode chimera-view-mode
                        nil
                        #'rigpa--on-view-mode-entry
-                       #'rigpa--on-view-mode-exit
+                       nil
                        #'rigpa--on-view-mode-post-exit)
   (rigpa-register-mode chimera-activity-mode
                        nil
@@ -283,16 +283,16 @@
                        nil
                        #'rigpa--on-history-mode-entry
                        nil
-                       #'rigpa--on-history-mode-entry)
+                       #'rigpa--on-history-mode-post-exit)
   (rigpa-register-mode chimera-tab-mode
                        nil
                        #'rigpa--on-tab-mode-entry
                        nil
                        #'rigpa--on-tab-mode-post-exit)
   (rigpa-register-mode chimera-word-mode
-                       #'rigpa--on-word-mode-pre-entry
+                       nil
                        #'rigpa--on-word-mode-entry
-                       #'rigpa--on-word-mode-exit
+                       nil
                        #'rigpa--on-word-mode-post-exit)
   (rigpa-register-mode chimera-window-mode
                        nil
@@ -302,7 +302,7 @@
   (rigpa-register-mode chimera-char-mode
                        nil
                        #'rigpa--on-char-mode-entry
-                       #'rigpa--on-char-mode-exit
+                       nil
                        #'rigpa--on-char-mode-post-exit)
   (rigpa-register-mode chimera-system-mode
                        nil
@@ -312,7 +312,7 @@
   (rigpa-register-mode chimera-buffer-mode
                        nil
                        #'rigpa--on-buffer-mode-entry
-                       #'rigpa--on-buffer-mode-exit
+                       nil
                        #'rigpa--on-buffer-mode-post-exit)
   (rigpa-register-mode chimera-file-mode
                        nil

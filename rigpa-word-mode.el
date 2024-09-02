@@ -327,14 +327,6 @@
 ;; exiting keys: c, a, i, A, I, s-r (delete), s-o (delete others), ?, Esc, Ret
 ;; TODO: add a spell-correct verb, which magically fixes a word according to whatever suggestion.
 
-(defun rigpa--on-word-mode-pre-entry ()
-  "Enable word minor mode."
-  nil)
-
-(defun rigpa--on-word-mode-exit ()
-  "Disable word minor mode."
-  nil)
-
 (defun rigpa--on-word-mode-entry ()
   "Enable word minor mode."
   (evil-word-state))

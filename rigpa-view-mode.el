@@ -231,17 +231,14 @@ reference to which we are zooming."
   ;; rigpa hook in mode registration
   (evil-view-state))
 
-(defun rigpa--on-view-mode-exit ()
+(defun rigpa--on-view-mode-post-exit ()
   "Actions to take upon exit from view mode."
   (blink-cursor-mode 1) ; TODO: depend on user config instead
   (internal-show-cursor nil t)
   (if (and rigpa-view--original-position
            (pos-visible-in-window-p rigpa-view--original-position))
       (goto-char rigpa-view--original-position)
-    (evil-window-middle)))
-
-(defun rigpa--on-view-mode-post-exit ()
-  "Actions to take upon exit from view mode."
+    (evil-window-middle))
   ;; TODO: probably do this via a standard internal
   ;; rigpa hook in mode registration
   (rigpa--enter-appropriate-mode))
