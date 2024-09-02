@@ -86,10 +86,6 @@ exiting by entering."
 
 (defun chimera--enter-mode (mode)
   "Enter MODE."
-  ;; This is used for enabling evil-specific minor modes
-  ;; that need to be enabled _before_ mode entry.
-  ;; See docs for `rigpa--minor-mode-enabler'
-  ;; Would be great if we could avoid the need for this.
   (when (chimera-mode-manage-hooks mode)
     (run-hooks (chimera-mode-pre-entry-hook mode)))
   (let ((enter-mode (chimera-mode-enter mode)))

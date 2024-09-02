@@ -45,94 +45,42 @@
 (defvar rigpa-modes
   (ht))
 
-(defun rigpa--minor-mode-enabler (name)
-  "Return a function to enable the minor mode for the mode named NAME.
-
-We modulate keybindings in evil states (e.g. in particular visual and
-operator states) via a minor mode. As it looks like this only works if
-the minor mode is activated *before* entering the evil state, we need
-to define pre-entry hooks at the chimera level and can't just use the
-evil entry hooks.
-
-We need this extra layer of indirection because lambdas can't be
-removed from hooks since they are anonymous. This just gives us a way
-to parametrize the hook function but still be able to remove it."
-  (let ((enable-mode
-         (intern
-          (concat "rigpa--enable-" name "-minor-mode"))))
-    enable-mode))
-
-(defun rigpa--on-mode-pre-entry (name)
-  "Return the function that takes actions upon mode pre-entry."
-  (intern
-   (concat "rigpa--on-" name "-mode-pre-entry")))
-
-(defun rigpa--on-mode-entry (name)
-  "Return the function that takes actions upon mode entry."
-  (intern
-   (concat "rigpa--on-" name "-mode-entry")))
-
-(defun rigpa--on-mode-exit (name)
-  "Return the function that takes actions upon mode exit."
-  (intern
-   (concat "rigpa--on-" name "-mode-exit")))
-
-(defun rigpa--on-mode-post-exit (name)
-  "Return the function that takes actions upon mode post-exit."
-  (intern
-   (concat "rigpa--on-" name "-mode-post-exit")))
-
-(defun rigpa-register-mode (mode)
+(defun rigpa-register-mode (mode
+                            &optional
+                            pre-entry-action
+                            post-entry-action
+                            pre-exit-action
+                            post-exit-action)
   "Register MODE for use with rigpa.
 
 This registers callbacks with the hooks provided by the chimera MODE
 to ensure, upon state transitions, that:
 (1) the correct state is reflected,
 (2) any lingering config from prior states is cleaned, and
-(3) the previous state is remembered for possible recall."
-  (let ((name (chimera-mode-name mode))
-        (pre-entry-hook (chimera-mode-pre-entry-hook mode))
-        (entry-hook (chimera-mode-entry-hook mode))
-        (exit-hook (chimera-mode-exit-hook mode))
-        (post-exit-hook (chimera-mode-post-exit-hook mode)))
-    (ht-set! rigpa-modes name mode)
-    (let ((fn (rigpa--on-mode-pre-entry name)))
-      (when (fboundp fn)
-        (add-hook pre-entry-hook fn)))
-    (let ((fn (rigpa--on-mode-entry name)))
-      (when (fboundp fn)
-        (add-hook entry-hook fn)))
-    (let ((fn (rigpa--on-mode-exit name)))
-      (when (fboundp fn)
-        (add-hook exit-hook fn)))
-    (let ((fn (rigpa--on-mode-post-exit name)))
-      (when (fboundp fn)
-        (add-hook post-exit-hook fn)))
-    (add-hook entry-hook #'rigpa-reconcile-level)
-    (add-hook exit-hook #'rigpa-remember-for-recall)))
+(3) the previous state is remembered for possible recall.
 
-(defun rigpa-unregister-mode (mode)
-  "Unregister MODE."
+PRE-ENTRY-ACTION, POST-ENTRY-ACTION, PRE-EXIT-ACTION, and
+POST-EXIT-ACTION are functions to be called at the appropriate point
+in a mode transition with respect to MODE."
   (let ((name (chimera-mode-name mode))
         (pre-entry-hook (chimera-mode-pre-entry-hook mode))
-        (entry-hook (chimera-mode-entry-hook mode))
-        (exit-hook (chimera-mode-exit-hook mode))
+        (post-entry-hook (chimera-mode-entry-hook mode))
+        (pre-exit-hook (chimera-mode-exit-hook mode))
         (post-exit-hook (chimera-mode-post-exit-hook mode)))
-    (ht-remove! rigpa-modes name)
-    (let ((minor-mode-entry (rigpa--minor-mode-enabler name)))
-      (when (fboundp minor-mode-entry)
-        (remove-hook pre-entry-hook minor-mode-entry)))
-    (let ((fn (rigpa--on-mode-entry name)))
-      (when (fboundp fn)
-        (remove-hook pre-entry-hook fn)))
-    (let ((fn (rigpa--on-mode-exit name)))
-      (when (fboundp fn)
-        (remove-hook exit-hook fn)))
-    (let ((fn (rigpa--on-mode-post-exit name)))
-      (when (fboundp fn)
-        (remove-hook post-exit-hook fn)))
-    (remove-hook entry-hook #'rigpa-reconcile-level)
-    (remove-hook exit-hook #'rigpa-remember-for-recall)))
+
+    (ht-set! rigpa-modes name mode)
+
+    (add-hook post-entry-hook #'rigpa-reconcile-level)
+    (add-hook pre-exit-hook #'rigpa-remember-for-recall)
+
+    (when pre-entry-action
+      (add-hook pre-entry-hook pre-entry-action))
+    (when post-entry-action
+      (add-hook post-entry-hook post-entry-action))
+    (when pre-exit-action
+      (add-hook pre-exit-hook pre-exit-action))
+    (when post-exit-action
+      (add-hook post-exit-hook post-exit-action))))
 
 (defun rigpa-enter-mode (mode-name)
   "Enter mode MODE-NAME."
