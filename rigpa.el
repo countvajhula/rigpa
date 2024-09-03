@@ -298,8 +298,7 @@
                        :post-entry #'rigpa--on-text-mode-entry
                        :post-exit #'rigpa--on-text-mode-post-exit)
   (rigpa-register-mode chimera-symex-mode
-                       :pre-entry #'rigpa--on-symex-mode-pre-entry
-                       :pre-exit #'rigpa--on-symex-mode-exit))
+                       :post-entry #'rigpa--on-symex-mode-entry))
 
 (defun rigpa--create-editing-structures ()
   "Create standard editing structures."
