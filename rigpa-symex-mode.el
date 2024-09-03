@@ -29,28 +29,19 @@
 (require 'symex)
 (require 'chimera)
 
-(defvar chimera-symex-mode-entry-hook nil
-  "Entry hook for rigpa symex mode.")
-
-(defvar chimera-symex-mode-exit-hook nil
-  "Exit hook for rigpa symex mode.")
-
-(defun rigpa--on-symex-mode-pre-entry ()
-  "Enable symex minor mode."
-  (symex-enable-editing-minor-mode))
-
-(defun rigpa--on-symex-mode-exit ()
-  "Disable symex minor mode."
-  (symex-disable-editing-minor-mode))
-
 (defvar chimera-symex-mode
   (make-chimera-mode :name "symex"
                      :enter #'symex-mode-interface
-                     :pre-entry-hook 'chimera-symex-mode-entry-hook
-                     :post-exit-hook 'chimera-symex-mode-exit-hook
-                     :entry-hook 'evil-symex-state-entry-hook
-                     :exit-hook 'evil-symex-state-exit-hook))
+                     :exit #'symex-editing-mode-exit
+                     :pre-entry-hook 'symex-editing-mode-pre-entry-hook
+                     :post-exit-hook 'symex-editing-mode-post-exit-hook
+                     :entry-hook 'symex-editing-mode-post-entry-hook
+                     :exit-hook 'symex-editing-mode-pre-exit-hook
+                     :manage-hooks nil))
 
+(defun rigpa--on-symex-mode-entry ()
+  "Actions to take upon entering symex mode."
+  (evil-symex-state))
 
 (provide 'rigpa-symex-mode)
 ;;; rigpa-symex-mode.el ends here

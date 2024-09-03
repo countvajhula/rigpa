@@ -50,8 +50,7 @@ to be run by the mode provider."))
         "visual"
         "replace"
         "operator"
-        "char"
-        "symex"))
+        "char"))
 
 (defvar chimera-insertion-states
   (list "insert" "emacs"))
