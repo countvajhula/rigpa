@@ -52,13 +52,41 @@ to be run by the mode provider."))
         "operator"
         "char"))
 
+(defvar rigpa-lithium-modes
+  (ht ('rigpa-char-mode "char")
+      ('rigpa-word-mode "word")
+      ('rigpa-line-mode "line")
+      ('symex-editing-mode "symex")
+      ('rigpa-view-mode "view")
+      ('rigpa-window-mode "window")
+      ('rigpa-file-mode "file")
+      ('rigpa-buffer-mode "buffer")
+      ('rigpa-system-mode "system")
+      ('rigpa-application-mode "application")
+      ('rigpa-activity-mode "activity")
+      ('rigpa-text-mode "text")
+      ('rigpa-tab-mode "tab")
+      ('rigpa-history-mode "history")))
+
 (defvar chimera-insertion-states
   (list "insert" "emacs"))
+
+(defun rigpa-name-for-lithium-mode (name)
+  "Rigpa name for lithium mode NAME."
+  (ht-get rigpa-lithium-modes
+          name))
 
 ;; TODO: note name confusion
 (defun rigpa-current-mode ()
   "Current rigpa mode."
-  (chimera--mode-for-state (symbol-name evil-state)))
+  (let ((current-lithium-mode (lithium-current-mode-name)))
+    (or (and current-lithium-mode
+             (chimera--mode-by-name
+              (rigpa-name-for-lithium-mode
+               current-lithium-mode)))
+        (and (member (symbol-name evil-state) chimera-evil-states)
+             (chimera--mode-by-name
+              (symbol-name evil-state))))))
 
 (defun chimera-switch-mode (to-mode)
   "Switch to TO-MODE.
@@ -90,8 +118,8 @@ exiting by entering."
   (when (chimera-mode-manage-hooks mode)
     (run-hooks (chimera-mode-post-exit-hook mode))))
 
-(defun chimera--mode-for-state (mode-name)
-  (symbol-value (intern (concat "chimera-" mode-name "-mode"))))
+(defun chimera--mode-by-name (name)
+  (ht-get rigpa-modes name))
 
 
 (provide 'chimera)
