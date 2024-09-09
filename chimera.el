@@ -73,15 +73,7 @@ exiting by entering."
          (from-mode-name (chimera-mode-name from-mode))
          (to-mode-name (chimera-mode-name to-mode)))
     (chimera--exit-mode from-mode)
-    (chimera--enter-mode to-mode)
-    ;; we're using evil state variables to keep track of state (even
-    ;; for non-evil backed modes), so ensure that the evil state is
-    ;; entered here
-    (when (chimera-mode-manage-hooks to-mode)
-      (unless (member to-mode-name chimera-evil-states)
-        ;; currently impossible to hit
-        (let ((evil-state-entry (intern (concat "evil-" to-mode-name "-state"))))
-          (funcall evil-state-entry))))))
+    (chimera--enter-mode to-mode)))
 
 (defun chimera--enter-mode (mode)
   "Enter MODE."
