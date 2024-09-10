@@ -28,6 +28,7 @@
 
 (require 'cl-lib)
 (require 'evil)
+(require 'ht)
 
 (cl-defstruct chimera-mode
   "Specification for a mode."
