@@ -83,8 +83,20 @@ MODE."
       (add-hook post-exit-hook post-exit))))
 
 (defun rigpa-enter-mode (mode-name)
-  "Enter mode MODE-NAME."
-  (chimera-switch-mode (ht-get rigpa-modes mode-name)))
+  "Enter mode MODE-NAME.
+
+If the target mode is in the current tower, or if the current mode
+is not in the current tower, then exit the current mode before
+entering the new mode. Otherwise, simply enter the new mode so that
+upon exit, we are implicitly returned to a native mode."
+  (let ((from-mode (rigpa-current-mode))
+        (to-mode (ht-get rigpa-modes mode-name)))
+    (if (or (rigpa--member-of-ensemble-p to-mode
+                                         (rigpa--local-tower))
+            (not (rigpa--member-of-ensemble-p from-mode
+                                              (rigpa--local-tower))))
+        (chimera-switch-mode to-mode)
+      (chimera--enter-mode to-mode))))
 
 (defun rigpa--enter-level (level-number)
   "Enter level LEVEL-NUMBER"
