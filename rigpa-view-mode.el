@@ -241,7 +241,7 @@ reference to which we are zooming."
     (evil-window-middle))
   ;; TODO: probably do this via a standard internal
   ;; rigpa hook in mode registration
-  (rigpa--enter-appropriate-mode))
+  (rigpa--enter-local-evil-state))
 
 (defvar chimera-view-mode
   (make-chimera-mode :name "view"

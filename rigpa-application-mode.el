@@ -156,7 +156,7 @@
 
 (defun rigpa--on-application-mode-post-exit ()
   "Actions to take upon exiting application mode."
-  (rigpa--enter-appropriate-mode))
+  (rigpa--enter-local-evil-state))
 
 (defvar chimera-application-mode
   (make-chimera-mode :name "application"

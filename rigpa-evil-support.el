@@ -28,6 +28,12 @@
 
 (require 'evil)
 
+(defun rigpa-evil-state-by-name (name)
+  "Evil state handle for mode NAME, by string."
+  (intern
+   (concat "evil-"
+           name
+           "-state")))
 
 
 (provide 'rigpa-evil-support)

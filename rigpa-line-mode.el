@@ -342,7 +342,7 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   (internal-show-cursor nil t)
   (hl-line-mode -1)
   (evil-goto-column rigpa-line--column)
-  (rigpa--enter-appropriate-mode))
+  (rigpa--enter-local-evil-state))
 
 (defvar chimera-line-mode
   (make-chimera-mode :name "line"

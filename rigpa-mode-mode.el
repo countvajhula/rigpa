@@ -42,8 +42,8 @@
 (defvar-local rigpa-recall nil)
 
 ;; registry of known modes
-(defvar rigpa-modes
-  (ht))
+(defvar rigpa-modes (ht)
+  "Lookup chimera modes by their name.")
 
 (cl-defun rigpa-register-mode (mode
                                &key
@@ -81,6 +81,16 @@ MODE."
       (add-hook pre-exit-hook pre-exit))
     (when post-exit
       (add-hook post-exit-hook post-exit))))
+
+(defun rigpa--enter-local-evil-state ()
+  "Enter evil state for the local mode."
+  (let* ((current-lithium-mode (lithium-current-mode-name))
+         (name (if current-lithium-mode
+                   (rigpa-name-for-lithium-mode
+                    current-lithium-mode)
+                 (rigpa--local-recall-mode)))
+         (evil-state-fn (rigpa-evil-state-by-name name)))
+    (funcall evil-state-fn)))
 
 (defun rigpa-enter-mode (mode-name)
   "Enter mode MODE-NAME.

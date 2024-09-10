@@ -62,7 +62,7 @@
   "Actions to take upon exit from history mode."
   ;; TODO: probably do this via a standard internal
   ;; rigpa hook in mode registration
-  (rigpa--enter-appropriate-mode))
+  (rigpa--enter-local-evil-state))
 
 (defvar chimera-history-mode
   (make-chimera-mode :name "history"
