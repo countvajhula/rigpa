@@ -119,19 +119,7 @@ upon exit, we are implicitly returned to a native mode."
         (when (> rigpa--current-level 0)
           (rigpa--enter-level (1- rigpa--current-level)))
       ;; first (low-level) exit the current mode
-      (chimera--exit-mode (ht-get rigpa-modes mode-name))
-      ;; "not my tower, not my problem"
-      ;; if we exited a buffer via a state that isn't in its tower, then
-      ;; returning to it "out of band" would find it still that way,
-      ;; and Enter/Escape would a priori do nothing since the mode is still
-      ;; outside the local tower. Ordinarily, we would return to this
-      ;; buffer in a rigpa mode such as buffer mode, which upon
-      ;; exiting would look for a recall. Since that isn't the case
-      ;; here, nothing would happen at this point, and this is the spot
-      ;; where we could have taken some action had we been more civic
-      ;; minded. So preemptively go to a safe "default" as a failsafe,
-      ;; which would be overridden by a recall if there is one.
-      (rigpa--enter-appropriate-mode))))
+      (chimera--exit-mode (ht-get rigpa-modes mode-name)))))
 
 (defun rigpa--enter-appropriate-mode (&optional buffer)
   "Enter the most appropriate mode in BUFFER.
@@ -161,19 +149,17 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
 (defun rigpa-enter-higher-level ()
   "Enter higher level."
   (interactive)
-  (let ((mode-name (symbol-name evil-state)))
+  (let ((mode (rigpa-current-mode)))
     ;; TODO: using evil-state doesn't work in buffer mode
     ;; since the other buffer is in a local (e.g. Insert) state
     ;; rather than buffer state
-    (if (rigpa-ensemble-member-position-by-name (rigpa--local-tower)
-                                                mode-name)
+    (if (rigpa--member-of-ensemble-p mode
+                                     (rigpa--local-tower))
         (when (< rigpa--current-level
                  (1- (rigpa-ensemble-size (rigpa--local-tower))))
           (rigpa--enter-level (1+ rigpa--current-level)))
       ;; first (low-level) exit the current mode
-      (chimera--exit-mode (ht-get rigpa-modes mode-name))
-      ;; see note for rigpa-enter-lower-level
-      (rigpa--enter-appropriate-mode))))
+      (chimera--exit-mode mode))))
 
 (defun rigpa-enter-lowest-level ()
   "Enter lowest (manual) level."
