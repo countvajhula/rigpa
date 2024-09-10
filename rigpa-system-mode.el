@@ -56,7 +56,7 @@
 
 (defun rigpa--on-system-mode-post-exit ()
   "Actions to take upon exiting system mode."
-  (rigpa--enter-appropriate-mode))
+  (rigpa--enter-local-evil-state))
 
 (defvar chimera-system-mode
   (make-chimera-mode :name "system"

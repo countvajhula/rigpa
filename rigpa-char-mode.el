@@ -203,7 +203,7 @@
 
 (defun rigpa--on-char-mode-post-exit ()
   "Enable word minor mode."
-  (rigpa--enter-appropriate-mode))
+  (rigpa--enter-local-evil-state))
 
 (defvar chimera-char-mode
   (make-chimera-mode :name "char"

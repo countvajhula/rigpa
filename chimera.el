@@ -119,6 +119,7 @@ exiting by entering."
     (run-hooks (chimera-mode-post-exit-hook mode))))
 
 (defun chimera--mode-by-name (name)
+  "Get the chimera mode by NAME, a string."
   (ht-get rigpa-modes name))
 
 

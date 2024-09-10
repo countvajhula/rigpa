@@ -126,7 +126,7 @@ buffer mode."
 (defun rigpa--on-tab-mode-post-exit ()
   "Actions to take upon exiting tab mode."
   (rigpa-tab-flash-to-original)
-  (rigpa--enter-appropriate-mode))
+  (rigpa--enter-local-evil-state))
 
 (defvar chimera-tab-mode
   (make-chimera-mode :name "tab"

@@ -111,7 +111,7 @@
 
 (defun rigpa--on-activity-mode-post-exit ()
   "Actions to take upon exiting activity mode."
-  (rigpa--enter-appropriate-mode))
+  (rigpa--enter-local-evil-state))
 
 (defvar chimera-activity-mode
   (make-chimera-mode :name "activity"

@@ -333,7 +333,7 @@
 
 (defun rigpa--on-word-mode-post-exit ()
   "Enable word minor mode."
-  (rigpa--enter-appropriate-mode))
+  (rigpa--enter-local-evil-state))
 
 (defvar chimera-word-mode
   (make-chimera-mode :name "word"

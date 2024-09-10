@@ -360,7 +360,7 @@ happen quickly enough not to be noticeable."
   (auto-dim-other-buffers-mode -1)
   ;; TODO: probably do this via a standard internal
   ;; rigpa hook in mode registration
-  (rigpa--for-all-buffers #'rigpa--enter-appropriate-mode))
+  (rigpa--for-all-buffers #'rigpa--enter-local-evil-state))
 
 (defvar chimera-window-mode
   (make-chimera-mode :name "window"

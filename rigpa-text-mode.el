@@ -51,7 +51,7 @@
 
 (defun rigpa--on-text-mode-post-exit ()
   "Actions to take upon exiting text mode."
-  (rigpa--enter-appropriate-mode))
+  (rigpa--enter-local-evil-state))
 
 (defvar chimera-text-mode
   (make-chimera-mode :name "text"

@@ -392,7 +392,7 @@ current ('original') buffer."
   ;; TODO: probably do this (entering appropriate mode in current and original buffer)
   ;; via a standard internal rigpa hook in mode registration.
   ;; we can enter appropriate in original if different from current buffer
-  (rigpa--for-all-buffers #'rigpa--enter-appropriate-mode))
+  (rigpa--for-all-buffers #'rigpa--enter-local-evil-state))
 
 (defvar chimera-buffer-mode
   (make-chimera-mode :name "buffer"

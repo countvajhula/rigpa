@@ -90,7 +90,7 @@ Version 2016-04-04"
 
 (defun rigpa--on-file-mode-post-exit ()
   "Actions to take upon exiting file mode."
-  (rigpa--enter-appropriate-mode))
+  (rigpa--enter-local-evil-state))
 
 (defvar chimera-file-mode
   (make-chimera-mode :name "file"
