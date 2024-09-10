@@ -123,13 +123,13 @@ upon exit, we are implicitly returned to a native mode."
 (defun rigpa-enter-lower-level ()
   "Enter lower level."
   (interactive)
-  (let ((mode-name (symbol-name evil-state)))
-    (if (rigpa-ensemble-member-position-by-name (rigpa--local-tower)
-                                                mode-name)
+  (let ((mode (rigpa-current-mode)))
+    (if (rigpa--member-of-ensemble-p mode
+                                     (rigpa--local-tower))
         (when (> rigpa--current-level 0)
           (rigpa--enter-level (1- rigpa--current-level)))
       ;; first (low-level) exit the current mode
-      (chimera--exit-mode (ht-get rigpa-modes mode-name)))))
+      (chimera--exit-mode mode))))
 
 (defun rigpa--enter-appropriate-mode (&optional buffer)
   "Enter the most appropriate mode in BUFFER.
