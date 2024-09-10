@@ -160,9 +160,6 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
   "Enter higher level."
   (interactive)
   (let ((mode (rigpa-current-mode)))
-    ;; TODO: using evil-state doesn't work in buffer mode
-    ;; since the other buffer is in a local (e.g. Insert) state
-    ;; rather than buffer state
     (if (rigpa--member-of-ensemble-p mode
                                      (rigpa--local-tower))
         (when (< rigpa--current-level
