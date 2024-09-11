@@ -50,10 +50,13 @@
   :lighter " history"
   :group 'rigpa)
 
+(defun rigpa--on-history-mode-pre-entry ()
+  "Pre-entry"
+  (unless git-timemachine-mode
+    (git-timemachine)))
+
 (defun rigpa--on-history-mode-entry ()
   "Actions to take upon entry into history mode."
-  (unless git-timemachine-mode
-    (git-timemachine))
   ;; TODO: probably do this via a standard internal
   ;; rigpa hook in mode registration
   (evil-history-state))

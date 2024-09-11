@@ -271,6 +271,7 @@
                        :post-entry #'rigpa--on-activity-mode-entry
                        :post-exit #'rigpa--on-activity-mode-post-exit)
   (rigpa-register-mode chimera-history-mode
+                       :pre-entry #'rigpa--on-history-mode-pre-entry
                        :post-entry #'rigpa--on-history-mode-entry
                        :post-exit #'rigpa--on-history-mode-post-exit)
   (rigpa-register-mode chimera-tab-mode
