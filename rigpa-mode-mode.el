@@ -202,7 +202,8 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
 If the current mode is present in the current tower, ensure that the
 current level reflects the mode's position in the tower."
   (interactive)
-  (let* ((mode-name (symbol-name evil-state))
+  (let* ((mode (rigpa-current-mode))
+         (mode-name (when mode (chimera-mode-name mode)))
          (level-number
           (rigpa-ensemble-member-position-by-name (rigpa--local-tower)
                                                   mode-name)))
