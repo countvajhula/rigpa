@@ -293,8 +293,8 @@
                        :post-entry #'rigpa--on-buffer-mode-entry
                        :post-exit #'rigpa--on-buffer-mode-post-exit)
   (rigpa-register-mode chimera-file-mode
-                       :post-entry #'rigpa--on-buffer-mode-entry
-                       :post-exit #'rigpa--on-buffer-mode-post-exit)
+                       :post-entry #'rigpa--on-file-mode-entry
+                       :post-exit #'rigpa--on-file-mode-post-exit)
   (rigpa-register-mode chimera-text-mode
                        :post-entry #'rigpa--on-text-mode-entry
                        :post-exit #'rigpa--on-text-mode-post-exit)
