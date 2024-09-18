@@ -244,7 +244,11 @@
   ;; This will bypass any rigpa-specific behavior, but as it seems
   ;; unlikely that we'd want to incorporate operator state formally
   ;; as part of any structures, this seems a reasonable hack
-  (define-key evil-operator-state-map [escape] #'evil-force-normal-state))
+  (define-key evil-operator-state-map [escape] #'evil-force-normal-state)
+  ;; same, I guess, for replace state? though, why are we even overriding
+  ;; [esc] above to begin with? Should we not integrate built-in evil
+  ;; states other than Normal?
+  (define-key evil-replace-state-map [escape] #'evil-force-normal-state))
 
 (defun rigpa--register-modes ()
   "Register the standard modes with the framework."
