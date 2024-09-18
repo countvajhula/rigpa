@@ -89,9 +89,10 @@ MODE."
          (name (if current-lithium-mode
                    (rigpa-name-for-lithium-mode
                     current-lithium-mode)
-                 (rigpa--local-recall-mode)))
-         (evil-state-fn (rigpa-evil-state-by-name name)))
-    (funcall evil-state-fn)))
+                 (rigpa--local-recall-mode))))
+    (when name
+      (funcall
+       (rigpa-evil-state-by-name name)))))
 
 (defun rigpa-enter-mode (mode-name)
   "Enter mode MODE-NAME.
