@@ -360,6 +360,7 @@ current editing tower."
   (let ((ref-buf (rigpa--get-ground-buffer)))
     (rigpa--revert-ui)
     (rigpa--remove-meta-side-effects)
+    (chimera--exit-mode (rigpa-current-mode))
     (when (eq (with-current-buffer ref-buf
                 (rigpa--get-ground-buffer))
               ref-buf)

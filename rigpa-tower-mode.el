@@ -236,6 +236,7 @@ initial editing tower."
       (setq rigpa--last-tower-index rigpa--tower-index-on-entry))
     (rigpa--revert-ui)
     (rigpa--remove-meta-tower-side-effects)
+    (chimera--exit-mode (rigpa-current-mode))
     (kill-matching-buffers (concat "^" rigpa-buffer-prefix) nil t)
     (switch-to-buffer ref-buf)))
 
