@@ -94,6 +94,11 @@ MODE."
       (funcall
        (rigpa-evil-state-by-name name)))))
 
+(defun rigpa--native-p (mode)
+  "Is MODE native to the local editing ensemble (e.g. tower)?"
+  (rigpa--member-of-ensemble-p mode
+                               (rigpa--local-tower)))
+
 (defun rigpa-enter-mode (mode-name)
   "Enter mode MODE-NAME.
 
@@ -103,10 +108,8 @@ entering the new mode. Otherwise, simply enter the new mode so that
 upon exit, we are implicitly returned to a native mode."
   (let ((from-mode (rigpa-current-mode))
         (to-mode (ht-get rigpa-modes mode-name)))
-    (if (or (rigpa--member-of-ensemble-p to-mode
-                                         (rigpa--local-tower))
-            (not (rigpa--member-of-ensemble-p from-mode
-                                              (rigpa--local-tower))))
+    (if (or (not (rigpa--native-p from-mode))
+            (rigpa--native-p to-mode))
         (chimera-switch-mode to-mode)
       (chimera--enter-mode to-mode))))
 
@@ -126,8 +129,7 @@ upon exit, we are implicitly returned to a native mode."
   "Enter lower level."
   (interactive)
   (let ((mode (rigpa-current-mode)))
-    (if (rigpa--member-of-ensemble-p mode
-                                     (rigpa--local-tower))
+    (if (rigpa--native-p mode)
         (when (> rigpa--current-level 0)
           (rigpa--enter-level (1- rigpa--current-level)))
       ;; first (low-level) exit the current mode
@@ -145,8 +147,7 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
            (current-mode-name (chimera-mode-name current-mode))
            (recall-mode-name (rigpa--local-recall-mode))
            (default-mode-name (editing-ensemble-default (rigpa--local-tower))))
-      (cond ((rigpa--member-of-ensemble-p current-mode
-                                          (rigpa--local-tower))
+      (cond ((rigpa--native-p current-mode)
              ;; we don't want to do anything in this case,
              ;; but re-enter the current mode to ensure
              ;; that it reconciles state with the new tower
@@ -162,8 +163,7 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
   "Enter higher level."
   (interactive)
   (let ((mode (rigpa-current-mode)))
-    (if (rigpa--member-of-ensemble-p mode
-                                     (rigpa--local-tower))
+    (if (rigpa--native-p mode)
         (when (< rigpa--current-level
                  (1- (rigpa-ensemble-size (rigpa--local-tower))))
           (rigpa--enter-level (1+ rigpa--current-level)))
