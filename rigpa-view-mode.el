@@ -61,39 +61,42 @@
   (interactive)
   (evil-scroll-line-down 9))
 
-(defun rigpa-view--set-zoom-context ()
+(defmacro rigpa-view--with-zoom-context (&rest body)
   "Set virtual point location for zoom purposes.
 
 Point is reset upon View mode exit, so this is 'virtual' in the sense
 that it is only in effect within View mode to indicate the position in
 reference to which we are zooming."
-  (let ((bob-visible (pos-visible-in-window-p (point-min)))
-        (eob-visible (pos-visible-in-window-p (point-max))))
-    (cond ((and bob-visible eob-visible) (move-to-window-line nil))
-          (bob-visible (move-to-window-line 0))
-          (eob-visible (move-to-window-line -1))
-          (t (move-to-window-line nil)))))
+  `(let ((orig-pt (point))
+         (bob-visible (pos-visible-in-window-p (point-min)))
+         (eob-visible (pos-visible-in-window-p (point-max))))
+     (cond ((and bob-visible eob-visible) (move-to-window-line nil))
+           (bob-visible (move-to-window-line 0))
+           (eob-visible (move-to-window-line -1))
+           (t (move-to-window-line nil)))
+     ,@body
+     (goto-char orig-pt)))
 
 (defun rigpa-view-zoom-in ()
   "Zoom in"
   (interactive)
-  (rigpa-view--set-zoom-context)
-  (text-scale-increase 1)
-  (recenter))
+  (rigpa-view--with-zoom-context
+   (text-scale-increase 1)
+   (recenter)))
 
 (defun rigpa-view-zoom-out ()
   "Zoom out"
   (interactive)
-  (rigpa-view--set-zoom-context)
-  (text-scale-decrease 1)
-  (recenter))
+  (rigpa-view--with-zoom-context
+   (text-scale-decrease 1)
+   (recenter)))
 
 (defun rigpa-view-reset-zoom ()
   "Reset zoom level to default"
   (interactive)
-  (rigpa-view--set-zoom-context)
-  (text-scale-adjust 0)
-  (recenter))
+  (rigpa-view--with-zoom-context
+   (text-scale-adjust 0)
+   (recenter)))
 
 (defun rigpa-view-reset-preferred-zoom ()
   "Reset zoom level to preferred"
@@ -104,20 +107,20 @@ reference to which we are zooming."
   ;; TODO: don't zoom in if > N% of lines overflow -- use the logic
   ;; from Window mode
   ;; TODO: zoom should be stable
-  (rigpa-view--set-zoom-context)
-  (let ((min-zoom (- rigpa-view-preferred-zoom-level
-                     rigpa-view-preferred-zoom-level-tolerance))
-        (max-zoom (+ rigpa-view-preferred-zoom-level
-                     rigpa-view-preferred-zoom-level-tolerance)))
-    (cond ((< (window-screen-lines) min-zoom)
-           (while (< (window-screen-lines) min-zoom)
-             (text-scale-decrease 1)))
-          ((> (window-screen-lines) max-zoom)
-           (while (> (window-screen-lines) max-zoom)
-             (text-scale-increase 1)))
-          ;; otherwise do nothing
-          (t nil)))
-  (recenter))
+  (rigpa-view--with-zoom-context
+   (let ((min-zoom (- rigpa-view-preferred-zoom-level
+                      rigpa-view-preferred-zoom-level-tolerance))
+         (max-zoom (+ rigpa-view-preferred-zoom-level
+                      rigpa-view-preferred-zoom-level-tolerance)))
+     (cond ((< (window-screen-lines) min-zoom)
+            (while (< (window-screen-lines) min-zoom)
+              (text-scale-decrease 1)))
+           ((> (window-screen-lines) max-zoom)
+            (while (> (window-screen-lines) max-zoom)
+              (text-scale-increase 1)))
+           ;; otherwise do nothing
+           (t nil)))
+   (recenter)))
 
 (defun rigpa-view-scroll-left (&optional superlative)
   "Scroll view left"
