@@ -30,6 +30,10 @@
 ;; a mode for navigating pages
 ;; TODO: region does not persist on entering mode, e.g. for
 ;;       use in "narrow" functionality
+;; TODO: the only point location that should be significant
+;;       within View mode is the original one upon entry.
+;;       Any "recentering" commands (e.g. v, s-v, H, L) should
+;;       be in relation to that original point.
 
 (require 'evil)
 (require 'chimera)
