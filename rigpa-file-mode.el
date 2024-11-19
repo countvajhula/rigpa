@@ -66,6 +66,17 @@ Version 2016-04-04"
   (interactive)
   (insert-register ?f))
 
+(defun rigpa-file-delete ()
+  "Delete current buffer contents."
+  (interactive)
+  (delete-region (point-min) (point-max)))
+
+(defun rigpa-file-change ()
+  "Change current buffer contents."
+  (interactive)
+  (rigpa-file-delete)
+  (evil-insert-state))
+
 (lithium-define-global-mode rigpa-file-mode
   "File mode"
   (("h" evil-backward-char)
@@ -78,6 +89,8 @@ Version 2016-04-04"
    ("C-l" unpop-to-mark-command)
    ("y" rigpa-file-yank)
    ("p" rigpa-file-paste)
+   ("x" rigpa-file-delete)
+   ("c" rigpa-file-change)
    ("i" nil t)
    ("<return>" rigpa-enter-lower-level)
    ("<escape>" rigpa-enter-higher-level))
