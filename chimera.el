@@ -98,10 +98,9 @@ essential to use only primitive mode entry and exit here to avoid
 unwittingly entering an infinite loop where modes attempt to enter by
 exiting by entering."
   (interactive)
-  (let* ((from-mode (rigpa-current-mode))
-         (from-mode-name (chimera-mode-name from-mode))
-         (to-mode-name (chimera-mode-name to-mode)))
-    (chimera--exit-mode from-mode)
+  (let ((from-mode (rigpa-current-mode)))
+    (when from-mode
+      (chimera--exit-mode from-mode))
     (chimera--enter-mode to-mode)))
 
 (defun chimera--enter-mode (mode)
