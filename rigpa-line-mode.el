@@ -342,6 +342,12 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   (internal-show-cursor nil t)
   (hl-line-mode -1)
   (evil-goto-column rigpa-line--column)
+  ;; TODO: Line mode is _nonlocal_ to the tower, and yet
+  ;; buffer-local. So upon exit, we ideally want to return
+  ;; to a tower-local mode here, instead of leaving it
+  ;; hanging, or, as we are doing here, entering an _evil_
+  ;; state explicitly (which would happen as a side effect
+  ;; of the right thing, viz. returning to the tower).
   (rigpa--enter-local-evil-state))
 
 (defvar chimera-line-mode

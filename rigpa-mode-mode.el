@@ -233,6 +233,14 @@ is precisely the thing to be done."
       (when recall
         (rigpa-enter-mode recall)))))
 
+;; TODO: we probably want to leave local modes alone
+;; e.g. if Line was there, just exit the global mode
+;; (e.g. View) and it should return us to Line, whether
+;; or not Line is present in the tower. That is, we
+;; should be able to go to nonlocal modes and have
+;; them be preserved. Esc or Enter from a nonlocal
+;; mode like Line should enter the tower, just like
+;; for nonlocal global modes
 (defun rigpa-remember-for-recall (&optional buffer)
   "Remember the current mode for future recall."
   ;; we're relying on the evil state here even though the
