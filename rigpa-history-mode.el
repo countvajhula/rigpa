@@ -59,13 +59,13 @@
   "Actions to take upon entry into history mode."
   ;; TODO: probably do this via a standard internal
   ;; rigpa hook in mode registration
-  (evil-history-state))
+  (rigpa--for-all-buffers #'evil-history-state))
 
 (defun rigpa--on-history-mode-post-exit ()
   "Actions to take upon exit from history mode."
   ;; TODO: probably do this via a standard internal
   ;; rigpa hook in mode registration
-  (rigpa--enter-local-evil-state))
+  (rigpa--for-all-buffers #'rigpa--enter-local-evil-state))
 
 (defvar chimera-history-mode
   (make-chimera-mode :name "history"
