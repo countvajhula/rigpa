@@ -129,11 +129,13 @@ upon exit, we are implicitly returned to a native mode."
   "Enter lower level."
   (interactive)
   (let ((mode (rigpa-current-mode)))
-    (if (rigpa--native-p mode)
-        (when (> rigpa--current-level 0)
-          (rigpa--enter-level (1- rigpa--current-level)))
-      ;; first (low-level) exit the current mode
-      (chimera--exit-mode mode))))
+    (if mode
+        (if (rigpa--native-p mode)
+            (when (> rigpa--current-level 0)
+              (rigpa--enter-level (1- rigpa--current-level)))
+          ;; first (low-level) exit the current mode
+          (chimera--exit-mode mode))
+      (rigpa--enter-appropriate-mode))))
 
 (defun rigpa--enter-appropriate-mode (&optional buffer)
   "Enter the most appropriate mode in BUFFER.
@@ -143,32 +145,36 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
           (3) default level for tower (which could default to lowest
               if unspecified - TODO)."
   (with-current-buffer (or buffer (current-buffer))
-    (let* ((current-mode (rigpa-current-mode))
-           (current-mode-name (chimera-mode-name current-mode))
-           (recall-mode-name (rigpa--local-recall-mode))
-           (default-mode-name (editing-ensemble-default (rigpa--local-tower))))
-      (cond ((rigpa--native-p current-mode)
-             ;; we don't want to do anything in this case,
-             ;; but re-enter the current mode to ensure
-             ;; that it reconciles state with the new tower
-             (chimera--enter-mode (ht-get rigpa-modes current-mode-name)))
-            (recall-mode-name
-             ;; recall if available
-             (rigpa--clear-local-recall)
-             (chimera--enter-mode (ht-get rigpa-modes recall-mode-name)))
-            ;; otherwise default for tower
-            (t (chimera--enter-mode (ht-get rigpa-modes default-mode-name)))))))
+    (let ((current-mode (rigpa-current-mode))
+          (default-mode-name (editing-ensemble-default (rigpa--local-tower))))
+      (if current-mode
+          (let ((current-mode-name (chimera-mode-name current-mode))
+                (recall-mode-name (rigpa--local-recall-mode)))
+               (cond ((rigpa--native-p current-mode)
+                      ;; we don't want to do anything in this case,
+                      ;; but re-enter the current mode to ensure
+                      ;; that it reconciles state with the new tower
+                      (chimera--enter-mode (ht-get rigpa-modes current-mode-name)))
+                     (recall-mode-name
+                      ;; recall if available
+                      (rigpa--clear-local-recall)
+                      (chimera--enter-mode (ht-get rigpa-modes recall-mode-name)))
+                     ;; otherwise default for tower
+                     (t (chimera--enter-mode (ht-get rigpa-modes default-mode-name)))))
+        (chimera--enter-mode (ht-get rigpa-modes default-mode-name))))))
 
 (defun rigpa-enter-higher-level ()
   "Enter higher level."
   (interactive)
   (let ((mode (rigpa-current-mode)))
-    (if (rigpa--native-p mode)
-        (when (< rigpa--current-level
-                 (1- (rigpa-ensemble-size (rigpa--local-tower))))
-          (rigpa--enter-level (1+ rigpa--current-level)))
-      ;; first (low-level) exit the current mode
-      (chimera--exit-mode mode))))
+    (if mode
+        (if (rigpa--native-p mode)
+            (when (< rigpa--current-level
+                     (1- (rigpa-ensemble-size (rigpa--local-tower))))
+              (rigpa--enter-level (1+ rigpa--current-level)))
+          ;; first (low-level) exit the current mode
+          (chimera--exit-mode mode))
+      (rigpa--enter-appropriate-mode))))
 
 (defun rigpa-enter-lowest-level ()
   "Enter lowest (manual) level."
