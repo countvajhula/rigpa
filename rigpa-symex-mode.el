@@ -28,6 +28,12 @@
 
 (require 'symex)
 (require 'chimera)
+(require 'evil)
+
+(evil-define-state symex
+  "Symex state."
+  :tag " <λ> "
+  :message "-- SYMEX --")
 
 (defvar chimera-symex-mode
   (make-chimera-mode :name "symex"

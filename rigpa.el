@@ -408,6 +408,16 @@
             (lambda ()
               (setq rigpa--complex rigpa-meta-tower-complex))))
 
+(defun rigpa-initialize-evil ()
+  "Initialize some evil interop."
+  (advice-add 'evil-repeat
+              :around #'rigpa-evil-preserve-state-advice)
+  ;; undo resets to normal state if there are no
+  ;; changes to undo (for some reason. it doesn't do
+  ;; this if an action is there to undo)
+  (advice-add 'evil-undo
+              :around #'rigpa-evil-preserve-state-advice))
+
 (defun rigpa-initialize ()
   "Initialize rigpa."
   (interactive)
@@ -415,7 +425,8 @@
   ;; should make this optional via a defcustom flag
   ;; or potentially even have it in a separate evil-adapter package
   (when (boundp 'evil-mode)
-    (rigpa--integrate-evil-states))
+    (rigpa--integrate-evil-states)
+    (rigpa-initialize-evil))
   (rigpa--create-editing-structures)
   (rigpa--provide-editing-structures))
 
@@ -426,6 +437,7 @@
   ;; remap evil keybindings
   ;; unregister major mode hooks
   ;; unregister all modes (including esp evil states)
+  ;; remove evil advice
   nil)
 
 

@@ -35,6 +35,21 @@
            name
            "-state")))
 
+(defun rigpa-evil-preserve-state-advice (orig-fun &rest args)
+  "Return to an evil state if necessary after calling ORIG-FUN.
+
+This function is meant to advise `evil-repeat' which sets the
+buffer to normal state after repeating a command. This first
+checks whether the buffer is starting in symex state and, if so,
+returns to symex after invoking ORIG-FUN with ARGS."
+  (let ((original-evil-state evil-state))
+    (unwind-protect
+        (apply orig-fun args)
+      (when original-evil-state
+        (funcall
+         (intern
+          (concat "evil-" (symbol-name original-evil-state) "-state")))))))
+
 
 (provide 'rigpa-evil-support)
 ;;; rigpa-evil-support.el ends here
