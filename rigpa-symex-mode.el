@@ -49,5 +49,11 @@
   "Actions to take upon entering symex mode."
   (evil-symex-state))
 
+(defun rigpa--on-symex-mode-post-exit ()
+  "Actions to take upon exiting line mode."
+  ;; TODO: return to tower instead. See
+  ;; comment on line mode post exit
+  (rigpa--enter-local-evil-state))
+
 (provide 'rigpa-symex-mode)
 ;;; rigpa-symex-mode.el ends here
