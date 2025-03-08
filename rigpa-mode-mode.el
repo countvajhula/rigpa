@@ -89,7 +89,17 @@ MODE."
          (name (if current-lithium-mode
                    (rigpa-name-for-lithium-mode
                     current-lithium-mode)
-                 (rigpa--local-recall-mode))))
+                 (let ((recall-mode-name (rigpa--local-recall-mode)))
+                   ;; Do not enter the evil state for a lithium mode
+                   ;; as that should happen as a side effect of entry
+                   ;; (via Rigpa entry hook).
+                   ;; If we are attempting to enter a lithium evil
+                   ;; state here and the corresponding lithium mode
+                   ;; isn't active, then something has gone wrong. So
+                   ;; just fall back to normal state.
+                   (if (member recall-mode-name (ht-values rigpa-lithium-modes))
+                       "normal"
+                     recall-mode-name)))))
     (when name
       (funcall
        (rigpa-evil-state-by-name name)))))
@@ -137,6 +147,9 @@ upon exit, we are implicitly returned to a native mode."
           (chimera--exit-mode mode))
       (rigpa--enter-appropriate-mode))))
 
+;; NOTE: we may not be calling this anymore except in
+;; edge cases that shouldn't be happening, and possibly
+;; in meta modes it's still relevant, not sure
 (defun rigpa--enter-appropriate-mode (&optional buffer)
   "Enter the most appropriate mode in BUFFER.
 
