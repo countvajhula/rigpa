@@ -270,14 +270,6 @@ This simply is the complement of read-only or non-file buffer
          (rings (list (list "readonly" #'rigpa-buffer--read-only-buffer-p)
                       (list "special" #'rigpa-buffer--non-file-buffer-p)
                       (list "typical" #'rigpa-buffer--typical-buffer-p))))
-    ;; we could just add all the buffers to the ring naively,
-    ;; and that would be fine since buffer-ring takes no action
-    ;; if the buffer happens to already be a member. But we don't
-    ;; do that since each time this happens a message is echoed
-    ;; to indicate that to the user, and the cost of I/O over
-    ;; possibly hundreds of buffer additions could add a perceptible
-    ;; lag in buffer mode entry. So we efficiently compute the
-    ;; difference and just add those buffers
     (dolist (ring-config rings)
       (rigpa-buffer--refresh-ring (nth 0 ring-config)
                                   (nth 1 ring-config)
