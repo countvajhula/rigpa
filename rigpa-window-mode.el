@@ -302,6 +302,7 @@ happen quickly enough not to be noticeable."
    ("Q" rigpa-window-quit-other t)
    ;; maybe one for "select mru and close others"?
    ("o" rigpa-window-mru t)
+   ("O" delete-window t)
    ("s-w" rigpa-window-mru t)
    ("n" other-window)
    ("w" delete-other-windows t)
