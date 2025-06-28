@@ -323,6 +323,7 @@ current ('original') buffer."
 (lithium-define-global-mode rigpa-buffer-mode
   "Buffer mode"
   (("s-b" rigpa-buffer-alternate t)
+   ("s-k" rigpa-buffer-alternate t)
    ("b" rigpa-buffer-alternate t)
    ("h" buffer-ring-next-buffer)
    ("j" ignore)
