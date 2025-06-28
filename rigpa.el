@@ -379,6 +379,25 @@
   (setq rigpa--complex rigpa-general-complex)
   (make-variable-buffer-local 'rigpa--complex))
 
+(defvar rigpa--lisp-modes
+  '(fennel-mode
+    arc-mode
+    lisp-mode
+    slime-repl-mode
+    sly-mrepl-mode
+    clojure-mode
+    clojurescript-mode
+    clojurec-mode
+    scheme-mode
+    racket-mode
+    racket-repl-mode
+    lisp-interaction-mode
+    emacs-lisp-mode
+    inferior-emacs-lisp-mode
+    ;; and some treesitter modes too
+    clojure-ts-mode)
+  "Modes where it should use the Lisp tower.")
+
 (defun rigpa--provide-editing-structures ()
   "Register editing structures so they're used in relevant major modes."
   ;; change these to use a state struct instead of globals
@@ -388,14 +407,12 @@
   ;;  (2) the tower index
   ;;  (3) the level index
   ;; and eventually make these "coordinates" generic
-  (when (boundp 'symex-mode)
-    (dolist (mode-name (and (fboundp 'symex-get-lisp-modes)
-                            (symex-get-lisp-modes)))
-      (let ((mode-hook (intern (concat (symbol-name mode-name)
-                                       "-hook"))))
-        (add-hook mode-hook (lambda ()
-                              (setq rigpa--current-tower-index 2)
-                              (setq rigpa--current-level 2))))))
+  (dolist (mode-name rigpa--lisp-modes)
+    (let ((mode-hook (intern (concat (symbol-name mode-name)
+                                     "-hook"))))
+      (add-hook mode-hook (lambda ()
+                            (setq rigpa--current-tower-index 2)
+                            (setq rigpa--current-level 2)))))
   (add-hook 'rigpa-meta-mode-hook
             ;; TODO: dispatch here based on meta level. If the level
             ;; is 1 use line mode / buffers, if it's 2,
