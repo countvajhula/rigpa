@@ -35,16 +35,7 @@ This package isn't on `MELPA <https://melpa.org/>`_ yet, but you can install a p
 
 .. code-block:: elisp
 
-  (use-package lithium
-    :straight
-    (lithium
-     :type git
-     :host github
-     :repo "countvajhula/lithium"))
-
   (use-package rigpa
-
-    :after (evil symex buffer-ring lithium)
 
     :straight
     (rigpa
@@ -55,9 +46,6 @@ This package isn't on `MELPA <https://melpa.org/>`_ yet, but you can install a p
     :config
     (rigpa-initialize)
     (setq rigpa-mode t)
-
-    ;; temporary workaround for https://github.com/countvajhula/rigpa/issues/9
-    (remove-hook 'evil-symex-state-exit-hook #'symex-disable-editing-minor-mode)
 
     ;; navigating meta modes
     (global-unset-key (kbd "s-m"))
