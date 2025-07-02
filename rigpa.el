@@ -460,6 +460,16 @@
   ;; remove evil advice
   nil)
 
+;;;###autoload
+(define-minor-mode rigpa-mode
+  "A modal UI framework."
+  :lighter " rigpa"
+  :global t
+  :group 'rigpa
+  (if rigpa-mode
+      (rigpa-initialize)
+    (rigpa-disable)))
+
 
 (provide 'rigpa)
 ;;; rigpa.el ends here

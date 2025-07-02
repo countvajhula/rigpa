@@ -44,8 +44,7 @@ This package isn't on `MELPA <https://melpa.org/>`_ yet, but you can install a p
       :repo "countvajhula/rigpa")
 
     :config
-    (rigpa-initialize)
-    (setq rigpa-mode t)
+    (rigpa-mode 1)
 
     ;; navigating meta modes
     (global-unset-key (kbd "s-m"))
