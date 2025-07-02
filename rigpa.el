@@ -439,6 +439,8 @@
 (defun rigpa-initialize ()
   "Initialize rigpa."
   (interactive)
+  (unless lithium-mode
+    (lithium-mode 1))
   (rigpa--register-modes)
   ;; should make this optional via a defcustom flag
   ;; or potentially even have it in a separate evil-adapter package
