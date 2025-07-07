@@ -27,17 +27,6 @@
 ;;; Code:
 
 (require 'symex)
-(require 'chimera)
-
-(defvar chimera-symex-mode
-  (make-chimera-mode :name "symex"
-                     :enter #'symex-mode-interface
-                     :exit #'symex-editing-mode-exit
-                     :pre-entry-hook 'symex-editing-mode-pre-entry-hook
-                     :post-exit-hook 'symex-editing-mode-post-exit-hook
-                     :entry-hook 'symex-editing-mode-post-entry-hook
-                     :exit-hook 'symex-editing-mode-pre-exit-hook
-                     :manage-hooks nil))
 
 (defun rigpa--on-symex-mode-post-exit ()
   "Actions to take upon exiting line mode."
