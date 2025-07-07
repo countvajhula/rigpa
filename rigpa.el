@@ -443,9 +443,7 @@
   ;; or potentially even have it in a separate evil-adapter package
   (when (boundp 'evil-mode)
     (rigpa--integrate-evil-states)
-    (rigpa-initialize-evil))
-  (rigpa--create-editing-structures)
-  (rigpa--provide-editing-structures))
+    (rigpa-initialize-evil)))
 
 (defun rigpa-disable ()
   "Disable rigpa."
