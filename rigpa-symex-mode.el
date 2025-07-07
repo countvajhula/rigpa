@@ -28,12 +28,6 @@
 
 (require 'symex)
 (require 'chimera)
-(require 'evil)
-
-(evil-define-state symex
-  "Symex state."
-  :tag " <λ> "
-  :message "-- SYMEX --")
 
 (defvar chimera-symex-mode
   (make-chimera-mode :name "symex"
@@ -44,10 +38,6 @@
                      :entry-hook 'symex-editing-mode-post-entry-hook
                      :exit-hook 'symex-editing-mode-pre-exit-hook
                      :manage-hooks nil))
-
-(defun rigpa--on-symex-mode-entry ()
-  "Actions to take upon entering symex mode."
-  (evil-symex-state))
 
 (defun rigpa--on-symex-mode-post-exit ()
   "Actions to take upon exiting line mode."
