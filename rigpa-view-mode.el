@@ -250,7 +250,7 @@ reference to which we are zooming."
                      :manage-hooks nil))
 
 (defun rigpa-view-initialize ()
-  "Initialize Line mode."
+  "Initialize View mode."
   ;; mark view navigations as not repeatable from the perspective
   ;; of Evil's dot operator - i.e. I believe these won't get added
   ;; to the repeat stack.
