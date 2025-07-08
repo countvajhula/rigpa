@@ -30,11 +30,6 @@
 (require 'lithium)
 (require 'chimera)
 
-(evil-define-state system
-  "System state."
-  :tag " <S> "
-  :message "-- SYSTEM --")
-
 (defun rigpa-system-battery-life ()
   "Show power info including battery life
    (Mac-specific, at the moment)."
@@ -50,14 +45,6 @@
   :lighter " system"
   :group 'rigpa)
 
-(defun rigpa--on-system-mode-entry ()
-  "Actions to take upon entering system mode."
-  (evil-system-state))
-
-(defun rigpa--on-system-mode-post-exit ()
-  "Actions to take upon exiting system mode."
-  (rigpa--enter-local-evil-state))
-
 (defvar chimera-system-mode
   (make-chimera-mode :name "system"
                      :enter #'rigpa-system-mode-enter
@@ -67,6 +54,10 @@
                      :entry-hook 'rigpa-system-mode-post-entry-hook
                      :exit-hook 'rigpa-system-mode-pre-exit-hook
                      :manage-hooks nil))
+
+(defun rigpa-system-initialize ()
+  "Initialize System mode."
+  nil)
 
 
 (provide 'rigpa-system-mode)

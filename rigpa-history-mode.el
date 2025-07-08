@@ -31,11 +31,6 @@
 (require 'chimera)
 (require 'git-timemachine)
 
-(evil-define-state history
-  "History state."
-  :tag " <C> "
-  :message "-- x→o --")
-
 (lithium-define-global-mode rigpa-history-mode
   "History mode"
   (("h" git-timemachine-show-previous-revision)
@@ -55,18 +50,6 @@
   (unless git-timemachine-mode
     (git-timemachine)))
 
-(defun rigpa--on-history-mode-entry ()
-  "Actions to take upon entry into history mode."
-  ;; TODO: probably do this via a standard internal
-  ;; rigpa hook in mode registration
-  (rigpa--for-all-buffers #'evil-history-state))
-
-(defun rigpa--on-history-mode-post-exit ()
-  "Actions to take upon exit from history mode."
-  ;; TODO: probably do this via a standard internal
-  ;; rigpa hook in mode registration
-  (rigpa--for-all-buffers #'rigpa--enter-local-evil-state))
-
 (defvar chimera-history-mode
   (make-chimera-mode :name "history"
                      :enter #'rigpa-history-mode-enter
@@ -76,6 +59,11 @@
                      :entry-hook 'rigpa-history-mode-post-entry-hook
                      :exit-hook 'rigpa-history-mode-pre-exit-hook
                      :manage-hooks nil))
+
+(defun rigpa-history-initialize ()
+  "Initialize History mode."
+  (add-hook 'rigpa-history-mode-pre-entry-hook
+            #'rigpa--on-history-mode-pre-entry))
 
 
 (provide 'rigpa-history-mode)

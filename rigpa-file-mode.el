@@ -30,11 +30,6 @@
 (require 'lithium)
 (require 'chimera)
 
-(evil-define-state file
-  "File state."
-  :tag " <F> "
-  :message "-- FILE --")
-
 ;; From: https://www.emacswiki.org/emacs/MarkCommands#toc4
 (defun unpop-to-mark-command ()
     "Unpop off mark ring. Does nothing if mark ring is empty."
@@ -97,14 +92,6 @@ Version 2016-04-04"
   :lighter " file"
   :group 'rigpa)
 
-(defun rigpa--on-file-mode-entry ()
-  "Actions to take upon entering file mode."
-  (evil-file-state))
-
-(defun rigpa--on-file-mode-post-exit ()
-  "Actions to take upon exiting file mode."
-  (rigpa--enter-local-evil-state))
-
 (defvar chimera-file-mode
   (make-chimera-mode :name "file"
                      :enter #'rigpa-file-mode-enter
@@ -114,6 +101,10 @@ Version 2016-04-04"
                      :entry-hook 'rigpa-file-mode-post-entry-hook
                      :exit-hook 'rigpa-file-mode-pre-exit-hook
                      :manage-hooks nil))
+
+(defun rigpa-file-initialize ()
+  "Initialize File mode."
+  nil)
 
 
 (provide 'rigpa-file-mode)

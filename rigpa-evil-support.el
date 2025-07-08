@@ -70,6 +70,51 @@ returns to symex after invoking ORIG-FUN with ARGS."
   :tag " <A> "
   :message "-- APPLICATION --")
 
+(evil-define-state history
+  "History state."
+  :tag " <C> "
+  :message "-- x→o --")
+
+(evil-define-state tab
+  "Tab state."
+  :tag " <T> "
+  :message "-- TAB --")
+
+(evil-define-state word
+  "Word state."
+  :tag " <W> "
+  :message "-- WORD --")
+
+(evil-define-state window
+  "Window state."
+  :tag " <W> "
+  :message "-- WINDOW --")
+
+(evil-define-state char
+  "Char state."
+  :tag " <X> "
+  :message "-- CHAR --")
+
+(evil-define-state system
+  "System state."
+  :tag " <S> "
+  :message "-- SYSTEM --")
+
+(evil-define-state buffer
+  "Buffer state."
+  :tag " <B> "
+  :message "-- BUFFER --")
+
+(evil-define-state file
+  "File state."
+  :tag " <F> "
+  :message "-- FILE --")
+
+(evil-define-state text
+  "Text state."
+  :tag " <A> "
+  :message "-- TEXT --")
+
 
 (provide 'rigpa-evil-support)
 ;;; rigpa-evil-support.el ends here

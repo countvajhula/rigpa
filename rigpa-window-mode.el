@@ -36,11 +36,6 @@
 (require 'rigpa-util)
 (require 'dash)
 
-(evil-define-state window
-  "Window state."
-  :tag " <W> "
-  :message "-- WINDOW --")
-
 ;; configure home-row hotkeys to index windows in ace-window,
 ;; used as "search" feature in window mode
 (setq aw-keys '(?h ?j ?k ?l ?g ?f ?d ?s ?a))
@@ -350,18 +345,12 @@ happen quickly enough not to be noticeable."
   (rigpa-window-setup-marks-table)
   ;; TODO: if it is already active, then make a note
   ;; of it and don't disable it upon exit
-  (auto-dim-other-buffers-mode 1)
-  ;; TODO: probably do this via a standard internal
-  ;; rigpa hook in mode registration
-  (rigpa--for-all-buffers #'evil-window-state))
+  (auto-dim-other-buffers-mode 1))
 
 (defun rigpa--on-window-mode-post-exit ()
   "Actions to take upon exit from window mode."
   (rigpa-window-flash-to-original)
-  (auto-dim-other-buffers-mode -1)
-  ;; TODO: probably do this via a standard internal
-  ;; rigpa hook in mode registration
-  (rigpa--for-all-buffers #'rigpa--enter-local-evil-state))
+  (auto-dim-other-buffers-mode -1))
 
 (defvar chimera-window-mode
   (make-chimera-mode :name "window"
@@ -372,6 +361,13 @@ happen quickly enough not to be noticeable."
                      :entry-hook 'rigpa-window-mode-post-entry-hook
                      :exit-hook 'rigpa-window-mode-pre-exit-hook
                      :manage-hooks nil))
+
+(defun rigpa-window-initialize ()
+  "Initialize Window mode."
+  (add-hook 'rigpa-window-mode-post-entry-hook
+            #'rigpa--on-window-mode-entry)
+  (add-hook 'rigpa-window-mode-post-exit-hook
+            #'rigpa--on-window-mode-post-exit))
 
 
 (provide 'rigpa-window-mode)

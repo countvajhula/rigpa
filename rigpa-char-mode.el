@@ -30,11 +30,6 @@
 (require 'lithium)
 (require 'chimera)
 
-(evil-define-state char
-  "Char state."
-  :tag " <X> "
-  :message "-- CHAR --")
-
 (defun rigpa-char-info ()
   "Info on character"
   (interactive)
@@ -197,14 +192,6 @@
   :lighter " char"
   :group 'rigpa)
 
-(defun rigpa--on-char-mode-entry ()
-  "Enable char evil state."
-  (evil-char-state))
-
-(defun rigpa--on-char-mode-post-exit ()
-  "Enable word minor mode."
-  (rigpa--enter-local-evil-state))
-
 (defvar chimera-char-mode
   (make-chimera-mode :name "char"
                      :enter #'rigpa-char-mode-enter
@@ -214,6 +201,10 @@
                      :entry-hook 'rigpa-char-mode-post-entry-hook
                      :exit-hook 'rigpa-char-mode-pre-exit-hook
                      :manage-hooks nil))
+
+(defun rigpa-char-initialize ()
+  "Initialize Char mode."
+  nil)
 
 
 (provide 'rigpa-char-mode)

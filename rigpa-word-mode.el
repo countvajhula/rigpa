@@ -30,11 +30,6 @@
 (require 'lithium)
 (require 'chimera)
 
-(evil-define-state word
-  "Word state."
-  :tag " <W> "
-  :message "-- WORD --")
-
 (evil-define-motion rigpa-word-backward (count)
   "Motion for moving backward by a word."
   :type exclusive
@@ -327,14 +322,6 @@
 ;; exiting keys: c, a, i, A, I, s-r (delete), s-o (delete others), ?, Esc, Ret
 ;; TODO: add a spell-correct verb, which magically fixes a word according to whatever suggestion.
 
-(defun rigpa--on-word-mode-entry ()
-  "Enable word minor mode."
-  (evil-word-state))
-
-(defun rigpa--on-word-mode-post-exit ()
-  "Enable word minor mode."
-  (rigpa--enter-local-evil-state))
-
 (defvar chimera-word-mode
   (make-chimera-mode :name "word"
                      :enter #'rigpa-word-mode-enter
@@ -344,6 +331,10 @@
                      :entry-hook 'rigpa-word-mode-post-entry-hook
                      :exit-hook 'rigpa-word-mode-pre-exit-hook
                      :manage-hooks nil))
+
+(defun rigpa-word-initialize ()
+  "Initialize Word mode."
+  nil)
 
 
 (provide 'rigpa-word-mode)

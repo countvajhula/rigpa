@@ -279,40 +279,51 @@
                        :post-entry #'evil-activity-state
                        :post-exit #'rigpa--enter-local-evil-state)
   (rigpa-register-mode chimera-history-mode
-                       :pre-entry #'rigpa--on-history-mode-pre-entry
-                       :post-entry #'rigpa--on-history-mode-entry
-                       :post-exit #'rigpa--on-history-mode-post-exit)
+                       :post-entry (lambda () (rigpa--for-all-buffers #'evil-history-state))
+                       :post-exit (lambda () (rigpa--for-all-buffers #'rigpa--enter-local-evil-state)))
   (rigpa-register-mode chimera-tab-mode
-                       :post-entry #'rigpa--on-tab-mode-entry
-                       :post-exit #'rigpa--on-tab-mode-post-exit)
+                       :post-entry #'evil-tab-state
+                       :post-exit #'rigpa--enter-local-evil-state)
   (rigpa-register-mode chimera-word-mode
-                       :post-entry #'rigpa--on-word-mode-entry
-                       :post-exit #'rigpa--on-word-mode-post-exit)
+                       :post-entry #'evil-word-state
+                       :post-exit #'rigpa--enter-local-evil-state)
   (rigpa-register-mode chimera-window-mode
-                       :post-entry #'rigpa--on-window-mode-entry
-                       :post-exit #'rigpa--on-window-mode-post-exit)
+                       :post-entry (lambda () (rigpa--for-all-buffers #'evil-window-state))
+                       :post-exit (lambda () (rigpa--for-all-buffers #'rigpa--enter-local-evil-state)))
   (rigpa-register-mode chimera-char-mode
-                       :post-entry #'rigpa--on-char-mode-entry
-                       :post-exit #'rigpa--on-char-mode-post-exit)
+                       :post-entry #'evil-char-state
+                       :post-exit #'rigpa--enter-local-evil-state)
   (rigpa-register-mode chimera-system-mode
-                       :post-entry #'rigpa--on-system-mode-entry
-                       :post-exit #'rigpa--on-system-mode-post-exit)
+                       :post-entry #'evil-system-state
+                       :post-exit #'rigpa--enter-local-evil-state)
+  ;; TODO: for buffer mode, probably enter appropriate mode in current
+  ;; and original buffer
+  ;; we can enter appropriate in original if different from current buffer
   (rigpa-register-mode chimera-buffer-mode
-                       :post-entry #'rigpa--on-buffer-mode-entry
-                       :post-exit #'rigpa--on-buffer-mode-post-exit)
+                       :post-entry (lambda () (rigpa--for-all-buffers #'evil-buffer-state))
+                       :post-exit (lambda () (rigpa--for-all-buffers #'rigpa--enter-local-evil-state)))
   (rigpa-register-mode chimera-file-mode
-                       :post-entry #'rigpa--on-file-mode-entry
-                       :post-exit #'rigpa--on-file-mode-post-exit)
+                       :post-entry #'evil-file-state
+                       :post-exit #'rigpa--enter-local-evil-state)
   (rigpa-register-mode chimera-text-mode
-                       :post-entry #'rigpa--on-text-mode-entry
-                       :post-exit #'rigpa--on-text-mode-post-exit))
+                       :post-entry #'evil-text-state
+                       :post-exit #'rigpa--enter-local-evil-state))
 
 (defun rigpa--initialize-modes ()
   "Initialize all built-in modes."
   (rigpa-line-initialize)
   (rigpa-activity-initialize)
   (rigpa-view-initialize)
-  (rigpa-application-initialize))
+  (rigpa-application-initialize)
+  (rigpa-history-initialize)
+  (rigpa-tab-initialize)
+  (rigpa-word-initialize)
+  (rigpa-window-initialize)
+  (rigpa-char-initialize)
+  (rigpa-system-initialize)
+  (rigpa-buffer-initialize)
+  (rigpa-file-initialize)
+  (rigpa-text-initialize))
 
 (defun rigpa--create-editing-structures ()
   "Create standard editing structures."

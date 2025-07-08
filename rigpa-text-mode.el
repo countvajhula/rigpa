@@ -30,11 +30,6 @@
 (require 'lithium)
 (require 'chimera)
 
-(evil-define-state text
-  "Text state."
-  :tag " <A> "
-  :message "-- TEXT --")
-
 (lithium-define-global-mode rigpa-text-mode
   "Text mode"
   (("z" evil-fill-and-move t)
@@ -45,14 +40,6 @@
   :lighter " text"
   :group 'rigpa)
 
-(defun rigpa--on-text-mode-entry ()
-  "Actions to take upon entering text mode."
-  (evil-text-state))
-
-(defun rigpa--on-text-mode-post-exit ()
-  "Actions to take upon exiting text mode."
-  (rigpa--enter-local-evil-state))
-
 (defvar chimera-text-mode
   (make-chimera-mode :name "text"
                      :enter #'rigpa-text-mode-enter
@@ -62,6 +49,10 @@
                      :entry-hook 'rigpa-text-mode-post-entry-hook
                      :exit-hook 'rigpa-text-mode-pre-exit-hook
                      :manage-hooks nil))
+
+(defun rigpa-text-initialize ()
+  "Initialize Text mode."
+  nil)
 
 
 (provide 'rigpa-text-mode)

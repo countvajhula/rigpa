@@ -31,11 +31,6 @@
 (require 'lithium)
 (require 'centaur-tabs)
 
-(evil-define-state tab
-  "Tab state."
-  :tag " <T> "
-  :message "-- TAB --")
-
 (defun rigpa-tab-setup-marks-table ()
   "Initialize the tab marks hashtable and add an entry for the
 current ('original') tab."
@@ -120,13 +115,11 @@ buffer mode."
 
 (defun rigpa--on-tab-mode-entry ()
   "Actions to take upon entry into tab mode."
-  (rigpa-tab-setup-marks-table)
-  (evil-tab-state))
+  (rigpa-tab-setup-marks-table))
 
 (defun rigpa--on-tab-mode-post-exit ()
   "Actions to take upon exiting tab mode."
-  (rigpa-tab-flash-to-original)
-  (rigpa--enter-local-evil-state))
+  (rigpa-tab-flash-to-original))
 
 (defvar chimera-tab-mode
   (make-chimera-mode :name "tab"
@@ -137,6 +130,11 @@ buffer mode."
                      :entry-hook 'rigpa-tab-mode-post-entry-hook
                      :exit-hook 'rigpa-tab-mode-pre-exit-hook
                      :manage-hooks nil))
+
+(defun rigpa-tab-initialize ()
+  "Initialize Tab mode."
+  (add-hook 'rigpa-tab-mode-post-entry-hook
+            #'rigpa--on-tab-mode-entry))
 
 
 (provide 'rigpa-tab-mode)

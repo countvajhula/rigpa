@@ -48,11 +48,6 @@
   :type 'list
   :group 'rigpa-buffer)
 
-(evil-define-state buffer
-  "Buffer state."
-  :tag " <B> "
-  :message "-- BUFFER --")
-
 (cl-defun rigpa-buffer-create (&optional
                                buffer-name
                                major-mode-to-use
@@ -374,18 +369,11 @@ current ('original') buffer."
     ;; something like bufler, whose categories could correspond to
     ;; distinct rings, and maybe meta level could simply be another
     ;; category here.
-    (buffer-ring-torus-switch-to-ring buffer-ring-name))
-  ;; TODO: probably do this via a standard internal
-  ;; rigpa hook in mode registration
-  (rigpa--for-all-buffers #'evil-buffer-state))
+    (buffer-ring-torus-switch-to-ring buffer-ring-name)))
 
 (defun rigpa--on-buffer-mode-post-exit ()
   "Actions to take upon exit from buffer mode."
-  (rigpa-buffer-link-to-original)
-  ;; TODO: probably do this (entering appropriate mode in current and original buffer)
-  ;; via a standard internal rigpa hook in mode registration.
-  ;; we can enter appropriate in original if different from current buffer
-  (rigpa--for-all-buffers #'rigpa--enter-local-evil-state))
+  (rigpa-buffer-link-to-original))
 
 (defvar chimera-buffer-mode
   (make-chimera-mode :name "buffer"
@@ -396,6 +384,13 @@ current ('original') buffer."
                      :entry-hook 'rigpa-buffer-mode-post-entry-hook
                      :exit-hook 'rigpa-buffer-mode-pre-exit-hook
                      :manage-hooks nil))
+
+(defun rigpa-buffer-initialize ()
+  "Initialize Buffer mode."
+  (add-hook 'rigpa-buffer-mode-post-entry-hook
+            #'rigpa--on-buffer-mode-entry)
+  (add-hook 'rigpa-buffer-mode-post-exit-hook
+            #'rigpa--on-buffer-mode-post-exit))
 
 
 (provide 'rigpa-buffer-mode)
