@@ -324,97 +324,76 @@ done purely for UI purposes)."
   (rigpa-file-initialize)
   (rigpa-text-initialize))
 
-(defun rigpa--create-editing-structures ()
-  "Create standard editing structures."
+;; towers in base editing levels
+(defvar rigpa-complete-tower
+  (make-editing-ensemble :name "complete"
+                         :default "normal"
+                         :members (list chimera-insert-mode
+                                        chimera-char-mode
+                                        chimera-word-mode
+                                        chimera-line-mode
+                                        chimera-activity-mode
+                                        chimera-normal-mode
+                                        chimera-view-mode
+                                        chimera-window-mode
+                                        chimera-file-mode
+                                        chimera-buffer-mode
+                                        chimera-system-mode
+                                        chimera-application-mode)))
 
-  ;; towers in base editing levels
-  (setq rigpa-complete-tower
-        (make-editing-ensemble :name "complete"
-                               :default "normal"
-                               :members (list chimera-insert-mode
-                                              chimera-char-mode
-                                              chimera-word-mode
-                                              chimera-line-mode
-                                              chimera-activity-mode
-                                              chimera-normal-mode
-                                              chimera-view-mode
-                                              chimera-window-mode
-                                              chimera-file-mode
-                                              chimera-buffer-mode
-                                              chimera-system-mode
-                                              chimera-application-mode)))
+(defvar rigpa-vim-tower
+  (make-editing-ensemble :name "vim"
+                         :default "normal"
+                         :members (list chimera-insert-mode
+                                        chimera-normal-mode)))
+(defvar rigpa-emacs-tower
+  (make-editing-ensemble :name "emacs"
+                         :default "emacs"
+                         :members (list chimera-emacs-mode)))
 
-  (setq rigpa-vim-tower
-        (make-editing-ensemble :name "vim"
-                               :default "normal"
-                               :members (list chimera-insert-mode
-                                              chimera-normal-mode)))
-  (setq rigpa-emacs-tower
-        (make-editing-ensemble :name "emacs"
-                               :default "emacs"
-                               :members (list chimera-emacs-mode)))
-  (setq rigpa-lisp-tower
-        (make-editing-ensemble :name "lisp"
-                               :default "symex"
-                               :members (list chimera-insert-mode
-                                              chimera-symex-mode
-                                              chimera-normal-mode)))
+;; complexes for base editing levels
+(defvar rigpa-general-complex
+  (make-editing-ensemble
+   :name "general"
+   :default "vim"
+   :members (list rigpa-vim-tower
+                  rigpa-complete-tower
+                  rigpa-emacs-tower))
+  "A default editing complex for general use.")
 
-  ;; complexes for base editing levels
-  (setq rigpa-general-complex
-        (make-editing-ensemble
-         :name "general"
-         :default "vim"
-         :members (list rigpa-vim-tower
-                        rigpa-complete-tower
-                        rigpa-lisp-tower
-                        rigpa-emacs-tower)))
+;; towers and complexes for meta levels
+(defvar rigpa-meta-mode-tower
+  (make-editing-ensemble :name "meta-mode"
+                         :default "line"
+                         :members (list chimera-line-mode)))
+(defvar rigpa-meta-complex
+  (make-editing-ensemble
+   :name "meta"
+   :default "meta-mode"
+   :members (list rigpa-meta-mode-tower)))
 
-  ;; towers and complexes for meta levels
-  (setq rigpa-meta-mode-tower
-        (make-editing-ensemble :name "meta-mode"
-                               :default "line"
-                               :members (list chimera-line-mode)))
-  (setq rigpa-meta-complex
-        (make-editing-ensemble
-         :name "meta"
-         :default "meta-mode"
-         :members (list rigpa-meta-mode-tower)))
+(defvar rigpa-meta-tower-mode-tower
+  (make-editing-ensemble :name "meta-tower"
+                         :default "buffer"
+                         :members (list chimera-buffer-mode)))
 
-  (setq rigpa-meta-tower-mode-tower
-        (make-editing-ensemble :name "meta-tower"
-                               :default "buffer"
-                               :members (list chimera-buffer-mode)))
-  (setq rigpa-meta-tower-complex
-        (make-editing-ensemble
-         :name "meta-tower"
-         :default "meta-tower"
-         :members (list rigpa-meta-tower-mode-tower)))
+(defvar rigpa-meta-tower-complex
+  (make-editing-ensemble
+   :name "meta-tower"
+   :default "meta-tower"
+   :members (list rigpa-meta-tower-mode-tower)))
 
-  ;; the editing complex to use in a buffer
-  ;; by default this is general complex unless a more tailored one
-  ;; has been set (e.g. via major mode hook)
-  (setq rigpa--complex rigpa-general-complex)
-  (make-variable-buffer-local 'rigpa--complex))
+(defvar rigpa--complex rigpa-general-complex
+  "The current editing complex.
 
-(defvar rigpa--lisp-modes
-  '(fennel-mode
-    arc-mode
-    lisp-mode
-    slime-repl-mode
-    sly-mrepl-mode
-    clojure-mode
-    clojurescript-mode
-    clojurec-mode
-    scheme-mode
-    racket-mode
-    racket-repl-mode
-    lisp-interaction-mode
-    emacs-lisp-mode
-    inferior-emacs-lisp-mode
-    ;; and some treesitter modes too
-    clojure-ts-mode)
-  "Modes where it should use the Lisp tower.")
+By default this is general complex unless a more tailored one
+has been set in a buffer (e.g. via major mode hook).
+
+It is defined here as an ordinary global variable, but it is made
+buffer local below so that it can have a default value that can be
+overridden in individual buffers.")
+
+(make-variable-buffer-local 'rigpa--complex)
 
 (defun rigpa--provide-editing-structures ()
   "Register editing structures so they're used in relevant major modes."
@@ -425,12 +404,6 @@ done purely for UI purposes)."
   ;;  (2) the tower index
   ;;  (3) the level index
   ;; and eventually make these "coordinates" generic
-  (dolist (mode-name rigpa--lisp-modes)
-    (let ((mode-hook (intern (concat (symbol-name mode-name)
-                                     "-hook"))))
-      (add-hook mode-hook (lambda ()
-                            (setq rigpa--current-tower-index 2)
-                            (setq rigpa--current-level 2)))))
   (add-hook 'rigpa-meta-mode-hook
             ;; TODO: dispatch here based on meta level. If the level
             ;; is 1 use line mode / buffers, if it's 2,
@@ -461,6 +434,7 @@ done purely for UI purposes)."
     (lithium-mode 1))
   (rigpa--initialize-modes)
   (rigpa--register-modes)
+  (rigpa--provide-editing-structures)
   ;; should make this optional via a defcustom flag
   ;; or potentially even have it in a separate evil-adapter package
   (when (boundp 'evil-mode)
