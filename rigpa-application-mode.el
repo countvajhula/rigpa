@@ -35,11 +35,6 @@
 
 (defvar rigpa-application--original-transparency 100)
 
-(evil-define-state application
-  "Application state."
-  :tag " <A> "
-  :message "-- APPLICATION --")
-
 (defun rigpa-application-toggle-alarm-bell ()
   "Toggle whether the alarm bell sounds."
   (interactive)
@@ -150,14 +145,6 @@
   :lighter " application"
   :group 'rigpa)
 
-(defun rigpa--on-application-mode-entry ()
-  "Actions to take upon entering application mode."
-  (evil-application-state))
-
-(defun rigpa--on-application-mode-post-exit ()
-  "Actions to take upon exiting application mode."
-  (rigpa--enter-local-evil-state))
-
 (defvar chimera-application-mode
   (make-chimera-mode :name "application"
                      :enter #'rigpa-application-mode-enter
@@ -167,6 +154,10 @@
                      :entry-hook 'rigpa-application-mode-post-entry-hook
                      :exit-hook 'rigpa-application-mode-pre-exit-hook
                      :manage-hooks nil))
+
+(defun rigpa-application-initialize ()
+  "Initialize Application mode."
+  nil)
 
 
 (provide 'rigpa-application-mode)

@@ -50,6 +50,26 @@ returns to symex after invoking ORIG-FUN with ARGS."
          (intern
           (concat "evil-" (symbol-name original-evil-state) "-state")))))))
 
+(evil-define-state activity
+  "Activity state."
+  :tag " <A> "
+  :message "-- ACTIVITY --")
+
+(evil-define-state line
+  "Line state."
+  :tag " <L> "
+  :message "-- LINE --")
+
+(evil-define-state view
+  "View state."
+  :tag " <V> "
+  :message "-- VIEW --")
+
+(evil-define-state application
+  "Application state."
+  :tag " <A> "
+  :message "-- APPLICATION --")
+
 
 (provide 'rigpa-evil-support)
 ;;; rigpa-evil-support.el ends here

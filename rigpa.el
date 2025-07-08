@@ -260,18 +260,24 @@
 
   ;; register all the other modes
 
+  ;; TODO: Line mode is _nonlocal_ to the tower, and yet
+  ;; buffer-local. So upon exit, we ideally want to return
+  ;; to a tower-local mode here, instead of leaving it
+  ;; hanging, or, as we are doing here, entering an _evil_
+  ;; state explicitly (which would happen as a side effect
+  ;; of the right thing, viz. returning to the tower).
   (rigpa-register-mode chimera-line-mode
-                       :post-entry #'rigpa--on-line-mode-entry
-                       :post-exit #'rigpa--on-line-mode-post-exit)
+                       :post-entry #'evil-line-state
+                       :post-exit #'rigpa--enter-local-evil-state)
   (rigpa-register-mode chimera-application-mode
-                       :post-entry #'rigpa--on-application-mode-entry
-                       :post-exit #'rigpa--on-application-mode-post-exit)
+                       :post-entry #'evil-application-state
+                       :post-exit #'rigpa--enter-local-evil-state)
   (rigpa-register-mode chimera-view-mode
-                       :post-entry #'rigpa--on-view-mode-entry
-                       :post-exit #'rigpa--on-view-mode-post-exit)
+                       :post-entry #'evil-view-state
+                       :post-exit #'rigpa--enter-local-evil-state)
   (rigpa-register-mode chimera-activity-mode
-                       :post-entry #'rigpa--on-activity-mode-entry
-                       :post-exit #'rigpa--on-activity-mode-post-exit)
+                       :post-entry #'evil-activity-state
+                       :post-exit #'rigpa--enter-local-evil-state)
   (rigpa-register-mode chimera-history-mode
                        :pre-entry #'rigpa--on-history-mode-pre-entry
                        :post-entry #'rigpa--on-history-mode-entry
@@ -300,6 +306,13 @@
   (rigpa-register-mode chimera-text-mode
                        :post-entry #'rigpa--on-text-mode-entry
                        :post-exit #'rigpa--on-text-mode-post-exit))
+
+(defun rigpa--initialize-modes ()
+  "Initialize all built-in modes."
+  (rigpa-line-initialize)
+  (rigpa-activity-initialize)
+  (rigpa-view-initialize)
+  (rigpa-application-initialize))
 
 (defun rigpa--create-editing-structures ()
   "Create standard editing structures."
@@ -436,6 +449,7 @@
   (interactive)
   (unless lithium-mode
     (lithium-mode 1))
+  (rigpa--initialize-modes)
   (rigpa--register-modes)
   ;; should make this optional via a defcustom flag
   ;; or potentially even have it in a separate evil-adapter package

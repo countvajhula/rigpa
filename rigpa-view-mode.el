@@ -44,11 +44,6 @@
 (defvar rigpa-view-preferred-zoom-level 40) ; make a defcustom
 (defvar rigpa-view-preferred-zoom-level-tolerance 5)
 
-(evil-define-state view
-  "View state."
-  :tag " <V> "
-  :message "-- VIEW --")
-
 (defun rigpa-view-scroll-down ()
   (interactive)
   (evil-scroll-line-down 3))
@@ -233,10 +228,7 @@ reference to which we are zooming."
   ;; the view
   (setq rigpa-view--original-position (point))
   (blink-cursor-mode -1)
-  (internal-show-cursor nil nil)
-  ;; TODO: probably do this via a standard internal
-  ;; rigpa hook in mode registration
-  (evil-view-state))
+  (internal-show-cursor nil nil))
 
 (defun rigpa--on-view-mode-post-exit ()
   "Actions to take upon exit from view mode."
@@ -245,10 +237,7 @@ reference to which we are zooming."
   (if (and rigpa-view--original-position
            (pos-visible-in-window-p rigpa-view--original-position))
       (goto-char rigpa-view--original-position)
-    (evil-window-middle))
-  ;; TODO: probably do this via a standard internal
-  ;; rigpa hook in mode registration
-  (rigpa--enter-local-evil-state))
+    (evil-window-middle)))
 
 (defvar chimera-view-mode
   (make-chimera-mode :name "view"
@@ -260,17 +249,22 @@ reference to which we are zooming."
                      :exit-hook 'rigpa-view-mode-pre-exit-hook
                      :manage-hooks nil))
 
-;; mark view navigations as not repeatable from the perspective
-;; of Evil's dot operator - i.e. I believe these won't get added
-;; to the repeat stack.
-;; TODO: make this part of a generic "mode setup"
-;; but is there a better way than manually registering all
-;; interactive commands this way?
-(mapc #'evil-declare-abort-repeat
-      '(rigpa-view-scroll-up
-        rigpa-view-scroll-down
-        rigpa-view-scroll-skip-up
-        rigpa-view-scroll-skip-down))
+(defun rigpa-view-initialize ()
+  "Initialize Line mode."
+  ;; mark view navigations as not repeatable from the perspective
+  ;; of Evil's dot operator - i.e. I believe these won't get added
+  ;; to the repeat stack.
+  ;; TODO: is there a better way than manually registering all
+  ;; interactive commands this way?
+  (mapc #'evil-declare-abort-repeat
+        '(rigpa-view-scroll-up
+          rigpa-view-scroll-down
+          rigpa-view-scroll-skip-up
+          rigpa-view-scroll-skip-down))
+  (add-hook 'rigpa-view-mode-post-entry-hook
+            #'rigpa--on-view-mode-entry)
+  (add-hook 'rigpa-view-mode-post-exit-hook
+            #'rigpa--on-view-mode-post-exit))
 
 
 (provide 'rigpa-view-mode)

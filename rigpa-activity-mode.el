@@ -30,11 +30,6 @@
 (require 'lithium)
 (require 'chimera)
 
-(evil-define-state activity
-  "Activity state."
-  :tag " <A> "
-  :message "-- ACTIVITY --")
-
 (setq rigpa-activity-accumulate-buffer-name "MY-CLIPBOARD")
 
 (defun rigpa-activity-yank-and-accumulate ()
@@ -105,14 +100,6 @@
   :lighter " activity"
   :group 'rigpa)
 
-(defun rigpa--on-activity-mode-entry ()
-  "Actions to take upon entering activity mode."
-  (evil-activity-state))
-
-(defun rigpa--on-activity-mode-post-exit ()
-  "Actions to take upon exiting activity mode."
-  (rigpa--enter-local-evil-state))
-
 (defvar chimera-activity-mode
   (make-chimera-mode :name "activity"
                      :enter #'rigpa-activity-mode-enter
@@ -122,6 +109,10 @@
                      :entry-hook 'rigpa-activity-mode-post-entry-hook
                      :exit-hook 'rigpa-activity-mode-pre-exit-hook
                      :manage-hooks nil))
+
+(defun rigpa-activity-initialize ()
+  "Initialize Activity mode."
+  nil)
 
 
 (provide 'rigpa-activity-mode)

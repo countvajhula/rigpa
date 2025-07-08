@@ -44,11 +44,6 @@
 
 (defvar rigpa-line--column 1)
 
-(evil-define-state line
-  "Line state."
-  :tag " <L> "
-  :message "-- LINE --")
-
 (evil-define-command rigpa-line-move-down (count)
   "Move line down"
   (interactive "p")
@@ -333,22 +328,14 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   (internal-show-cursor nil nil)
   (setq rigpa-line--column (current-column))
   (beginning-of-line)
-  (hl-line-mode 1)
-  (evil-line-state))
+  (hl-line-mode 1))
 
 (defun rigpa--on-line-mode-post-exit ()
   "Actions to take upon exiting line mode."
   (blink-cursor-mode 1) ; TODO: depend on user config instead
   (internal-show-cursor nil t)
   (hl-line-mode -1)
-  (evil-goto-column rigpa-line--column)
-  ;; TODO: Line mode is _nonlocal_ to the tower, and yet
-  ;; buffer-local. So upon exit, we ideally want to return
-  ;; to a tower-local mode here, instead of leaving it
-  ;; hanging, or, as we are doing here, entering an _evil_
-  ;; state explicitly (which would happen as a side effect
-  ;; of the right thing, viz. returning to the tower).
-  (rigpa--enter-local-evil-state))
+  (evil-goto-column rigpa-line--column))
 
 (defvar chimera-line-mode
   (make-chimera-mode :name "line"
@@ -359,6 +346,13 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
                      :entry-hook 'rigpa-line-mode-post-entry-hook
                      :exit-hook 'rigpa-line-mode-pre-exit-hook
                      :manage-hooks nil))
+
+(defun rigpa-line-initialize ()
+  "Initialize Line mode."
+  (add-hook 'rigpa-line-mode-post-entry-hook
+            #'rigpa--on-line-mode-entry)
+  (add-hook 'rigpa-line-mode-post-exit-hook
+            #'rigpa--on-line-mode-post-exit))
 
 (provide 'rigpa-line-mode)
 ;;; rigpa-line-mode.el ends here
