@@ -344,12 +344,6 @@ current ('original') buffer."
   :lighter " buffer"
   :group 'rigpa)
 
-(defvar chimera-buffer-mode-entry-hook nil
-  "Entry hook for rigpa buffer mode.")
-
-(defvar chimera-buffer-mode-exit-hook nil
-  "Exit hook for rigpa buffer mode.")
-
 (defun rigpa--on-buffer-mode-entry ()
   "Actions to take upon entry into buffer mode."
   (rigpa-buffer--setup-buffer-marks-table)
