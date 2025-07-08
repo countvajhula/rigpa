@@ -248,8 +248,33 @@
   ;; states other than Normal?
   (define-key evil-replace-state-map [escape] #'evil-force-normal-state))
 
+(defun rigpa--register-local-mode (mode)
+  "Register the local mode MODE."
+  (rigpa-register-mode mode
+                       :post-entry (rigpa-evil-state-by-name
+                                    (chimera-mode-name mode))
+                       :post-exit #'rigpa--enter-local-evil-state))
+
+(defun rigpa--register-global-mode (mode)
+  "Register the global mode MODE."
+  (rigpa-register-mode mode
+                       :post-entry (lambda ()
+                                     (rigpa--for-all-buffers (rigpa-evil-state-by-name
+                                                              (chimera-mode-name mode))))
+                       :post-exit (lambda ()
+                                    (rigpa--for-all-buffers #'rigpa--enter-local-evil-state))))
+
 (defun rigpa--register-modes ()
-  "Register the standard modes with the framework."
+  "Register the built-in modes with the framework.
+
+This adds them to a global mode registry, `rigpa-modes', so that they
+can be looked up by name, and also registers functions to listen on
+mode transitions to ensure that the correct mode is reflected and to
+keep track of the history of mode transitions for \"recall\" purposes.
+It also adds internal hooks relevant for Rigpa (currently, that's just
+entering and exiting the associated Evil state for the mode, which is
+done purely for UI purposes)."
+
   ;; register evil chimera states with the rigpa framework
   (rigpa-register-mode chimera-normal-mode)
   (rigpa-register-mode chimera-insert-mode)
@@ -266,48 +291,22 @@
   ;; hanging, or, as we are doing here, entering an _evil_
   ;; state explicitly (which would happen as a side effect
   ;; of the right thing, viz. returning to the tower).
-  (rigpa-register-mode chimera-line-mode
-                       :post-entry #'evil-line-state
-                       :post-exit #'rigpa--enter-local-evil-state)
-  (rigpa-register-mode chimera-application-mode
-                       :post-entry #'evil-application-state
-                       :post-exit #'rigpa--enter-local-evil-state)
-  (rigpa-register-mode chimera-view-mode
-                       :post-entry #'evil-view-state
-                       :post-exit #'rigpa--enter-local-evil-state)
-  (rigpa-register-mode chimera-activity-mode
-                       :post-entry #'evil-activity-state
-                       :post-exit #'rigpa--enter-local-evil-state)
-  (rigpa-register-mode chimera-history-mode
-                       :post-entry (lambda () (rigpa--for-all-buffers #'evil-history-state))
-                       :post-exit (lambda () (rigpa--for-all-buffers #'rigpa--enter-local-evil-state)))
-  (rigpa-register-mode chimera-tab-mode
-                       :post-entry #'evil-tab-state
-                       :post-exit #'rigpa--enter-local-evil-state)
-  (rigpa-register-mode chimera-word-mode
-                       :post-entry #'evil-word-state
-                       :post-exit #'rigpa--enter-local-evil-state)
-  (rigpa-register-mode chimera-window-mode
-                       :post-entry (lambda () (rigpa--for-all-buffers #'evil-window-state))
-                       :post-exit (lambda () (rigpa--for-all-buffers #'rigpa--enter-local-evil-state)))
-  (rigpa-register-mode chimera-char-mode
-                       :post-entry #'evil-char-state
-                       :post-exit #'rigpa--enter-local-evil-state)
-  (rigpa-register-mode chimera-system-mode
-                       :post-entry #'evil-system-state
-                       :post-exit #'rigpa--enter-local-evil-state)
+  (rigpa--register-local-mode chimera-line-mode)
+  (rigpa--register-local-mode chimera-application-mode)
+  (rigpa--register-local-mode chimera-view-mode)
+  (rigpa--register-local-mode chimera-activity-mode)
+  (rigpa--register-local-mode chimera-tab-mode)
+  (rigpa--register-local-mode chimera-word-mode)
+  (rigpa--register-local-mode chimera-char-mode)
+  (rigpa--register-local-mode chimera-system-mode)
+  (rigpa--register-local-mode chimera-file-mode)
+  (rigpa--register-local-mode chimera-text-mode)
   ;; TODO: for buffer mode, probably enter appropriate mode in current
   ;; and original buffer
   ;; we can enter appropriate in original if different from current buffer
-  (rigpa-register-mode chimera-buffer-mode
-                       :post-entry (lambda () (rigpa--for-all-buffers #'evil-buffer-state))
-                       :post-exit (lambda () (rigpa--for-all-buffers #'rigpa--enter-local-evil-state)))
-  (rigpa-register-mode chimera-file-mode
-                       :post-entry #'evil-file-state
-                       :post-exit #'rigpa--enter-local-evil-state)
-  (rigpa-register-mode chimera-text-mode
-                       :post-entry #'evil-text-state
-                       :post-exit #'rigpa--enter-local-evil-state))
+  (rigpa--register-global-mode chimera-buffer-mode)
+  (rigpa--register-global-mode chimera-history-mode)
+  (rigpa--register-global-mode chimera-window-mode))
 
 (defun rigpa--initialize-modes ()
   "Initialize all built-in modes."
