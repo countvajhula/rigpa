@@ -29,13 +29,13 @@
 
 (require 'cl-lib)
 (require 'evil)
-(require 'hydra)
 (require 'ivy)
 (require 'chimera)
-(require 'chimera-hydra)
 (require 's)
 (require 'dynaring)
 (require 'buffer-ring)
+(require 'lithium)
+(require 'rigpa-util)
 
 (defconst rigpa-buffer-ring-name-prefix "rigpa-buffer-ring")
 
@@ -47,12 +47,6 @@
   "Buffers to ignore in navigation."
   :type 'list
   :group 'rigpa-buffer)
-
-(evil-define-state buffer
-  "Buffer state."
-  :tag " <B> "
-  :message "-- BUFFER --"
-  :enable (normal))
 
 (cl-defun rigpa-buffer-create (&optional
                                buffer-name
@@ -271,14 +265,6 @@ This simply is the complement of read-only or non-file buffer
          (rings (list (list "readonly" #'rigpa-buffer--read-only-buffer-p)
                       (list "special" #'rigpa-buffer--non-file-buffer-p)
                       (list "typical" #'rigpa-buffer--typical-buffer-p))))
-    ;; we could just add all the buffers to the ring naively,
-    ;; and that would be fine since buffer-ring takes no action
-    ;; if the buffer happens to already be a member. But we don't
-    ;; do that since each time this happens a message is echoed
-    ;; to indicate that to the user, and the cost of I/O over
-    ;; possibly hundreds of buffer additions could add a perceptible
-    ;; lag in buffer mode entry. So we efficiently compute the
-    ;; difference and just add those buffers
     (dolist (ring-config rings)
       (rigpa-buffer--refresh-ring (nth 0 ring-config)
                                   (nth 1 ring-config)
@@ -329,66 +315,55 @@ current ('original') buffer."
     ;; it so that recency ordering reflects correctly
     (buffer-ring-switch-to-buffer other-buffer)))
 
-(defhydra hydra-buffer (:columns 3
-                        :body-pre (chimera-hydra-signal-entry chimera-buffer-mode)
-                        :post (chimera-hydra-portend-exit chimera-buffer-mode t)
-                        :after-exit (chimera-hydra-signal-exit chimera-buffer-mode
-                                                               #'chimera-handle-hydra-exit))
+(lithium-define-global-mode rigpa-buffer-mode
   "Buffer mode"
-  ("s-b" rigpa-buffer-alternate "switch to last" :exit t)
-  ("b" rigpa-buffer-alternate "switch to last" :exit t)
-  ("h" buffer-ring-next-buffer "previous")
-  ("j" ignore nil)
-  ("k" ignore nil)
-  ("l" buffer-ring-prev-buffer "next")
-  ("y" rigpa-buffer-yank "yank")
-  ("p" rigpa-buffer-paste "paste")
-  ("n" (lambda ()
-         (interactive)
-         (rigpa-buffer-create nil nil :switch-p t))
-   "new" :exit t)
-  ("m" rigpa-buffer-set-mark "set mark")
-  ("'" rigpa-buffer-return-to-mark "return to mark" :exit t)
-  ("`" rigpa-buffer-return-to-mark "return to mark" :exit t)
-  ("s" rigpa-buffer-search "search" :exit t)
-  ("/" rigpa-buffer-search "search" :exit t)
-  ("i" ibuffer "list (ibuffer)" :exit t)
-  ("x" kill-buffer "delete" :exit t)
-  ("?" rigpa-buffer-info "info" :exit t)
-  ("q" rigpa-buffer-return-to-original "return to original" :exit t)
-  ("H-m" rigpa-toggle-menu "show/hide this menu")
-  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
+  (("s-b" rigpa-buffer-alternate t)
+   ("s-k" rigpa-buffer-alternate t)
+   ("b" rigpa-buffer-alternate t)
+   ("h" buffer-ring-next-buffer)
+   ("j" ignore)
+   ("k" ignore)
+   ("l" buffer-ring-prev-buffer)
+   ("y" rigpa-buffer-yank)
+   ("p" rigpa-buffer-paste)
+   ("n" (lambda ()
+          (interactive)
+          (rigpa-buffer-create nil nil :switch-p t))
+    t)
+   ("m" rigpa-buffer-set-mark)
+   ("'" rigpa-buffer-return-to-mark t)
+   ("`" rigpa-buffer-return-to-mark t)
+   ("s" rigpa-buffer-search t)
+   ("/" rigpa-buffer-search t)
+   ("i" ibuffer t)
+   ("x" kill-buffer t)
+   ("?" rigpa-buffer-info t)
+   ("q" rigpa-buffer-return-to-original t)
+   ("<return>" rigpa-enter-lower-level)
+   ("<escape>" rigpa-enter-higher-level))
+  :lighter " buffer"
+  :group 'rigpa)
 
-(defvar chimera-buffer-mode-entry-hook nil
-  "Entry hook for rigpa buffer mode.")
-
-(defvar chimera-buffer-mode-exit-hook nil
-  "Exit hook for rigpa buffer mode.")
-
-(defun rigpa-buffer-enter-mode ()
-  "Enter buffer mode (idempotent)."
-  (interactive)
+(defun rigpa--on-buffer-mode-entry ()
+  "Actions to take upon entry into buffer mode."
   (rigpa-buffer--setup-buffer-marks-table)
   (rigpa-buffer-refresh-ring)
-  (unless (chimera-hydra-is-active-p "buffer")
-    (let* ((ring-name (if (eq rigpa--complex rigpa-meta-tower-complex)
-                          "2"
-                        "0"))    ; TODO: derive from coordinates later
-           (buffer-ring-name (concat rigpa-buffer-ring-name-prefix
-                                     "-"
-                                     ring-name
-                                     (cond ((rigpa-buffer--read-only-buffer-p) "-readonly")
-                                           ((rigpa-buffer--non-file-buffer-p) "-special")
-                                           (t "-typical")))))
-      ;; TODO: the appropriate ring is a function of both the current
-      ;; meta level but also the current buffer.  we could probably
-      ;; make this selection of appropriate ring more robust by using
-      ;; something like bufler, whose categories could correspond to
-      ;; distinct rings, and maybe meta level could simply be another
-      ;; category here.
-      (buffer-ring-torus-switch-to-ring buffer-ring-name))
-    (hydra-buffer/body)))
+  (let* ((ring-name (if (eq rigpa--complex rigpa-meta-tower-complex)
+                        "2"
+                      "0"))    ; TODO: derive from coordinates later
+         (buffer-ring-name (concat rigpa-buffer-ring-name-prefix
+                                   "-"
+                                   ring-name
+                                   (cond ((rigpa-buffer--read-only-buffer-p) "-readonly")
+                                         ((rigpa-buffer--non-file-buffer-p) "-special")
+                                         (t "-typical")))))
+    ;; TODO: the appropriate ring is a function of both the current
+    ;; meta level but also the current buffer.  we could probably
+    ;; make this selection of appropriate ring more robust by using
+    ;; something like bufler, whose categories could correspond to
+    ;; distinct rings, and maybe meta level could simply be another
+    ;; category here.
+    (buffer-ring-torus-switch-to-ring buffer-ring-name)))
 
 (defun rigpa--on-buffer-mode-post-exit ()
   "Actions to take upon exit from buffer mode."
@@ -396,11 +371,20 @@ current ('original') buffer."
 
 (defvar chimera-buffer-mode
   (make-chimera-mode :name "buffer"
-                     :enter #'rigpa-buffer-enter-mode
-                     :pre-entry-hook 'chimera-buffer-mode-entry-hook
-                     :post-exit-hook 'chimera-buffer-mode-exit-hook
-                     :entry-hook 'evil-buffer-state-entry-hook
-                     :exit-hook 'evil-buffer-state-exit-hook))
+                     :enter #'rigpa-buffer-mode-enter
+                     :exit #'rigpa-buffer-mode-exit
+                     :pre-entry-hook 'rigpa-buffer-mode-pre-entry-hook
+                     :post-exit-hook 'rigpa-buffer-mode-post-exit-hook
+                     :entry-hook 'rigpa-buffer-mode-post-entry-hook
+                     :exit-hook 'rigpa-buffer-mode-pre-exit-hook
+                     :manage-hooks nil))
+
+(defun rigpa-buffer-initialize ()
+  "Initialize Buffer mode."
+  (add-hook 'rigpa-buffer-mode-post-entry-hook
+            #'rigpa--on-buffer-mode-entry)
+  (add-hook 'rigpa-buffer-mode-post-exit-hook
+            #'rigpa--on-buffer-mode-post-exit))
 
 
 (provide 'rigpa-buffer-mode)

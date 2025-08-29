@@ -37,8 +37,6 @@ This package isn't on `MELPA <https://melpa.org/>`_ yet, but you can install a p
 
   (use-package rigpa
 
-    :after (evil symex buffer-ring)
-
     :straight
     (rigpa
       :type git
@@ -46,14 +44,7 @@ This package isn't on `MELPA <https://melpa.org/>`_ yet, but you can install a p
       :repo "countvajhula/rigpa")
 
     :config
-    (rigpa-initialize)
-    (setq rigpa-mode t)
-
-    ;; temporary workaround for https://github.com/countvajhula/rigpa/issues/9
-    (remove-hook 'evil-symex-state-exit-hook #'symex-disable-editing-minor-mode)
-
-    ;; custom config
-    (setq rigpa-show-menus nil)
+    (rigpa-mode 1)
 
     ;; navigating meta modes
     (global-unset-key (kbd "s-m"))
@@ -148,6 +139,8 @@ This package isn't on `MELPA <https://melpa.org/>`_ yet, but you can install a p
                     (lambda ()
                       (interactive)
                       (rigpa-enter-mode "word"))))
+
+Note that the above config also installs `Lithium <https://github.com/countvajhula/lithium>`_, a dependency of Rigpa that also isn't yet on MELPA (if it were, we could just declare it as a dependency within Rigpa and we wouldn't need a separate `use-package` declaration).
 
 Usage
 =====

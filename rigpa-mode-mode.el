@@ -31,6 +31,7 @@
 (require 'chimera)
 (require 'rigpa-text-parsers)
 (require 'rigpa-meta)
+(require 'rigpa-evil-support)
 
 (evil-define-state mode
   "Mode state."
@@ -42,114 +43,85 @@
 (defvar-local rigpa-recall nil)
 
 ;; registry of known modes
-(defvar rigpa-modes
-  (ht))
+(defvar rigpa-modes (ht)
+  "Lookup chimera modes by their name.")
 
-(defun rigpa--minor-mode-enabler (name)
-  "Return a function to enable the minor mode for the mode named NAME.
-
-We modulate keybindings in evil states (e.g. in particular visual and
-operator states) via a minor mode. As it looks like this only works if
-the minor mode is activated *before* entering the evil state, we need
-to define pre-entry hooks at the chimera level and can't just use the
-evil entry hooks.
-
-We need this extra layer of indirection because lambdas can't be
-removed from hooks since they are anonymous. This just gives us a way
-to parametrize the hook function but still be able to remove it."
-  (let ((enable-mode
-         (intern
-          (concat "rigpa--enable-" name "-minor-mode"))))
-    enable-mode))
-
-(defun rigpa--on-mode-entry (name)
-  "Return the function that takes actions upon mode entry."
-  (intern
-   (concat "rigpa--on-" name "-mode-entry")))
-
-(defun rigpa--on-mode-exit (name)
-  "Return the function that takes actions upon mode exit."
-  (intern
-   (concat "rigpa--on-" name "-mode-exit")))
-
-(defun rigpa--on-mode-post-exit (name)
-  "Return the function that takes actions upon mode post-exit."
-  (intern
-   (concat "rigpa--on-" name "-mode-post-exit")))
-
-(defun rigpa--disable-other-minor-modes ()
-  "Disable all rigpa mode minor modes.
-
-This is called on state transitions to ensure that all minor modes are
-first disabled prior to the minor mode for new state being enabled."
-  (dolist (name (ht-keys rigpa-modes))
-    (let ((disable-mode
-           (intern
-            (concat "rigpa--disable-" name "-minor-mode"))))
-      (when (fboundp disable-mode)
-        (funcall disable-mode)))))
-
-(defun rigpa-register-mode (mode)
+(cl-defun rigpa-register-mode (mode
+                               &key
+                               pre-entry
+                               post-entry
+                               pre-exit
+                               post-exit)
   "Register MODE for use with rigpa.
 
 This registers callbacks with the hooks provided by the chimera MODE
 to ensure, upon state transitions, that:
 (1) the correct state is reflected,
 (2) any lingering config from prior states is cleaned, and
-(3) the previous state is remembered for possible recall."
+(3) the previous state is remembered for possible recall.
+
+PRE-ENTRY, POST-ENTRY, PRE-EXIT, and POST-EXIT are functions to be
+called at the appropriate point in a mode transition with respect to
+MODE."
   (let ((name (chimera-mode-name mode))
         (pre-entry-hook (chimera-mode-pre-entry-hook mode))
-        (entry-hook (chimera-mode-entry-hook mode))
-        (exit-hook (chimera-mode-exit-hook mode))
+        (post-entry-hook (chimera-mode-entry-hook mode))
+        (pre-exit-hook (chimera-mode-exit-hook mode))
         (post-exit-hook (chimera-mode-post-exit-hook mode)))
+
     (ht-set! rigpa-modes name mode)
-    (let ((minor-mode-entry (rigpa--minor-mode-enabler name)))
-      (when (fboundp minor-mode-entry)
-        (add-hook pre-entry-hook minor-mode-entry)))
-    (let ((fn (rigpa--on-mode-entry name)))
-      (when (fboundp fn)
-        (add-hook pre-entry-hook fn)))
-    (let ((fn (rigpa--on-mode-exit name)))
-      (when (fboundp fn)
-        (add-hook exit-hook fn)))
-    (let ((fn (rigpa--on-mode-post-exit name)))
-      (when (fboundp fn)
-        (add-hook post-exit-hook fn)))
-    (add-hook entry-hook #'rigpa-reconcile-level)
-    (add-hook pre-entry-hook #'rigpa--disable-other-minor-modes)
-    (add-hook exit-hook #'rigpa-remember-for-recall)))
 
-(defun rigpa-unregister-mode (mode)
-  "Unregister MODE."
-  (let ((name (chimera-mode-name mode))
-        (pre-entry-hook (chimera-mode-pre-entry-hook mode))
-        (entry-hook (chimera-mode-entry-hook mode))
-        (exit-hook (chimera-mode-exit-hook mode))
-        (post-exit-hook (chimera-mode-post-exit-hook mode)))
-    (ht-remove! rigpa-modes name)
-    (let ((minor-mode-entry (rigpa--minor-mode-enabler name)))
-      (when (fboundp minor-mode-entry)
-        (remove-hook pre-entry-hook minor-mode-entry)))
-    (let ((fn (rigpa--on-mode-entry name)))
-      (when (fboundp fn)
-        (remove-hook pre-entry-hook fn)))
-    (let ((fn (rigpa--on-mode-exit name)))
-      (when (fboundp fn)
-        (remove-hook exit-hook fn)))
-    (let ((fn (rigpa--on-mode-post-exit name)))
-      (when (fboundp fn)
-        (remove-hook post-exit-hook fn)))
-    (remove-hook entry-hook #'rigpa-reconcile-level)
-    (remove-hook pre-entry-hook #'rigpa--disable-other-minor-modes)
-    (remove-hook exit-hook #'rigpa-remember-for-recall)))
+    (add-hook post-entry-hook #'rigpa-reconcile-level)
+    (add-hook pre-exit-hook #'rigpa-remember-for-recall)
 
-(defun rigpa-current-mode ()
-  "Current rigpa mode."
-  (chimera--mode-for-state (symbol-name evil-state)))
+    (when pre-entry
+      (add-hook pre-entry-hook pre-entry))
+    (when post-entry
+      (add-hook post-entry-hook post-entry))
+    (when pre-exit
+      (add-hook pre-exit-hook pre-exit))
+    (when post-exit
+      (add-hook post-exit-hook post-exit))))
+
+(defun rigpa--enter-local-evil-state ()
+  "Enter evil state for the local mode."
+  (let* ((current-lithium-mode (lithium-current-mode-name))
+         (name (if current-lithium-mode
+                   (rigpa-name-for-lithium-mode
+                    current-lithium-mode)
+                 (let ((recall-mode-name (rigpa--local-recall-mode)))
+                   ;; Do not enter the evil state for a lithium mode
+                   ;; as that should happen as a side effect of entry
+                   ;; (via Rigpa entry hook).
+                   ;; If we are attempting to enter a lithium evil
+                   ;; state here and the corresponding lithium mode
+                   ;; isn't active, then something has gone wrong. So
+                   ;; just fall back to normal state.
+                   (if (member recall-mode-name (ht-values rigpa-lithium-modes))
+                       "normal"
+                     recall-mode-name)))))
+    (when name
+      (funcall
+       (rigpa-evil-state-by-name name)))))
+
+(defun rigpa--native-p (mode)
+  "Is MODE native to the local editing ensemble (e.g. tower)?"
+  (rigpa--member-of-ensemble-p mode
+                               (rigpa--local-tower)))
 
 (defun rigpa-enter-mode (mode-name)
-  "Enter mode MODE-NAME."
-  (chimera-enter-mode (ht-get rigpa-modes mode-name)))
+  "Enter mode MODE-NAME.
+
+If the target mode is in the current tower, or if the current mode
+is not in the current tower, then exit the current mode before
+entering the new mode. Otherwise, simply enter the new mode so that
+upon exit, we are implicitly returned to a native mode."
+  (let ((from-mode (rigpa-current-mode))
+        (to-mode (ht-get rigpa-modes mode-name)))
+    (if (or (not (rigpa--native-p from-mode))
+            (rigpa--native-p to-mode))
+        (chimera-switch-mode to-mode)
+      (chimera--enter-mode to-mode))))
 
 (defun rigpa--enter-level (level-number)
   "Enter level LEVEL-NUMBER"
@@ -166,24 +138,18 @@ to ensure, upon state transitions, that:
 (defun rigpa-enter-lower-level ()
   "Enter lower level."
   (interactive)
-  (let ((mode-name (symbol-name evil-state)))
-    (if (rigpa-ensemble-member-position-by-name (rigpa--local-tower)
-                                                mode-name)
-        (when (> rigpa--current-level 0)
-          (rigpa--enter-level (1- rigpa--current-level)))
-      ;; "not my tower, not my problem"
-      ;; if we exited a buffer via a state that isn't in its tower, then
-      ;; returning to it "out of band" would find it still that way,
-      ;; and Enter/Escape would a priori do nothing since the mode is still
-      ;; outside the local tower. Ordinarily, we would return to this
-      ;; buffer in a rigpa mode such as buffer mode, which upon
-      ;; exiting would look for a recall. Since that isn't the case
-      ;; here, nothing would happen at this point, and this is the spot
-      ;; where we could have taken some action had we been more civic
-      ;; minded. So preemptively go to a safe "default" as a failsafe,
-      ;; which would be overridden by a recall if there is one.
+  (let ((mode (rigpa-current-mode)))
+    (if mode
+        (if (rigpa--native-p mode)
+            (when (> rigpa--current-level 0)
+              (rigpa--enter-level (1- rigpa--current-level)))
+          ;; first (low-level) exit the current mode
+          (chimera--exit-mode mode))
       (rigpa--enter-appropriate-mode))))
 
+;; NOTE: we may not be calling this anymore except in
+;; edge cases that shouldn't be happening, and possibly
+;; in meta modes it's still relevant, not sure
 (defun rigpa--enter-appropriate-mode (&optional buffer)
   "Enter the most appropriate mode in BUFFER.
 
@@ -192,36 +158,35 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
           (3) default level for tower (which could default to lowest
               if unspecified - TODO)."
   (with-current-buffer (or buffer (current-buffer))
-    (let* ((current-mode (rigpa-current-mode))
-           (current-mode-name (chimera-mode-name current-mode))
-           (recall-mode-name (rigpa--local-recall-mode))
-           (default-mode-name (editing-ensemble-default (rigpa--local-tower))))
-      (cond ((rigpa--member-of-ensemble-p current-mode
-                                          (rigpa--local-tower))
-             ;; we don't want to do anything in this case,
-             ;; but re-enter the current mode to ensure
-             ;; that it reconciles state with the new tower
-             (rigpa-enter-mode current-mode-name))
-            (recall-mode-name
-             ;; recall if available
-             (rigpa--clear-local-recall)
-             (rigpa-enter-mode recall-mode-name))
-            ;; otherwise default for tower
-            (t (rigpa-enter-mode default-mode-name))))))
+    (let ((current-mode (rigpa-current-mode))
+          (default-mode-name (editing-ensemble-default (rigpa--local-tower))))
+      (if current-mode
+          (let ((current-mode-name (chimera-mode-name current-mode))
+                (recall-mode-name (rigpa--local-recall-mode)))
+               (cond ((rigpa--native-p current-mode)
+                      ;; we don't want to do anything in this case,
+                      ;; but re-enter the current mode to ensure
+                      ;; that it reconciles state with the new tower
+                      (chimera--enter-mode (ht-get rigpa-modes current-mode-name)))
+                     (recall-mode-name
+                      ;; recall if available
+                      (rigpa--clear-local-recall)
+                      (chimera--enter-mode (ht-get rigpa-modes recall-mode-name)))
+                     ;; otherwise default for tower
+                     (t (chimera--enter-mode (ht-get rigpa-modes default-mode-name)))))
+        (chimera--enter-mode (ht-get rigpa-modes default-mode-name))))))
 
 (defun rigpa-enter-higher-level ()
   "Enter higher level."
   (interactive)
-  (let ((mode-name (symbol-name evil-state)))
-    ;; TODO: using evil-state doesn't work in buffer mode
-    ;; since the other buffer is in a local (e.g. Insert) state
-    ;; rather than buffer state
-    (if (rigpa-ensemble-member-position-by-name (rigpa--local-tower)
-                                                mode-name)
-        (when (< rigpa--current-level
-                 (1- (rigpa-ensemble-size (rigpa--local-tower))))
-          (rigpa--enter-level (1+ rigpa--current-level)))
-      ;; see note for rigpa-enter-lower-level
+  (let ((mode (rigpa-current-mode)))
+    (if mode
+        (if (rigpa--native-p mode)
+            (when (< rigpa--current-level
+                     (1- (rigpa-ensemble-size (rigpa--local-tower))))
+              (rigpa--enter-level (1+ rigpa--current-level)))
+          ;; first (low-level) exit the current mode
+          (chimera--exit-mode mode))
       (rigpa--enter-appropriate-mode))))
 
 (defun rigpa-enter-lowest-level ()
@@ -257,7 +222,8 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
 If the current mode is present in the current tower, ensure that the
 current level reflects the mode's position in the tower."
   (interactive)
-  (let* ((mode-name (symbol-name evil-state))
+  (let* ((mode (rigpa-current-mode))
+         (mode-name (when mode (chimera-mode-name mode)))
          (level-number
           (rigpa-ensemble-member-position-by-name (rigpa--local-tower)
                                                   mode-name)))
@@ -286,6 +252,14 @@ is precisely the thing to be done."
       (when recall
         (rigpa-enter-mode recall)))))
 
+;; TODO: we probably want to leave local modes alone
+;; e.g. if Line was there, just exit the global mode
+;; (e.g. View) and it should return us to Line, whether
+;; or not Line is present in the tower. That is, we
+;; should be able to go to nonlocal modes and have
+;; them be preserved. Esc or Enter from a nonlocal
+;; mode like Line should enter the tower, just like
+;; for nonlocal global modes
 (defun rigpa-remember-for-recall (&optional buffer)
   "Remember the current mode for future recall."
   ;; we're relying on the evil state here even though the
@@ -413,6 +387,7 @@ current editing tower."
   (let ((ref-buf (rigpa--get-ground-buffer)))
     (rigpa--revert-ui)
     (rigpa--remove-meta-side-effects)
+    (chimera--exit-mode (rigpa-current-mode))
     (when (eq (with-current-buffer ref-buf
                 (rigpa--get-ground-buffer))
               ref-buf)

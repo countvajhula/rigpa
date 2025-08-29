@@ -28,20 +28,92 @@
 
 (require 'evil)
 
-(defun rigpa--define-evil-key (key fn map state)
-  "Define an evil keybinding in an evil-backed rigpa mode."
-  (evil-define-key* (list state 'visual 'operator)
-                    map
-                    (kbd key)
-                    fn))
+(defun rigpa-evil-state-by-name (name)
+  "Evil state handle for mode NAME, by string."
+  (intern
+   (concat "evil-"
+           name
+           "-state")))
 
-(defun rigpa--define-evil-keys-from-spec (keyspec keymap state)
-  "Define evil keys from a specification."
-  (dolist (keybinding keyspec)
-    (rigpa--define-evil-key (car keybinding)
-                            (cdr keybinding)
-                            keymap
-                            state)))
+(defun rigpa-evil-preserve-state-advice (orig-fun &rest args)
+  "Return to an evil state if necessary after calling ORIG-FUN.
+
+This function is meant to advise `evil-repeat' which sets the
+buffer to normal state after repeating a command. This first
+checks whether the buffer is starting in symex state and, if so,
+returns to symex after invoking ORIG-FUN with ARGS."
+  (let ((original-evil-state evil-state))
+    (unwind-protect
+        (apply orig-fun args)
+      (when original-evil-state
+        (funcall
+         (intern
+          (concat "evil-" (symbol-name original-evil-state) "-state")))))))
+
+(evil-define-state activity
+  "Activity state."
+  :tag " <A> "
+  :message "-- ACTIVITY --")
+
+(evil-define-state line
+  "Line state."
+  :tag " <L> "
+  :message "-- LINE --")
+
+(evil-define-state view
+  "View state."
+  :tag " <V> "
+  :message "-- VIEW --")
+
+(evil-define-state application
+  "Application state."
+  :tag " <A> "
+  :message "-- APPLICATION --")
+
+(evil-define-state history
+  "History state."
+  :tag " <C> "
+  :message "-- x→o --")
+
+(evil-define-state tab
+  "Tab state."
+  :tag " <T> "
+  :message "-- TAB --")
+
+(evil-define-state word
+  "Word state."
+  :tag " <W> "
+  :message "-- WORD --")
+
+(evil-define-state window
+  "Window state."
+  :tag " <W> "
+  :message "-- WINDOW --")
+
+(evil-define-state char
+  "Char state."
+  :tag " <X> "
+  :message "-- CHAR --")
+
+(evil-define-state system
+  "System state."
+  :tag " <S> "
+  :message "-- SYSTEM --")
+
+(evil-define-state buffer
+  "Buffer state."
+  :tag " <B> "
+  :message "-- BUFFER --")
+
+(evil-define-state file
+  "File state."
+  :tag " <F> "
+  :message "-- FILE --")
+
+(evil-define-state text
+  "Text state."
+  :tag " <A> "
+  :message "-- TEXT --")
 
 
 (provide 'rigpa-evil-support)

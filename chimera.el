@@ -28,6 +28,7 @@
 
 (require 'cl-lib)
 (require 'evil)
+(require 'ht)
 
 (cl-defstruct chimera-mode
   "Specification for a mode."
@@ -38,11 +39,10 @@
   (entry-hook nil)
   (exit-hook nil)
   (post-exit-hook nil)
-  (manage-hooks nil
-                :documentation "Whether within-mode hooks should be managed internally. \
-If not, they are expected to be run by the underlying mode provider \
-(e.g. evil or hydra). Wrapping hooks (pre-entry and post-exit) are \
-always managed by chimera."))
+  (manage-hooks t
+                :documentation "Whether wrapping (pre-entry and post-exit) hooks should be managed by chimera. \
+If not, they are expected to be run by the underlying mode provider. Internal hooks are always expected \
+to be run by the mode provider."))
 
 (defvar chimera-evil-states
   (list "normal"
@@ -51,44 +51,75 @@ always managed by chimera."))
         "visual"
         "replace"
         "operator"
-        "word"
-        "line"
-        "char"
-        "symex"))
+        "char"))
+
+(defvar rigpa-lithium-modes
+  (ht ('rigpa-char-mode "char")
+      ('rigpa-word-mode "word")
+      ('rigpa-line-mode "line")
+      ('rigpa-view-mode "view")
+      ('rigpa-window-mode "window")
+      ('rigpa-file-mode "file")
+      ('rigpa-buffer-mode "buffer")
+      ('rigpa-system-mode "system")
+      ('rigpa-application-mode "application")
+      ('rigpa-activity-mode "activity")
+      ('rigpa-text-mode "text")
+      ('rigpa-tab-mode "tab")
+      ('rigpa-history-mode "history")))
 
 (defvar chimera-insertion-states
   (list "insert" "emacs"))
 
-(defun chimera-enter-mode (mode)
+(defun rigpa-name-for-lithium-mode (name)
+  "Rigpa name for lithium mode NAME."
+  (ht-get rigpa-lithium-modes
+          name))
+
+;; TODO: note name confusion
+(defun rigpa-current-mode ()
+  "Current rigpa mode."
+  (let ((current-lithium-mode (lithium-current-mode-name)))
+    (or (and current-lithium-mode
+             (chimera--mode-by-name
+              (rigpa-name-for-lithium-mode
+               current-lithium-mode)))
+        (and (member (symbol-name evil-state) chimera-evil-states)
+             (chimera--mode-by-name
+              (symbol-name evil-state))))))
+
+(defun chimera-switch-mode (to-mode)
+  "Switch to TO-MODE.
+
+This first exits the current mode via its primitive mode exit
+function, and then enters MODE via its primitive mode entry. It's
+essential to use only primitive mode entry and exit here to avoid
+unwittingly entering an infinite loop where modes attempt to enter by
+exiting by entering."
+  (interactive)
+  (let ((from-mode (rigpa-current-mode)))
+    (when from-mode
+      (chimera--exit-mode from-mode))
+    (chimera--enter-mode to-mode)))
+
+(defun chimera--enter-mode (mode)
   "Enter MODE."
-  (interactive)
-  (let ((name (chimera-mode-name mode)))
-    ;; TODO: maybe call a function (perform-entry-actions ...) that
-    ;; handles any provider-specific jankiness, like checking for
-    ;; hydras that didn't exit cleanly, and perform their exit actions
-    ;; (which should be in a dedicated function that can be called
-    ;; from here as well as the original spot in the hydra exit
-    ;; lifecycle phase).
-    ;; we're using evil state variables to keep track of state (even
-    ;; for non-evil backed modes), so ensure that the evil state is
-    ;; entered here
-    (unless (member name chimera-evil-states)
-      (let ((evil-state-entry (intern (concat "evil-" name "-state"))))
-        (funcall evil-state-entry)))
-    (run-hooks (chimera-mode-pre-entry-hook mode))
-    (funcall (chimera-mode-enter mode))
-    (when (chimera-mode-manage-hooks mode)
-      ;; for now, we rely on evil hooks for all modes (incl.
-      ;; hydra-based ones), and this should never be called.
-      (run-hooks (chimera-mode-entry-hook mode)))))
+  (when (chimera-mode-manage-hooks mode)
+    (run-hooks (chimera-mode-pre-entry-hook mode)))
+  (let ((enter-mode (chimera-mode-enter mode)))
+    (funcall enter-mode)))
 
-(defun chimera-exit-mode (mode)
+(defun chimera--exit-mode (mode)
   "Exit (interrupt) MODE."
-  (interactive)
-  (funcall (chimera-mode-exit mode)))
+  (let ((exit-mode (chimera-mode-exit mode)))
+    (when exit-mode
+      (funcall exit-mode)))
+  (when (chimera-mode-manage-hooks mode)
+    (run-hooks (chimera-mode-post-exit-hook mode))))
 
-(defun chimera--mode-for-state (mode-name)
-  (symbol-value (intern (concat "chimera-" mode-name "-mode"))))
+(defun chimera--mode-by-name (name)
+  "Get the chimera mode by NAME, a string."
+  (ht-get rigpa-modes name))
 
 
 (provide 'chimera)

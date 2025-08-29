@@ -27,20 +27,14 @@
 ;;; Code:
 
 (require 'evil)
-(require 'hydra)
 (require 'ace-window)
 (require 'transpose-frame)
 (require 'winner)
 (require 'windmove)
 (require 'chimera)
-(require 'chimera-hydra)
+(require 'lithium)
+(require 'rigpa-util)
 (require 'dash)
-
-(evil-define-state window
-  "Window state."
-  :tag " <W> "
-  :message "-- WINDOW --"
-  :enable (normal))
 
 ;; configure home-row hotkeys to index windows in ace-window,
 ;; used as "search" feature in window mode
@@ -256,8 +250,11 @@ window mode."
   (let ((window (rigpa-window-original-window)))
     ;; TODO: it seems that when a window (e.g. REPL) is closed
     ;; it shows Normal mode in the other (only remaining) window
-    ;; but it doesn't allow you to move, suggesting the hydra is
+    ;; but it doesn't allow you to move, since Window mode is
     ;; still invisibly active.
+    ;; FIX: for global modes like Window, probably make them
+    ;; "globalized" so that they they set the correct buffer-local
+    ;; evil state
     (when (window-live-p window)
       (select-window window))))
 
@@ -276,97 +273,101 @@ happen quickly enough not to be noticeable."
       (save-window-excursion
         (rigpa-window-return-to-original-window)))))
 
-(defhydra hydra-window (:columns 4
-                        :body-pre (progn (rigpa-window-setup-marks-table)
-                                         (chimera-hydra-signal-entry chimera-window-mode)
-                                         ;; TODO: this should happen via proper entry hook.
-                                         ;; Also, if it is already active, then make a note
-                                         ;; of it and don't disable it upon exit
-                                         (auto-dim-other-buffers-mode 1))
-                        :post (progn (chimera-hydra-portend-exit chimera-window-mode t))
-                        :after-exit (chimera-hydra-signal-exit chimera-window-mode
-                                                               #'chimera-handle-hydra-exit))
+(lithium-define-global-mode rigpa-window-mode
   "Window mode"
-  ("h" rigpa-window-left "left")
-  ("j" rigpa-window-down "down")
-  ("k" rigpa-window-up "up")
-  ("l" rigpa-window-right "right")
-  ("H" rigpa-window-move-buffer-left "move buffer left")
-  ("J" rigpa-window-move-buffer-down "move buffer down")
-  ("K" rigpa-window-move-buffer-up "move buffer up")
-  ("L" rigpa-window-move-buffer-right "move buffer right")
-  ("C-S-h" rigpa-window-exchange-buffer-left "exchange buffer left")
-  ("C-S-j" rigpa-window-exchange-buffer-down "exchange buffer down")
-  ("C-S-k" rigpa-window-exchange-buffer-up "exchange buffer up")
-  ("C-S-l" rigpa-window-exchange-buffer-right "exchange buffer left")
-  ("M-H" evil-window-move-far-left "move to far left")
-  ("M-J" evil-window-move-very-bottom "move to bottom")
-  ("M-K" evil-window-move-very-top "move to top")
-  ("M-L" evil-window-move-far-right "move to far right")
-  ("x" evil-window-delete "delete")
-  ("d" evil-window-delete :exit t)
-  ("X" transpose-frame "transpose") ; there are more in transpose-frame that may be useful
-  ("Q" rigpa-window-quit-other "quit other window" :exit t)
-  ("o" rigpa-window-mru "Jump to most recent (like Alt-Tab)" :exit t)
-  ("s-w" rigpa-window-mru "Jump to most recent (like Alt-Tab)" :exit t)
-  ("n" other-window "next")
-  ("w" delete-other-windows "maximize" :exit t)
-  ("s" evil-window-split "split horizontally")
-  ("_" evil-window-split "")
-  ("v" evil-window-vsplit "split vertically")
-  ("|" evil-window-vsplit "")
-  ("u" winner-undo "undo")
-  ("C-r" winner-redo "redo")
-  ("m" rigpa-window-set-mark "set mark")
-  ("'" rigpa-window-return-to-mark "return to mark" :exit t)
-  ("`" rigpa-window-return-to-mark "return to mark" :exit t)
-  ("q" rigpa-window-return-to-original-configuration "return to original" :exit t)
-  ("/" ace-window "search")
-  ("+" evil-window-increase-height "expand vertically")
-  ("-" evil-window-decrease-height "shrink vertically")
-  ("C-+" (lambda ()
-           (interactive)
-           (evil-window-increase-height 3)) "expand vertically more")
-  ("C--" (lambda ()
-           (interactive)
-           (evil-window-decrease-height 3)) "shrink vertically more")
-  (">" evil-window-increase-width "expand horizontally")
-  ("<" evil-window-decrease-width "shrink horizontally")
-  ("C->" (lambda ()
-           (interactive)
-           (evil-window-increase-width 5)) "expand horizontally more")
-  ("C-<" (lambda ()
-           (interactive)
-           (evil-window-decrease-width 5)) "shrink horizontally more")
-  ("<backspace>" balance-windows "balance")
-  ("<tab>" fit-window-to-buffer "fit to width")
-  ("=" fit-window-to-buffer "fit to width")
-  ("r" evil-window-rotate-downwards "rotate downwards")
-  ("R" evil-window-rotate-upwards "rotate upwards")
-  ("f" ffap-other-window "go to file in other window" :exit t)
-  ("i" nil "exit" :exit t)
-  ("H-m" rigpa-toggle-menu "show/hide this menu")
-  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
+  (("h" rigpa-window-left)
+   ("j" rigpa-window-down)
+   ("k" rigpa-window-up)
+   ("l" rigpa-window-right)
+   ("H" rigpa-window-move-buffer-left)
+   ("J" rigpa-window-move-buffer-down)
+   ("K" rigpa-window-move-buffer-up)
+   ("L" rigpa-window-move-buffer-right)
+   ("C-S-h" rigpa-window-exchange-buffer-left)
+   ("C-S-j" rigpa-window-exchange-buffer-down)
+   ("C-S-k" rigpa-window-exchange-buffer-up)
+   ("C-S-l" rigpa-window-exchange-buffer-right)
+   ("M-H" evil-window-move-far-left)
+   ("M-J" evil-window-move-very-bottom)
+   ("M-K" evil-window-move-very-top)
+   ("M-L" evil-window-move-far-right)
+   ("x" evil-window-delete)
+   ("d" evil-window-delete t)
+   ("X" transpose-frame) ; there are more in transpose-frame that may be useful
+   ("Q" rigpa-window-quit-other t)
+   ;; maybe one for "select mru and close others"?
+   ("o" rigpa-window-mru t)
+   ("O" delete-window t)
+   ("s-w" rigpa-window-mru t)
+   ("n" other-window)
+   ("w" delete-other-windows t)
+   ("s" evil-window-split)
+   ("_" evil-window-split)
+   ("v" evil-window-vsplit)
+   ("|" evil-window-vsplit)
+   ("u" winner-undo)
+   ("C-r" winner-redo)
+   ("m" rigpa-window-set-mark)
+   ("'" rigpa-window-return-to-mark t)
+   ("`" rigpa-window-return-to-mark t)
+   ("q" rigpa-window-return-to-original-configuration t)
+   ("/" ace-window)
+   ("+" evil-window-increase-height)
+   ("-" evil-window-decrease-height)
+   ("C-+" (lambda ()
+            (interactive)
+            (evil-window-increase-height 3)))
+   ("C--" (lambda ()
+            (interactive)
+            (evil-window-decrease-height 3)))
+   (">" evil-window-increase-width)
+   ("<" evil-window-decrease-width)
+   ("C->" (lambda ()
+            (interactive)
+            (evil-window-increase-width 5)))
+   ("C-<" (lambda ()
+            (interactive)
+            (evil-window-decrease-width 5)))
+   ("<backspace>" balance-windows)
+   ("<tab>" fit-window-to-buffer)
+   ("=" fit-window-to-buffer)
+   ("r" evil-window-rotate-downwards)
+   ("R" evil-window-rotate-upwards)
+   ("f" ffap-other-window t)
+   ("i" nil t)
+   ("<return>" rigpa-enter-lower-level)
+   ("<escape>" rigpa-enter-higher-level))
+  :lighter " window"
+  :group 'rigpa)
+
+(defun rigpa--on-window-mode-entry ()
+  "Actions to take upon entry into window mode."
+  (rigpa-window-setup-marks-table)
+  ;; TODO: if it is already active, then make a note
+  ;; of it and don't disable it upon exit
+  (auto-dim-other-buffers-mode 1))
 
 (defun rigpa--on-window-mode-post-exit ()
   "Actions to take upon exit from window mode."
   (rigpa-window-flash-to-original)
   (auto-dim-other-buffers-mode -1))
 
-(defvar chimera-window-mode-entry-hook nil
-  "Entry hook for rigpa window mode.")
-
-(defvar chimera-window-mode-exit-hook nil
-  "Exit hook for rigpa window mode.")
-
 (defvar chimera-window-mode
   (make-chimera-mode :name "window"
-                     :enter #'hydra-window/body
-                     :pre-entry-hook 'chimera-window-mode-entry-hook
-                     :post-exit-hook 'chimera-window-mode-exit-hook
-                     :entry-hook 'evil-window-state-entry-hook
-                     :exit-hook 'evil-window-state-exit-hook))
+                     :enter #'rigpa-window-mode-enter
+                     :exit #'rigpa-window-mode-exit
+                     :pre-entry-hook 'rigpa-window-mode-pre-entry-hook
+                     :post-exit-hook 'rigpa-window-mode-post-exit-hook
+                     :entry-hook 'rigpa-window-mode-post-entry-hook
+                     :exit-hook 'rigpa-window-mode-pre-exit-hook
+                     :manage-hooks nil))
+
+(defun rigpa-window-initialize ()
+  "Initialize Window mode."
+  (add-hook 'rigpa-window-mode-post-entry-hook
+            #'rigpa--on-window-mode-entry)
+  (add-hook 'rigpa-window-mode-post-exit-hook
+            #'rigpa--on-window-mode-post-exit))
 
 
 (provide 'rigpa-window-mode)

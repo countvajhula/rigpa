@@ -27,21 +27,8 @@
 ;;; Code:
 
 (require 'evil)
+(require 'lithium)
 (require 'chimera)
-(require 'rigpa-evil-support)
-
-(defvar rigpa-char-mode-map (make-sparse-keymap))
-
-(define-minor-mode rigpa-char-mode
-  "Minor mode to modulate keybindings in rigpa char mode."
-  :lighter "char"
-  :keymap rigpa-char-mode-map)
-
-(evil-define-state char
-  "Char state."
-  :tag " <X> "
-  :message "-- CHAR --"
-  :enable (normal))
 
 (defun rigpa-char-info ()
   "Info on character"
@@ -152,82 +139,72 @@
   :motion evil-forward-char
   (evil-yank beg end type register yank-handler))
 
-(defvar rigpa--char-mode-keyspec
-      '(("h" . evil-backward-char)
-        ("j" . evil-next-line)
-        ("k" . evil-previous-line)
-        ("l" . evil-forward-char)
-        ("c" . evil-substitute)
-        ("y" . rigpa-char-yank)
-        ("~" . rigpa-char-toggle-case)
-        ("g" . goto-char) ; improve these to have beginning/end
-        ("G" . goto-char) ; default behavior
-        ("C-h" . (lambda ()
-                   (interactive)
-                   (evil-backward-char 3)))
-        ("C-j" . (lambda ()
-                   (interactive)
-                   (evil-next-line 3)))
-        ("C-k" . (lambda ()
-                   (interactive)
-                   (evil-previous-line 3)))
-        ("C-l" . (lambda ()
-                   (interactive)
-                   (evil-forward-char 3)))
-        ("M-h" . (lambda ()
-                   (interactive)
-                   (evil-beginning-of-line)))
-        ("M-j" . (lambda ()
-                   (interactive)
-                   (evil-forward-paragraph)
-                   (evil-previous-line)))
-        ("M-k" . (lambda ()
-                   (interactive)
-                   (evil-backward-paragraph)
-                   (evil-next-line)))
-        ("M-l" . (lambda ()
-                   (interactive)
-                   (evil-end-of-line)))
-        ("H" . rigpa-char-move-left)
-        ("J" . rigpa-char-move-down)
-        ("K" . rigpa-char-move-up)
-        ("L" . rigpa-char-move-right)
-        ("?" . rigpa-char-info)
-        ("C-S-h" . rigpa-char-move-left-more)
-        ("C-S-j" . rigpa-char-move-down-more)
-        ("C-S-k" . rigpa-char-move-up-more)
-        ("C-S-l" . rigpa-char-move-right-more)
-        ("M-H" . rigpa-char-move-left-most)
-        ("M-J" . rigpa-char-move-down-most)
-        ("M-K" . rigpa-char-move-up-most)
-        ("M-L" . rigpa-char-move-right-most))
-      "Key specification for rigpa char mode.")
-
-(rigpa--define-evil-keys-from-spec rigpa--char-mode-keyspec
-                                   rigpa-char-mode-map
-                                   'char)
-
-(defvar chimera-char-mode-entry-hook nil
-  "Entry hook for rigpa char mode.")
-
-(defvar chimera-char-mode-exit-hook nil
-  "Exit hook for rigpa char mode.")
-
-(defun rigpa--enable-char-minor-mode ()
-  "Enable char minor mode."
-  (rigpa-char-mode 1))
-
-(defun rigpa--disable-char-minor-mode ()
-  "Disable char minor mode."
-  (rigpa-char-mode -1))
+(lithium-define-local-mode rigpa-char-mode
+  "Char mode."
+  (("h" evil-backward-char)
+   ("j" evil-next-line)
+   ("k" evil-previous-line)
+   ("l" evil-forward-char)
+   ("c" evil-substitute)
+   ("y" rigpa-char-yank)
+   ("~" rigpa-char-toggle-case)
+   ("g" goto-char) ; improve these to have beginning/end
+   ("G" goto-char) ; default behavior
+   ("C-h" (lambda ()
+            (interactive)
+            (evil-backward-char 3)))
+   ("C-j" (lambda ()
+            (interactive)
+            (evil-next-line 3)))
+   ("C-k" (lambda ()
+            (interactive)
+            (evil-previous-line 3)))
+   ("C-l" (lambda ()
+            (interactive)
+            (evil-forward-char 3)))
+   ("M-h" (lambda ()
+            (interactive)
+            (evil-beginning-of-line)))
+   ("M-j" (lambda ()
+            (interactive)
+            (evil-forward-paragraph)
+            (evil-previous-line)))
+   ("M-k" (lambda ()
+            (interactive)
+            (evil-backward-paragraph)
+            (evil-next-line)))
+   ("M-l" (lambda ()
+            (interactive)
+            (evil-end-of-line)))
+   ("H" rigpa-char-move-left)
+   ("J" rigpa-char-move-down)
+   ("K" rigpa-char-move-up)
+   ("L" rigpa-char-move-right)
+   ("?" rigpa-char-info)
+   ("C-S-h" rigpa-char-move-left-more)
+   ("C-S-j" rigpa-char-move-down-more)
+   ("C-S-k" rigpa-char-move-up-more)
+   ("C-S-l" rigpa-char-move-right-more)
+   ("M-H" rigpa-char-move-left-most)
+   ("M-J" rigpa-char-move-down-most)
+   ("M-K" rigpa-char-move-up-most)
+   ("M-L" rigpa-char-move-right-most))
+  :lighter " char"
+  :group 'rigpa)
 
 (defvar chimera-char-mode
   (make-chimera-mode :name "char"
-                     :enter #'evil-char-state
-                     :pre-entry-hook 'chimera-char-mode-entry-hook
-                     :post-exit-hook 'chimera-char-mode-exit-hook
-                     :entry-hook 'evil-char-state-entry-hook
-                     :exit-hook 'evil-char-state-exit-hook))
+                     :enter #'rigpa-char-mode-enter
+                     :exit #'rigpa-char-mode-exit
+                     :pre-entry-hook 'rigpa-char-mode-pre-entry-hook
+                     :post-exit-hook 'rigpa-char-mode-post-exit-hook
+                     :entry-hook 'rigpa-char-mode-post-entry-hook
+                     :exit-hook 'rigpa-char-mode-pre-exit-hook
+                     :manage-hooks nil))
+
+(defun rigpa-char-initialize ()
+  "Initialize Char mode."
+  nil)
 
 
 (provide 'rigpa-char-mode)

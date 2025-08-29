@@ -27,49 +27,43 @@
 ;;; Code:
 
 (require 'evil)
-(require 'hydra)
+(require 'lithium)
 (require 'chimera)
-(require 'chimera-hydra)
 (require 'git-timemachine)
 
-(evil-define-state history
-  "History state."
-  :tag " <C> "
-  :message "-- x→o --"
-  :enable (normal))
-
-(defhydra hydra-history (:columns 2
-                         ; maybe put body-pre in ad hoc entry
-                         :body-pre (progn (unless git-timemachine-mode (git-timemachine))
-                                          (chimera-hydra-signal-entry chimera-history-mode))
-                         :post (chimera-hydra-portend-exit chimera-history-mode t)
-                         :after-exit (chimera-hydra-signal-exit chimera-history-mode
-                                                                #'chimera-handle-hydra-exit))
+(lithium-define-global-mode rigpa-history-mode
   "History mode"
-  ("h" git-timemachine-show-previous-revision "previous")
-  ("l" git-timemachine-show-next-revision "next")
-  ("M-l" git-timemachine-show-current-revision "latest")
-  ("b" git-timemachine-blame "annotate history ('blame')" :exit t)
-  ("/" git-timemachine-show-revision-fuzzy "search")
-  ("?" git-timemachine-show-commit "help (show commit)")
-  ("q" git-timemachine-quit "return to the present" :exit t)
-  ("H-m" rigpa-toggle-menu "show/hide this menu")
-  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
+  (("h" git-timemachine-show-previous-revision)
+   ("l" git-timemachine-show-next-revision)
+   ("M-l" git-timemachine-show-current-revision)
+   ("b" git-timemachine-blame t)
+   ("/" git-timemachine-show-revision-fuzzy)
+   ("?" git-timemachine-show-commit)
+   ("q" git-timemachine-quit t)
+   ("<return>" rigpa-enter-lower-level)
+   ("<escape>" rigpa-enter-higher-level))
+  :lighter " history"
+  :group 'rigpa)
 
-(defvar chimera-history-mode-entry-hook nil
-  "Entry hook for rigpa history mode.")
-
-(defvar chimera-history-mode-exit-hook nil
-  "Exit hook for rigpa history mode.")
+(defun rigpa--on-history-mode-pre-entry ()
+  "Pre-entry"
+  (unless git-timemachine-mode
+    (git-timemachine)))
 
 (defvar chimera-history-mode
   (make-chimera-mode :name "history"
-                     :enter #'hydra-history/body
-                     :pre-entry-hook 'chimera-history-mode-entry-hook
-                     :post-exit-hook 'chimera-history-mode-exit-hook
-                     :entry-hook 'evil-history-state-entry-hook
-                     :exit-hook 'evil-history-state-exit-hook))
+                     :enter #'rigpa-history-mode-enter
+                     :exit #'rigpa-history-mode-exit
+                     :pre-entry-hook 'rigpa-history-mode-pre-entry-hook
+                     :post-exit-hook 'rigpa-history-mode-post-exit-hook
+                     :entry-hook 'rigpa-history-mode-post-entry-hook
+                     :exit-hook 'rigpa-history-mode-pre-exit-hook
+                     :manage-hooks nil))
+
+(defun rigpa-history-initialize ()
+  "Initialize History mode."
+  (add-hook 'rigpa-history-mode-pre-entry-hook
+            #'rigpa--on-history-mode-pre-entry))
 
 
 (provide 'rigpa-history-mode)

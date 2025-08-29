@@ -27,43 +27,32 @@
 ;;; Code:
 
 (require 'evil)
-(require 'hydra)
+(require 'lithium)
 (require 'chimera)
-(require 'chimera-hydra)
 
-(evil-define-state text
-  "Text state."
-  :tag " <A> "
-  :message "-- TEXT --"
-  :enable (normal))
-
-
-(defhydra hydra-text (:columns 2
-                      :body-pre (chimera-hydra-signal-entry chimera-text-mode)
-                      :post (chimera-hydra-portend-exit chimera-text-mode t)
-                      :after-exit (chimera-hydra-signal-exit chimera-text-mode
-                                                             #'chimera-handle-hydra-exit))
+(lithium-define-global-mode rigpa-text-mode
   "Text mode"
-  ("z" evil-fill-and-move "justify" :exit t)
-  ("s-z" evil-fill-and-move "justify" :exit t)
-  ("i" nil "exit" :exit t)
-  ("H-m" rigpa-toggle-menu "show/hide this menu")
-  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
-
-(defvar chimera-text-mode-entry-hook nil
-  "Entry hook for rigpa text mode.")
-
-(defvar chimera-text-mode-exit-hook nil
-  "Exit hook for rigpa text mode.")
+  (("z" evil-fill-and-move t)
+   ("s-z" evil-fill-and-move t)
+   ("i" nil t)
+   ("<return>" rigpa-enter-lower-level)
+   ("<escape>" rigpa-enter-higher-level))
+  :lighter " text"
+  :group 'rigpa)
 
 (defvar chimera-text-mode
   (make-chimera-mode :name "text"
-                     :enter #'hydra-text/body
-                     :pre-entry-hook 'chimera-text-mode-entry-hook
-                     :post-exit-hook 'chimera-text-mode-exit-hook
-                     :entry-hook 'evil-text-state-entry-hook
-                     :exit-hook 'evil-text-state-exit-hook))
+                     :enter #'rigpa-text-mode-enter
+                     :exit #'rigpa-text-mode-exit
+                     :pre-entry-hook 'rigpa-text-mode-pre-entry-hook
+                     :post-exit-hook 'rigpa-text-mode-post-exit-hook
+                     :entry-hook 'rigpa-text-mode-post-entry-hook
+                     :exit-hook 'rigpa-text-mode-pre-exit-hook
+                     :manage-hooks nil))
+
+(defun rigpa-text-initialize ()
+  "Initialize Text mode."
+  nil)
 
 
 (provide 'rigpa-text-mode)

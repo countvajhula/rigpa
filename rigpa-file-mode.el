@@ -27,28 +27,21 @@
 ;;; Code:
 
 (require 'evil)
-(require 'hydra)
+(require 'lithium)
 (require 'chimera)
-(require 'chimera-hydra)
-
-(evil-define-state file
-  "File state."
-  :tag " <F> "
-  :message "-- FILE --"
-  :enable (normal))
 
 ;; From: https://www.emacswiki.org/emacs/MarkCommands#toc4
 (defun unpop-to-mark-command ()
-    "Unpop off mark ring. Does nothing if mark ring is empty."
-    (interactive)
-    (when mark-ring
-      (let ((pos (marker-position (car (last mark-ring)))))
-        (if (not (= (point) pos))
-            (goto-char pos)
-          (setq mark-ring (cons (copy-marker (mark-marker)) mark-ring))
-          (set-marker (mark-marker) pos)
-          (setq mark-ring (nbutlast mark-ring))
-          (goto-char (marker-position (car (last mark-ring))))))))
+  "Unpop off mark ring. Does nothing if mark ring is empty."
+  (interactive)
+  (when mark-ring
+    (let ((pos (marker-position (car (last mark-ring)))))
+      (if (not (= (point) pos))
+          (goto-char pos)
+        (setq mark-ring (cons (copy-marker (mark-marker)) mark-ring))
+        (set-marker (mark-marker) pos)
+        (setq mark-ring (nbutlast mark-ring))
+        (goto-char (marker-position (car (last mark-ring))))))))
 
 (defun xah-pop-local-mark-ring ()
   "Move cursor to last mark position of current buffer.
@@ -68,40 +61,50 @@ Version 2016-04-04"
   (interactive)
   (insert-register ?f))
 
-(defhydra hydra-file (:columns 2
-                      :body-pre (chimera-hydra-signal-entry chimera-file-mode)
-                      :post (chimera-hydra-portend-exit chimera-file-mode t)
-                      :after-exit (chimera-hydra-signal-exit chimera-file-mode
-                                                             #'chimera-handle-hydra-exit))
+(defun rigpa-file-delete ()
+  "Delete current buffer contents."
+  (interactive)
+  (delete-region (point-min) (point-max)))
+
+(defun rigpa-file-change ()
+  "Change current buffer contents."
+  (interactive)
+  (rigpa-file-delete)
+  (evil-insert-state))
+
+(lithium-define-global-mode rigpa-file-mode
   "File mode"
-  ("h" evil-backward-char "backward")
-  ("j" evil-next-line "down")
-  ("k" evil-previous-line "up")
-  ("l" evil-forward-char "forward")
-  ("M-h" evil-goto-first-line "beginning")
-  ("M-l" evil-goto-line "end")
-  ("C-h" xah-pop-local-mark-ring "previous mark")
-  ("C-l" unpop-to-mark-command "next mark")
-  ("y" rigpa-file-yank "yank")
-  ("p" rigpa-file-paste "paste")
-  ("i" nil "exit" :exit t)
-  ("H-m" rigpa-toggle-menu "show/hide this menu")
-  ("<return>" rigpa-enter-lower-level "enter lower level" :exit t)
-  ("<escape>" rigpa-enter-higher-level "escape to higher level" :exit t))
-
-(defvar chimera-file-mode-entry-hook nil
-  "Entry hook for rigpa file mode.")
-
-(defvar chimera-file-mode-exit-hook nil
-  "Exit hook for rigpa file mode.")
+  (("h" evil-backward-char)
+   ("j" evil-next-line)
+   ("k" evil-previous-line)
+   ("l" evil-forward-char)
+   ("M-h" evil-goto-first-line)
+   ("M-l" evil-goto-line)
+   ("C-h" xah-pop-local-mark-ring)
+   ("C-l" unpop-to-mark-command)
+   ("y" rigpa-file-yank)
+   ("p" rigpa-file-paste)
+   ("x" rigpa-file-delete)
+   ("c" rigpa-file-change)
+   ("i" nil t)
+   ("<return>" rigpa-enter-lower-level)
+   ("<escape>" rigpa-enter-higher-level))
+  :lighter " file"
+  :group 'rigpa)
 
 (defvar chimera-file-mode
   (make-chimera-mode :name "file"
-                     :enter #'hydra-file/body
-                     :pre-entry-hook 'chimera-file-mode-entry-hook
-                     :post-exit-hook 'chimera-file-mode-exit-hook
-                     :entry-hook 'evil-file-state-entry-hook
-                     :exit-hook 'evil-file-state-exit-hook))
+                     :enter #'rigpa-file-mode-enter
+                     :exit #'rigpa-file-mode-exit
+                     :pre-entry-hook 'rigpa-file-mode-pre-entry-hook
+                     :post-exit-hook 'rigpa-file-mode-post-exit-hook
+                     :entry-hook 'rigpa-file-mode-post-entry-hook
+                     :exit-hook 'rigpa-file-mode-pre-exit-hook
+                     :manage-hooks nil))
+
+(defun rigpa-file-initialize ()
+  "Initialize File mode."
+  nil)
 
 
 (provide 'rigpa-file-mode)

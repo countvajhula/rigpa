@@ -3,7 +3,7 @@
 ;; Author: Siddhartha Kasivajhula <sid@countvajhula.com>
 ;; URL: https://github.com/countvajhula/rigpa
 ;; Version: 0.5
-;; Package-Requires: ((emacs "26.1") (evil "1.2.14") (hydra "0.15.0") (symex "0.8.1") (dynaring "0.3") (buffer-ring "0.3.4") (ivy "0.13.0") (centaur-tabs "3.1") (beacon "1.3.4") (dictionary "1.11") (ace-window "0.9.0") (git-timemachine "4.11") (parsec "0.1.3") (ht "2.0") (s "1.12.0") (dash "2.18.0") (transpose-frame "0.2.0") (auto-dim-other-buffers "20220209.2101"))
+;; Package-Requires: ((emacs "26.1") (evil "1.2.14") (hydra "0.15.0") (lithium "0.1") (dynaring "0.3") (buffer-ring "0.3.4") (ivy "0.13.0") (centaur-tabs "3.1") (beacon "1.3.4") (dictionary "1.11") (ace-window "0.9.0") (git-timemachine "4.11") (parsec "0.1.3") (ht "2.0") (s "1.12.0") (dash "2.18.0") (transpose-frame "0.2.0") (auto-dim-other-buffers "20220209.2101"))
 ;; Keywords: emulations, frames, convenience
 
 ;; This program is "part of the world," in the sense described at
@@ -43,15 +43,13 @@
 ;;; Code:
 
 (require 'evil)
-(require 'hydra)
 (require 'chimera)
 (require 'ht)
 (require 'rigpa-custom)
+(require 'rigpa-mode-mode)
 (require 'rigpa-char-mode)
 (require 'rigpa-word-mode)
 (require 'rigpa-line-mode)
-(require 'symex)
-(require 'rigpa-symex-mode)
 (require 'rigpa-view-mode)
 (require 'rigpa-window-mode)
 (require 'rigpa-file-mode)
@@ -76,34 +74,6 @@
 ;; the prefix that will be used in naming all buffers used
 ;; in meta mode representations
 (defvar rigpa-buffer-prefix "*RIGPA-META*")
-
-(defun rigpa-hide-menu (mode-name)
-  "Hide current mode menu."
-  (unless (member mode-name chimera-evil-states)
-    ;; only supported for hydra
-    (let ((mode-hydra (intern (concat "hydra-" mode-name))))
-      (hydra-set-property mode-hydra :verbosity 0))))
-
-(defun rigpa-show-menu (mode-name)
-  "Show current mode menu."
-  (unless (member mode-name chimera-evil-states)
-    ;; only supported for hydra
-    (let ((mode-hydra (intern (concat "hydra-" mode-name))))
-      (hydra-set-property mode-hydra :verbosity 2))))
-
-(defun rigpa-toggle-menu ()
-  "Show/hide the current mode menu.
-
-Note that hiding the menu still retains the current editing mode,
-and simply toggles whether the menu is visible or not."
-  (interactive)
-  (let* ((mode-name (symbol-name evil-state))
-         (mode-hydra (intern (concat "hydra-" mode-name))))
-    (let ((visibility (hydra-get-property mode-hydra :verbosity)))
-      (if (or (eq nil visibility)
-              (> visibility 0))
-          (rigpa-hide-menu mode-name)
-        (rigpa-show-menu mode-name)))))
 
 (define-derived-mode rigpa-meta-mode
   text-mode "Meta"
@@ -272,10 +242,39 @@ and simply toggles whether the menu is visible or not."
   ;; This will bypass any rigpa-specific behavior, but as it seems
   ;; unlikely that we'd want to incorporate operator state formally
   ;; as part of any structures, this seems a reasonable hack
-  (define-key evil-operator-state-map [escape] #'evil-force-normal-state))
+  (define-key evil-operator-state-map [escape] #'evil-force-normal-state)
+  ;; same, I guess, for replace state? though, why are we even overriding
+  ;; [esc] above to begin with? Should we not integrate built-in evil
+  ;; states other than Normal?
+  (define-key evil-replace-state-map [escape] #'evil-force-normal-state))
+
+(defun rigpa--register-local-mode (mode)
+  "Register the local mode MODE."
+  (rigpa-register-mode mode
+                       :post-entry (rigpa-evil-state-by-name
+                                    (chimera-mode-name mode))
+                       :post-exit #'rigpa--enter-local-evil-state))
+
+(defun rigpa--register-global-mode (mode)
+  "Register the global mode MODE."
+  (rigpa-register-mode mode
+                       :post-entry (lambda ()
+                                     (rigpa--for-all-buffers (rigpa-evil-state-by-name
+                                                              (chimera-mode-name mode))))
+                       :post-exit (lambda ()
+                                    (rigpa--for-all-buffers #'rigpa--enter-local-evil-state))))
 
 (defun rigpa--register-modes ()
-  "Register the standard modes with the framework."
+  "Register the built-in modes with the framework.
+
+This adds them to a global mode registry, `rigpa-modes', so that they
+can be looked up by name, and also registers functions to listen on
+mode transitions to ensure that the correct mode is reflected and to
+keep track of the history of mode transitions for \"recall\" purposes.
+It also adds internal hooks relevant for Rigpa (currently, that's just
+entering and exiting the associated Evil state for the mode, which is
+done purely for UI purposes)."
+
   ;; register evil chimera states with the rigpa framework
   (rigpa-register-mode chimera-normal-mode)
   (rigpa-register-mode chimera-insert-mode)
@@ -285,93 +284,116 @@ and simply toggles whether the menu is visible or not."
   (rigpa-register-mode chimera-operator-mode)
 
   ;; register all the other modes
-  (rigpa-register-mode chimera-application-mode)
-  (rigpa-register-mode chimera-line-mode)
-  (rigpa-register-mode chimera-view-mode)
-  (rigpa-register-mode chimera-activity-mode)
-  (rigpa-register-mode chimera-history-mode)
-  (rigpa-register-mode chimera-tab-mode)
-  (rigpa-register-mode chimera-word-mode)
-  (rigpa-register-mode chimera-window-mode)
-  (rigpa-register-mode chimera-char-mode)
-  (rigpa-register-mode chimera-system-mode)
-  (rigpa-register-mode chimera-buffer-mode)
-  (rigpa-register-mode chimera-file-mode)
-  (rigpa-register-mode chimera-text-mode)
-  (rigpa-register-mode chimera-symex-mode))
 
-(defun rigpa--create-editing-structures ()
-  "Create standard editing structures."
+  ;; TODO: Line mode is _nonlocal_ to the tower, and yet
+  ;; buffer-local. So upon exit, we ideally want to return
+  ;; to a tower-local mode here, instead of leaving it
+  ;; hanging, or, as we are doing here, entering an _evil_
+  ;; state explicitly (which would happen as a side effect
+  ;; of the right thing, viz. returning to the tower).
+  (rigpa--register-local-mode chimera-line-mode)
+  (rigpa--register-local-mode chimera-application-mode)
+  (rigpa--register-local-mode chimera-view-mode)
+  (rigpa--register-local-mode chimera-activity-mode)
+  (rigpa--register-local-mode chimera-tab-mode)
+  (rigpa--register-local-mode chimera-word-mode)
+  (rigpa--register-local-mode chimera-char-mode)
+  (rigpa--register-local-mode chimera-system-mode)
+  (rigpa--register-local-mode chimera-file-mode)
+  (rigpa--register-local-mode chimera-text-mode)
+  ;; TODO: for buffer mode, probably enter appropriate mode in current
+  ;; and original buffer
+  ;; we can enter appropriate in original if different from current buffer
+  (rigpa--register-global-mode chimera-buffer-mode)
+  (rigpa--register-global-mode chimera-history-mode)
+  (rigpa--register-global-mode chimera-window-mode))
 
-  ;; towers in base editing levels
-  (setq rigpa-complete-tower
-        (make-editing-ensemble :name "complete"
-                               :default "normal"
-                               :members (list chimera-insert-mode
-                                              chimera-char-mode
-                                              chimera-word-mode
-                                              chimera-line-mode
-                                              chimera-activity-mode
-                                              chimera-normal-mode
-                                              chimera-view-mode
-                                              chimera-window-mode
-                                              chimera-file-mode
-                                              chimera-buffer-mode
-                                              chimera-system-mode
-                                              chimera-application-mode)))
+(defun rigpa--initialize-modes ()
+  "Initialize all built-in modes."
+  (rigpa-line-initialize)
+  (rigpa-activity-initialize)
+  (rigpa-view-initialize)
+  (rigpa-application-initialize)
+  (rigpa-history-initialize)
+  (rigpa-tab-initialize)
+  (rigpa-word-initialize)
+  (rigpa-window-initialize)
+  (rigpa-char-initialize)
+  (rigpa-system-initialize)
+  (rigpa-buffer-initialize)
+  (rigpa-file-initialize)
+  (rigpa-text-initialize))
 
-  (setq rigpa-vim-tower
-        (make-editing-ensemble :name "vim"
-                               :default "normal"
-                               :members (list chimera-insert-mode
-                                              chimera-normal-mode)))
-  (setq rigpa-emacs-tower
-        (make-editing-ensemble :name "emacs"
-                               :default "emacs"
-                               :members (list chimera-emacs-mode)))
-  (setq rigpa-lisp-tower
-        (make-editing-ensemble :name "lisp"
-                               :default "symex"
-                               :members (list chimera-insert-mode
-                                              chimera-symex-mode
-                                              chimera-normal-mode)))
+;; towers in base editing levels
+(defvar rigpa-complete-tower
+  (make-editing-ensemble :name "complete"
+                         :default "normal"
+                         :members (list chimera-insert-mode
+                                        chimera-char-mode
+                                        chimera-word-mode
+                                        chimera-line-mode
+                                        chimera-activity-mode
+                                        chimera-normal-mode
+                                        chimera-view-mode
+                                        chimera-window-mode
+                                        chimera-file-mode
+                                        chimera-buffer-mode
+                                        chimera-system-mode
+                                        chimera-application-mode)))
 
-  ;; complexes for base editing levels
-  (setq rigpa-general-complex
-        (make-editing-ensemble
-         :name "general"
-         :default "vim"
-         :members (list rigpa-vim-tower
-                        rigpa-complete-tower
-                        rigpa-lisp-tower
-                        rigpa-emacs-tower)))
+(defvar rigpa-vim-tower
+  (make-editing-ensemble :name "vim"
+                         :default "normal"
+                         :members (list chimera-insert-mode
+                                        chimera-normal-mode)))
+(defvar rigpa-emacs-tower
+  (make-editing-ensemble :name "emacs"
+                         :default "emacs"
+                         :members (list chimera-emacs-mode)))
 
-  ;; towers and complexes for meta levels
-  (setq rigpa-meta-mode-tower
-        (make-editing-ensemble :name "meta-mode"
-                               :default "line"
-                               :members (list chimera-line-mode)))
-  (setq rigpa-meta-complex
-        (make-editing-ensemble
-         :name "meta"
-         :default "meta-mode"
-         :members (list rigpa-meta-mode-tower)))
+;; complexes for base editing levels
+(defvar rigpa-general-complex
+  (make-editing-ensemble
+   :name "general"
+   :default "vim"
+   :members (list rigpa-vim-tower
+                  rigpa-complete-tower
+                  rigpa-emacs-tower))
+  "A default editing complex for general use.")
 
-  (setq rigpa-meta-tower-mode-tower
-        (make-editing-ensemble :name "meta-tower"
-                               :default "buffer"
-                               :members (list chimera-buffer-mode)))
-  (setq rigpa-meta-tower-complex
-        (make-editing-ensemble
-         :name "meta-tower"
-         :default "meta-tower"
-         :members (list rigpa-meta-tower-mode-tower)))
+;; towers and complexes for meta levels
+(defvar rigpa-meta-mode-tower
+  (make-editing-ensemble :name "meta-mode"
+                         :default "line"
+                         :members (list chimera-line-mode)))
+(defvar rigpa-meta-complex
+  (make-editing-ensemble
+   :name "meta"
+   :default "meta-mode"
+   :members (list rigpa-meta-mode-tower)))
 
-  ;; the editing complex to use in a buffer
-  ;; by default this is general complex unless a more tailored one
-  ;; has been set (e.g. via major mode hook)
-  (setq rigpa--complex rigpa-general-complex)
-  (make-variable-buffer-local 'rigpa--complex))
+(defvar rigpa-meta-tower-mode-tower
+  (make-editing-ensemble :name "meta-tower"
+                         :default "buffer"
+                         :members (list chimera-buffer-mode)))
+
+(defvar rigpa-meta-tower-complex
+  (make-editing-ensemble
+   :name "meta-tower"
+   :default "meta-tower"
+   :members (list rigpa-meta-tower-mode-tower)))
+
+(defvar rigpa--complex rigpa-general-complex
+  "The current editing complex.
+
+By default this is general complex unless a more tailored one
+has been set in a buffer (e.g. via major mode hook).
+
+It is defined here as an ordinary global variable, but it is made
+buffer local below so that it can have a default value that can be
+overridden in individual buffers.")
+
+(make-variable-buffer-local 'rigpa--complex)
 
 (defun rigpa--provide-editing-structures ()
   "Register editing structures so they're used in relevant major modes."
@@ -382,14 +404,6 @@ and simply toggles whether the menu is visible or not."
   ;;  (2) the tower index
   ;;  (3) the level index
   ;; and eventually make these "coordinates" generic
-  (when (boundp 'symex-mode)
-    (dolist (mode-name (and (fboundp 'symex-get-lisp-modes)
-                            (symex-get-lisp-modes)))
-      (let ((mode-hook (intern (concat (symbol-name mode-name)
-                                       "-hook"))))
-        (add-hook mode-hook (lambda ()
-                              (setq rigpa--current-tower-index 2)
-                              (setq rigpa--current-level 2))))))
   (add-hook 'rigpa-meta-mode-hook
             ;; TODO: dispatch here based on meta level. If the level
             ;; is 1 use line mode / buffers, if it's 2,
@@ -403,21 +417,29 @@ and simply toggles whether the menu is visible or not."
             (lambda ()
               (setq rigpa--complex rigpa-meta-tower-complex))))
 
+(defun rigpa-initialize-evil ()
+  "Initialize some evil interop."
+  (advice-add 'evil-repeat
+              :around #'rigpa-evil-preserve-state-advice)
+  ;; undo resets to normal state if there are no
+  ;; changes to undo (for some reason. it doesn't do
+  ;; this if an action is there to undo)
+  (advice-add 'evil-undo
+              :around #'rigpa-evil-preserve-state-advice))
+
 (defun rigpa-initialize ()
   "Initialize rigpa."
   (interactive)
+  (unless lithium-mode
+    (lithium-mode 1))
+  (rigpa--initialize-modes)
   (rigpa--register-modes)
+  (rigpa--provide-editing-structures)
   ;; should make this optional via a defcustom flag
   ;; or potentially even have it in a separate evil-adapter package
   (when (boundp 'evil-mode)
-    (rigpa--integrate-evil-states))
-  (rigpa--create-editing-structures)
-  (rigpa--provide-editing-structures)
-  (if (and (boundp 'rigpa-show-menus) rigpa-show-menus)
-      (dolist (mode (ht-values rigpa-modes))
-        (rigpa-show-menu (chimera-mode-name mode)))
-    (dolist (mode (ht-values rigpa-modes))
-      (rigpa-hide-menu (chimera-mode-name mode)))))
+    (rigpa--integrate-evil-states)
+    (rigpa-initialize-evil)))
 
 (defun rigpa-disable ()
   "Disable rigpa."
@@ -426,7 +448,18 @@ and simply toggles whether the menu is visible or not."
   ;; remap evil keybindings
   ;; unregister major mode hooks
   ;; unregister all modes (including esp evil states)
+  ;; remove evil advice
   nil)
+
+;;;###autoload
+(define-minor-mode rigpa-mode
+  "A modal UI framework."
+  :lighter " rigpa"
+  :global t
+  :group 'rigpa
+  (if rigpa-mode
+      (rigpa-initialize)
+    (rigpa-disable)))
 
 
 (provide 'rigpa)

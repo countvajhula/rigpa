@@ -28,18 +28,12 @@
 
 (require 'evil)
 (require 'hydra)
+(require 'lithium)
 (require 'chimera)
-(require 'chimera-hydra)
 (require 'centaur-tabs)
 (require 'beacon)
 
 (defvar rigpa-application--original-transparency 100)
-
-(evil-define-state application
-  "Application state."
-  :tag " <A> "
-  :message "-- APPLICATION --"
-  :enable (normal))
 
 (defun rigpa-application-toggle-alarm-bell ()
   "Toggle whether the alarm bell sounds."
@@ -135,39 +129,35 @@
               'consult-theme)
              (t 'load-theme))))
 
-(defhydra hydra-application (:columns 2
-                             :exit t
-                             :body-pre (chimera-hydra-signal-entry chimera-application-mode)
-                             :post (chimera-hydra-portend-exit chimera-application-mode t)
-                             :after-exit (chimera-hydra-signal-exit chimera-application-mode
-                                                                    #'chimera-handle-hydra-exit))
-  "Control application environment"
-  ("y" hydra-transparency/body "transparency")
-  ("t" centaur-tabs-mode "toggle tabs")
-  ("n" display-line-numbers-mode "toggle line numbers")
-  ("b" rigpa-application-toggle-alarm-bell "toggle alarm bell")
-  ("B" beacon-mode "toggle beacon")
-  ("s" scroll-bar-mode "toggle scroll bar")
-  ("l" hl-line-mode "toggle highlight line")
-  ("c" rigpa-application-load-theme "change color scheme")
-  ("f" set-frame-font "change font")
-  ("H-m" rigpa-toggle-menu "show/hide this menu" :exit nil)
-  ("<return>" rigpa-enter-lower-level "enter lower level")
-  ("<escape>" rigpa-enter-higher-level "escape to higher level"))
-
-(defvar chimera-application-mode-entry-hook nil
-  "Entry hook for rigpa application mode.")
-
-(defvar chimera-application-mode-exit-hook nil
-  "Exit hook for rigpa application mode.")
+(lithium-define-global-mode rigpa-application-mode
+  "Application mode"
+  (("y" hydra-transparency/body t)
+   ("t" centaur-tabs-mode t)
+   ("n" display-line-numbers-mode t)
+   ("b" rigpa-application-toggle-alarm-bell t)
+   ("B" beacon-mode t)
+   ("s" scroll-bar-mode t)
+   ("l" hl-line-mode t)
+   ("c" rigpa-application-load-theme t)
+   ("f" set-frame-font t)
+   ("<return>" rigpa-enter-lower-level)
+   ("<escape>" rigpa-enter-higher-level))
+  :lighter " application"
+  :group 'rigpa)
 
 (defvar chimera-application-mode
   (make-chimera-mode :name "application"
-                     :enter #'hydra-application/body
-                     :pre-entry-hook 'chimera-application-mode-entry-hook
-                     :post-exit-hook 'chimera-application-mode-exit-hook
-                     :entry-hook 'evil-application-state-entry-hook
-                     :exit-hook 'evil-application-state-exit-hook))
+                     :enter #'rigpa-application-mode-enter
+                     :exit #'rigpa-application-mode-exit
+                     :pre-entry-hook 'rigpa-application-mode-pre-entry-hook
+                     :post-exit-hook 'rigpa-application-mode-post-exit-hook
+                     :entry-hook 'rigpa-application-mode-post-entry-hook
+                     :exit-hook 'rigpa-application-mode-pre-exit-hook
+                     :manage-hooks nil))
+
+(defun rigpa-application-initialize ()
+  "Initialize Application mode."
+  nil)
 
 
 (provide 'rigpa-application-mode)
