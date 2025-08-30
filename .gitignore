@@ -6,3 +6,5 @@
 .cask
 *.elc
 dist
+*.html
+ci-init
