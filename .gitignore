@@ -8,3 +8,4 @@
 dist
 *.html
 ci-init
+emacs-ci
