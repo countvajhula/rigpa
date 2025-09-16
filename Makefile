@@ -25,24 +25,24 @@ help:
 	@echo "**All of these actions take effect and are contained inside the emacs-ci/ folder --- they do not affect the system Emacs configuration.**"
 
 setup-ci:
-	git clone https://github.com/countvajhula/emacs-ci.git
+	git clone https://github.com/countvajhula/emacs-ci.git .emacs-ci.clone
 
 clean:
-	cd emacs-ci && rm -rf ci-init
+	cd .emacs-ci.clone && rm -rf ci-init
 
 bootstrap:
-	cd emacs-ci && emacs --batch --quick --load bootstrap.el
+	cd .emacs-ci.clone && emacs --batch --quick --load bootstrap.el
 
 install:
-	cd emacs-ci && emacs --batch --quick --load install.el
+	cd .emacs-ci.clone && emacs --batch --quick --load install.el
 
 build:
-	cd emacs-ci && emacs --batch --quick --load build.el
+	cd .emacs-ci.clone && emacs --batch --quick --load build.el
 
 lint:
-	cd emacs-ci && emacs --batch --quick --load lint.el
+	cd .emacs-ci.clone && emacs --batch --quick --load lint.el
 
 checkdoc:
-	cd emacs-ci && emacs --batch --quick --load checkdoc.el
+	cd .emacs-ci.clone && emacs --batch --quick --load checkdoc.el
 
 .PHONY: help setup-ci clean bootstrap install build lint checkdoc
