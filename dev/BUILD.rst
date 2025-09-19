@@ -33,7 +33,7 @@ Build steps
 
 .. code-block:: bash
 
-  make build
+  make byte-compile
 
 Drafting a New Release
 ======================

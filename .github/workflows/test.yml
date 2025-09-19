@@ -35,4 +35,7 @@ jobs:
         continue-on-error: true
         run: make checkdoc
       - name: Byte Compile
-        run: make build
+        run: make byte-compile
+      - name: Native Compile
+        if: "matrix.emacs_version == '29.1' || matrix.emacs_version == 'snapshot'"
+        run: make native-compile

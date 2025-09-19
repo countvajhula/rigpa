@@ -18,7 +18,8 @@ help:
 	@echo "setup-ci - clone emacs-ci to run project CI actions such as linting"
 	@echo "bootstrap - install Straight.el"
 	@echo "install - install package dependencies"
-	@echo "build - byte compile the package"
+	@echo "byte-compile - byte compile the package"
+	@echo "native-compile - native compile the package"
 	@echo "lint - check style with package-lint"
 	@echo "checkdoc - check docstrings"
 	@echo
@@ -42,8 +43,11 @@ bootstrap:
 install:
 	cd .emacs-ci && emacs --batch --quick --load install.el
 
-build:
-	cd .emacs-ci && emacs --batch --quick --load build.el
+byte-compile:
+	cd .emacs-ci && emacs --batch --quick --load byte-compile.el
+
+native-compile:
+	cd .emacs-ci && emacs --batch --quick --load native-compile.el
 
 lint:
 	cd .emacs-ci && emacs --batch --quick --load lint.el
@@ -51,4 +55,4 @@ lint:
 checkdoc:
 	cd .emacs-ci && emacs --batch --quick --load checkdoc.el
 
-.PHONY: help setup-ci clean bootstrap install build lint checkdoc
+.PHONY: help setup-ci clean bootstrap install byte-compile native-compile lint checkdoc
