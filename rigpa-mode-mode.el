@@ -107,8 +107,17 @@ MODE."
 
 (defun rigpa--native-p (mode)
   "Is MODE native to the local editing ensemble (e.g. tower)?"
-  (rigpa--member-of-ensemble-p (rigpa--local-tower)
-                               mode))
+  (or (rigpa--member-of-ensemble-p (rigpa--local-tower)
+                                   ;; TODO: can make this dynaringp dynaring-value, etc.
+                                   ;; but that doesn't quite work since the ensemble-position-by-name
+                                   ;; derives the list to check for membership from the head value of the ring
+                                   (rigpa-editing-entity-name mode))
+      ;; a hack just to check if it works.
+      ;; there's a ghost third element in the ring, it seems (but not actually since its size is 2)
+      ;; when hitting Esc to rotate (verify what Esc is bound to)
+      (and (equal "lisp" (rigpa-editing-entity-name (rigpa--local-tower)))
+           (member (rigpa-editing-entity-name mode)
+                   (list "symex" "normal")))))
 
 (defun rigpa-enter-mode (mode-name)
   "Enter mode MODE-NAME.
