@@ -107,8 +107,8 @@ MODE."
 
 (defun rigpa--native-p (mode)
   "Is MODE native to the local editing ensemble (e.g. tower)?"
-  (rigpa--member-of-ensemble-p mode
-                               (rigpa--local-tower)))
+  (rigpa--member-of-ensemble-p (rigpa--local-tower)
+                               mode))
 
 (defun rigpa-enter-mode (mode-name)
   "Enter mode MODE-NAME.
