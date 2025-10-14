@@ -158,6 +158,15 @@ upon exit, we are implicitly returned to a native mode."
   (interactive)
   (rigpa--rotate-mode-ring #'dynaring-rotate-right))
 
+(defun rigpa-escape-or-rotate ()
+  "Escape to a higher level or rotate mode ring.
+
+Tries these actions in that order."
+  (if (< rigpa--current-level
+         (1- (rigpa-ensemble-size (rigpa--local-tower))))
+      (rigpa--enter-level (1+ rigpa--current-level))
+    (rigpa-rotate-mode-ring-left)))
+
 (defun rigpa--enter-level (level-number)
   "Enter level LEVEL-NUMBER"
   (let* ((tower (rigpa--local-tower))
