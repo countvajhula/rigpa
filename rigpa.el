@@ -78,12 +78,16 @@
 (define-derived-mode rigpa-meta-mode
   text-mode "Meta"
   "Major mode for meta modes"
-  (define-key rigpa-meta-mode-map (kbd "g r") 'rigpa--reload-tower))
+  (define-key rigpa-meta-mode-map
+              (kbd "g r")
+              'rigpa--reload-tower))
 
 (define-derived-mode rigpa-meta-tower-mode
   text-mode "Tower"
   "Major mode for meta modes"
-  (define-key rigpa-meta-tower-mode-map (kbd "g r") 'rigpa--reload-tower))
+  (define-key rigpa-meta-tower-mode-map
+              (kbd "g r")
+              'rigpa--reload-tower))
 
 ;; wrap native evil states in chimera modes
 (defvar chimera-normal-mode-entry-hook nil
@@ -225,35 +229,49 @@
                    (intern
                     (concat "evil-" state "-state-map")))))
       (if (member state chimera-insertion-states)
-          (define-key keymap [escape] #'rigpa-enter-higher-level)
-        (define-key keymap [escape] (lambda ()
-                                      (interactive)
-                                      (if (equal "lisp"
-                                                 (rigpa-editing-entity-name
-                                                  (rigpa--local-tower)))
-                                          (rigpa-rotate-mode-ring-left)
-                                        (rigpa-enter-higher-level))))
-        (define-key keymap [return] #'rigpa--enter-lower-or-pass-through))))
+          (define-key keymap
+                      [escape]
+                      #'rigpa-enter-higher-level)
+        (define-key keymap
+                    [escape]
+                    (lambda ()
+                      (interactive)
+                      (if (equal "lisp"
+                                 (rigpa-editing-entity-name
+                                  (rigpa--local-tower)))
+                          (rigpa-rotate-mode-ring-left)
+                        (rigpa-enter-higher-level))))
+        (define-key keymap
+                    [return]
+                    #'rigpa--enter-lower-or-pass-through))))
   ;; exit visual state gracefully
-  (define-key evil-visual-state-map [escape] (lambda ()
-                                               (interactive)
-                                               (evil-exit-visual-state)
-                                               (rigpa-enter-higher-level)))
-  (define-key evil-visual-state-map [return] (lambda ()
-                                               (interactive)
-                                               (evil-exit-visual-state)
-                                               (rigpa-enter-lower-level)))
+  (define-key evil-visual-state-map
+              [escape]
+              (lambda ()
+                (interactive)
+                (evil-exit-visual-state)
+                (rigpa-enter-higher-level)))
+  (define-key evil-visual-state-map
+              [return]
+              (lambda ()
+                (interactive)
+                (evil-exit-visual-state)
+                (rigpa-enter-lower-level)))
   ;; interrupting operator state should unconditionally "escape"
   ;; but by default an operator enters insert state as a follow-on.
   ;; we use the default normal override binding here to avoid this.
   ;; This will bypass any rigpa-specific behavior, but as it seems
   ;; unlikely that we'd want to incorporate operator state formally
   ;; as part of any structures, this seems a reasonable hack
-  (define-key evil-operator-state-map [escape] #'evil-force-normal-state)
+  (define-key evil-operator-state-map
+              [escape]
+              #'evil-force-normal-state)
   ;; same, I guess, for replace state? though, why are we even overriding
   ;; [esc] above to begin with? Should we not integrate built-in evil
   ;; states other than Normal?
-  (define-key evil-replace-state-map [escape] #'evil-force-normal-state))
+  (define-key evil-replace-state-map
+              [escape]
+              #'evil-force-normal-state))
 
 (defun rigpa--register-local-mode (mode)
   "Register the local mode MODE."
