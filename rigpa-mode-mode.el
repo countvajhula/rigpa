@@ -195,7 +195,7 @@ Tries these actions in that order."
         (if (rigpa--native-p mode)
             (when (> rigpa--current-level 0)
               (rigpa--enter-level (1- rigpa--current-level)))
-          ;; first (low-level) exit the current mode
+          ;; just (low-level) exit the current mode
           (chimera--exit-mode mode))
       (rigpa--enter-appropriate-mode))))
 
@@ -237,7 +237,7 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
             (when (< rigpa--current-level
                      (1- (rigpa-ensemble-size (rigpa--local-tower))))
               (rigpa--enter-level (1+ rigpa--current-level)))
-          ;; first (low-level) exit the current mode
+          ;; just (low-level) exit the current mode
           (chimera--exit-mode mode))
       (rigpa--enter-appropriate-mode))))
 

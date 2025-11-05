@@ -236,11 +236,7 @@
                     [escape]
                     (lambda ()
                       (interactive)
-                      (if (equal "lisp"
-                                 (rigpa-editing-entity-name
-                                  (rigpa--local-tower)))
-                          (rigpa-rotate-mode-ring-left)
-                        (rigpa-enter-higher-level))))
+                      (rigpa-enter-higher-level)))
         (define-key keymap
                     [return]
                     #'rigpa--enter-lower-or-pass-through))))
