@@ -143,10 +143,11 @@ upon exit, we are implicitly returned to a native mode."
                             0))
          (ring (rigpa-ensemble-member-at-position tower
                                                   level-number)))
-    (funcall direction ring)
-    (rigpa-enter-mode
-     (rigpa-editing-entity-name
-      (dynaring-value ring)))))
+    (when (dynaringp ring)
+      (funcall direction ring)
+      (rigpa-enter-mode
+       (rigpa-editing-entity-name
+        (dynaring-value ring))))))
 
 (defun rigpa-rotate-mode-ring-left ()
   "Rotate the current mode ring to the left."
