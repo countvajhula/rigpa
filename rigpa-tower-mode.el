@@ -48,7 +48,27 @@
 (defun rigpa--tower (tower-id)
   "The editing tower corresponding to the provided index."
   (interactive)
-  (nth tower-id (editing-ensemble-members rigpa--complex)))
+  (let* ((towers (editing-ensemble-members rigpa--complex))
+         (tower-id
+          ;; A hack to choose the first position if we provide an
+          ;; invalid tower index, to address #25.
+          ;;
+          ;; The rigpa--current-tower-index variable is global and not
+          ;; sensitive to the current complex, and so, choosing Emacs
+          ;; tower (index 2) as default causes Rigpa to attempt to
+          ;; find tower index 2 even in meta modes where there is
+          ;; exactly one tower and 2 is an invalid index.
+          ;;
+          ;; A proper fix would involve associating stateful data
+          ;; structures with each buffer to track current mode, tower,
+          ;; complex, etc. instead of separately maintaining "current"
+          ;; indexes. We should also provide a way to customize a
+          ;; default value for each of these structures in the
+          ;; definition of the structure itself, in user config.
+          (if (> tower-id (length towers))
+              0
+            tower-id)))
+    (nth tower-id towers)))
 
 (defun rigpa--ground-tower ()
   "The editing tower we are currently in, in relation to the ground buffer."
