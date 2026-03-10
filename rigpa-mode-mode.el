@@ -32,6 +32,7 @@
 (require 'rigpa-text-parsers)
 (require 'rigpa-meta)
 (require 'rigpa-evil-support)
+(require 'dynaring)
 
 (evil-define-state mode
   "Mode state."
@@ -106,8 +107,17 @@ MODE."
 
 (defun rigpa--native-p (mode)
   "Is MODE native to the local editing ensemble (e.g. tower)?"
-  (rigpa--member-of-ensemble-p mode
-                               (rigpa--local-tower)))
+  (or (rigpa--member-of-ensemble-p (rigpa--local-tower)
+                                   ;; TODO: can make this dynaringp dynaring-value, etc.
+                                   ;; but that doesn't quite work since the ensemble-position-by-name
+                                   ;; derives the list to check for membership from the head value of the ring
+                                   (rigpa-editing-entity-name mode))
+      ;; a hack just to check if it works.
+      ;; there's a ghost third element in the ring, it seems (but not actually since its size is 2)
+      ;; when hitting Esc to rotate (verify what Esc is bound to)
+      (and (equal "lisp" (rigpa-editing-entity-name (rigpa--local-tower)))
+           (member (rigpa-editing-entity-name mode)
+                   (list "symex" "normal")))))
 
 (defun rigpa-enter-mode (mode-name)
   "Enter mode MODE-NAME.
@@ -123,15 +133,58 @@ upon exit, we are implicitly returned to a native mode."
         (chimera-switch-mode to-mode)
       (chimera--enter-mode to-mode))))
 
+(defun rigpa--rotate-mode-ring (direction)
+  "Rotate the current mode ring in DIRECTION."
+  (interactive)
+  (let* ((tower (rigpa--local-tower))
+         (tower-height (rigpa-ensemble-size tower))
+         (level-number (max (min rigpa--current-level
+                                 (1- tower-height))
+                            0))
+         (ring (rigpa-ensemble-member-at-position tower
+                                                  level-number)))
+    (when (dynaringp ring)
+      (funcall direction ring)
+      (rigpa-enter-mode
+       (rigpa-editing-entity-name
+        (dynaring-value ring))))))
+
+(defun rigpa-rotate-mode-ring-left ()
+  "Rotate the current mode ring to the left."
+  (interactive)
+  (rigpa--rotate-mode-ring #'dynaring-rotate-left))
+
+(defun rigpa-rotate-mode-ring-right ()
+  "Rotate the current mode ring to the right."
+  (interactive)
+  (rigpa--rotate-mode-ring #'dynaring-rotate-right))
+
+(defun rigpa-escape-or-rotate ()
+  "Escape to a higher level or rotate mode ring.
+
+Tries these actions in that order."
+  (if (< rigpa--current-level
+         (1- (rigpa-ensemble-size (rigpa--local-tower))))
+      (rigpa--enter-level (1+ rigpa--current-level))
+    (rigpa-rotate-mode-ring-left)))
+
 (defun rigpa--enter-level (level-number)
   "Enter level LEVEL-NUMBER"
   (let* ((tower (rigpa--local-tower))
          (tower-height (rigpa-ensemble-size tower))
          (level-number (max (min level-number
                                  (1- tower-height))
-                            0)))
-    (let ((mode-name (rigpa-editing-entity-name
-                      (rigpa-ensemble-member-at-position tower level-number))))
+                            0))
+         (level (rigpa-ensemble-member-at-position tower
+                                                   level-number))
+         (mode (if (dynaringp level)
+                   (dynaring-value level)
+                 level)))
+    (let ((mode-name (rigpa-editing-entity-name mode)))
+      ;; so, we're expecting the tower to be a list containing
+      ;; _modes_. Instead, we want to change it to contain
+      ;; _mode rings_. Let's first convert it into a mode ring
+      ;; containing a single element.
       (rigpa-enter-mode mode-name)
       (setq rigpa--current-level level-number))))
 
@@ -143,7 +196,7 @@ upon exit, we are implicitly returned to a native mode."
         (if (rigpa--native-p mode)
             (when (> rigpa--current-level 0)
               (rigpa--enter-level (1- rigpa--current-level)))
-          ;; first (low-level) exit the current mode
+          ;; just (low-level) exit the current mode
           (chimera--exit-mode mode))
       (rigpa--enter-appropriate-mode))))
 
@@ -185,7 +238,7 @@ Priority: (1) provided mode if admissible (i.e. present in tower) [TODO]
             (when (< rigpa--current-level
                      (1- (rigpa-ensemble-size (rigpa--local-tower))))
               (rigpa--enter-level (1+ rigpa--current-level)))
-          ;; first (low-level) exit the current mode
+          ;; just (low-level) exit the current mode
           (chimera--exit-mode mode))
       (rigpa--enter-appropriate-mode))))
 
@@ -274,11 +327,11 @@ is precisely the thing to be done."
           (recall rigpa-recall))
       ;; only set recall here if it is currently in the tower AND
       ;; going to a state outside the tower
-      (when (and (rigpa-ensemble-member-position-by-name (rigpa--local-tower)
-                                                         mode-name)
-                 (not (rigpa-ensemble-member-position-by-name
-                       (rigpa--local-tower)
-                       (symbol-name evil-next-state))))
+      (when (and (rigpa--member-of-ensemble-p (rigpa--local-tower)
+                                              mode-name)
+                 (not
+                  (rigpa--member-of-ensemble-p (rigpa--local-tower)
+                                               (symbol-name evil-next-state))))
         (rigpa-set-mode-recall mode-name)))))
 
 (defun rigpa-set-mode-recall (mode-name)
@@ -287,7 +340,7 @@ is precisely the thing to be done."
 
 (defun rigpa-serialize-mode (mode tower level-number)
   "A string representation of a mode."
-  (let ((name (rigpa-editing-entity-name mode)))
+  (let ((name (rigpa-editing-entity-name (if (dynaringp mode) (dynaring-value mode) mode))))
     (concat "|―――"
             (number-to-string level-number)
             "―――|"
